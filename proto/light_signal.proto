@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+option csharp_namespace = "EulynxLive.LightSignal.Proto";
+
+package light_signal;
+
+enum SignalAspect {
+    Stop_Danger_1 = 0;
+    Proceed_Clear_1 = 1;
+    ExpectStop = 2;
+}
+
+service LightSignal {
+    rpc GetSignalAspect (Nothing) returns (SignalAspectMessage) {}
+}
+
+message SignalAspectMessage {
+    SignalAspect aspect = 1;
+}
+
+message Nothing {
+}
+

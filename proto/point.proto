@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+option csharp_namespace = "EulynxLive.Point.Proto";
+
+package point;
+
+enum PointPosition {
+    Right = 0;
+    Left = 1;
+    NoEndPosition = 2;
+    Trailed = 3;
+}
+
+service Point {
+    rpc SimulateTrailed (Nothing) returns (Nothing) {}
+    rpc GetPointPosition (Nothing) returns (PointPositionMessage) {}
+}
+
+message PointPositionMessage {
+    PointPosition position = 1;
+}
+
+message Nothing {
+}
+

@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option go_package = "github.com/rs22/ixl-sim/proto";
+option csharp_namespace = "EulynxLive.TrainDetectionSystem.Proto";
+
+package ixl;
+
+service TrainDetectionSystem {
+    rpc IncreaseAxleCount (TpsCommand) returns (Nothing) {}
+    rpc DecreaseAxleCount (TpsCommand) returns (Nothing) {}
+}
+
+message TpsCommand {
+  string tps = 1;
+}
+
+message Nothing {
+}
+
