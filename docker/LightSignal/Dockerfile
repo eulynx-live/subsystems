@@ -10,6 +10,6 @@ COPY src/LightSignal/bin/Release/net6.0/publish/ app/
 
 WORKDIR /app
 
-COPY entrypoint.sh .
+COPY src/LightSignal/entrypoint.sh .
 
 ENTRYPOINT ["./entrypoint.sh"]
