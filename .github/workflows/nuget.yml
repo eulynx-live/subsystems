@@ -20,14 +20,20 @@ jobs:
     steps:
 
     - uses: actions/checkout@v3
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v2
       with:
         dotnet-version: 6.0.x
+
     - name: Restore dependencies
       run: dotnet restore src/Messages
+
+    - name: Set VERSION variable
+      run: echo "VERSION=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
     - name: Build
-      run: dotnet pack -c Release --no-restore src/Messages
+      run: dotnet pack -c Release --no-restore src/Messages /p:Version=1.0.0+${{VERSION}}
 
     - name: Build and push NuGet Package
       run: dotnet nuget push "src/Messages/bin/Release/EulynxLive.Messages.1.0.0.nupkg" --api-key ${{ secrets.NUGET_REGISTRY }} --source https://api.nuget.org/v3/index.json
