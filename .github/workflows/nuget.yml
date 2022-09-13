@@ -30,4 +30,4 @@ jobs:
       run: dotnet pack -c Release --no-restore src/Messages
 
     - name: Build and push NuGet Package
-      run: dotnet nuget push "src/Messages/bin/Release/Messages.1.0.0.nupkg" --source "https://nuget.pkg.github.com/eulynx-live/index.json" --api-key ${{ secrets.GITHUB_TOKEN }}
+      run: dotnet nuget push "src/Messages/bin/Release/EulynxLive.Messages.1.0.0.nupkg" --source "https://nuget.pkg.github.com/eulynx-live/index.json" --api-key ${{ secrets.GITHUB_TOKEN }}
