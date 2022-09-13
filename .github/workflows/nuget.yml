@@ -33,7 +33,7 @@ jobs:
       run: echo "VERSION=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
     - name: Build
-      run: dotnet pack -c Release --no-restore src/Messages /p:Version=1.0.0+${VERSION}
+      run: dotnet pack -c Release --no-restore src/Messages /p:Version=1.0.1-build.${{ github.run_number }}
 
     - name: Build and push NuGet Package
-      run: dotnet nuget push "src/Messages/bin/Release/EulynxLive.Messages.1.0.0.nupkg" --api-key ${{ secrets.NUGET_REGISTRY }} --source https://api.nuget.org/v3/index.json
+      run: dotnet nuget push "src/Messages/bin/Release/EulynxLive.Messages.1.0.1-build.${{ github.run_number }}.nupkg" --api-key ${{ secrets.NUGET_REGISTRY }} --source https://api.nuget.org/v3/index.json
