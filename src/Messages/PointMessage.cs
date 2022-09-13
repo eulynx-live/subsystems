@@ -6,6 +6,7 @@ namespace EulynxLive.Messages
         InitializationCompleted = 0x0023,
         VersionCheckCommand = 0x0024,
         VersionCheckMessage = 0x0025,
+        PDINotAvailable = 0x002A,
         MovePointCommand = 0x0001,
         PointPositionMessage = 0x000B,
         TimeoutMessage = 0x000C,
@@ -76,6 +77,25 @@ namespace EulynxLive.Messages
             bytes[RESULT_PDI_VERSION_CHECK_OFFSET] = (byte)ResultPdiVersionCheck;
             bytes[SENDER_PDI_VERSION_OFFSET] = SenderPdiVersion;
             bytes[CHECKSUM_LENGTH_OFFSET] = ChecksumLength;
+        }
+    }
+
+    public class PointPDINotAvailableMessage : PointMessage
+    {
+        public PointPDINotAvailableMessage(string senderId, string receiverId) : base(senderId, receiverId)
+        {
+        }
+
+        public override PointMessageType MessageType => PointMessageType.PDINotAvailable;
+
+        public byte SenderPdiVersion { get; }
+
+        public override int Size => 43;
+
+        internal static EulynxMessage Parse(string senderId, string receiverId, byte[] message) => new PointPDINotAvailableMessage(senderId, receiverId);
+
+        protected override void WritePayloadToByteArray(byte[] bytes)
+        {
         }
     }
 

@@ -32,13 +32,15 @@ namespace EulynxLive.Messages
 
             switch (protocolType)
             {
-                case Messages.ProtocolType.TrainDetectionSystem:
+                case ProtocolType.TrainDetectionSystem:
                     switch ((TrainDetectionSystemMessageType)messageType)
                     {
                         case TrainDetectionSystemMessageType.VersionCheckCommand:
                             return TrainDetectionSystemVersionCheckCommand.Parse(senderId, receiverId, message);
                         case TrainDetectionSystemMessageType.VersionCheckMessage:
                             return TrainDetectionSystemVersionCheckMessage.Parse(senderId, receiverId, message);
+                        case TrainDetectionSystemMessageType.PDINotAvailable:
+                            return TrainDetectionSystemPDINotAvailableMessage.Parse(senderId, receiverId, message);
                         case TrainDetectionSystemMessageType.InitializationRequest:
                             return TrainDetectionSystemInitializationRequestMessage.Parse(senderId, receiverId, message);
                         case TrainDetectionSystemMessageType.StartInitialization:
@@ -76,7 +78,7 @@ namespace EulynxLive.Messages
                             return TrainDetectionSystemTDPStatusMessage.Parse(senderId, receiverId, message);
                     }
                     break;
-                case Messages.ProtocolType.LightSignal:
+                case ProtocolType.LightSignal:
                     switch ((LightSignalMessageType)messageType)
                     {
                         case LightSignalMessageType.IndicateSignalAspect:
@@ -87,6 +89,8 @@ namespace EulynxLive.Messages
                             return LightSignalVersionCheckCommand.Parse(senderId, receiverId, message);
                         case LightSignalMessageType.VersionCheckMessage:
                             return LightSignalVersionCheckMessage.Parse(senderId, receiverId, message);
+                        case LightSignalMessageType.PDINotAvailable:
+                            return LightSignalPDINotAvailableMessage.Parse(senderId, receiverId, message);
                         case LightSignalMessageType.InitializationRequest:
                             return LightSignalInitializationRequestMessage.Parse(senderId, receiverId, message);
                         case LightSignalMessageType.StartInitialization:
@@ -101,7 +105,7 @@ namespace EulynxLive.Messages
                         //     return LightSignalSetLuminosityCommand.Parse(senderId, receiverId, message);
                     }
                     break;
-                case Messages.ProtocolType.Point:
+                case ProtocolType.Point:
                     switch ((PointMessageType)messageType)
                     {
                         case PointMessageType.MovePointCommand:
@@ -114,6 +118,8 @@ namespace EulynxLive.Messages
                             return PointVersionCheckCommand.Parse(senderId, receiverId, message);
                         case PointMessageType.VersionCheckMessage:
                             return PointVersionCheckMessage.Parse(senderId, receiverId, message);
+                        case PointMessageType.PDINotAvailable:
+                            return PointPDINotAvailableMessage.Parse(senderId, receiverId, message);
                         case PointMessageType.InitializationRequest:
                             return PointInitializationRequestMessage.Parse(senderId, receiverId, message);
                         case PointMessageType.StartInitialization:
