@@ -39,6 +39,8 @@ namespace EulynxLive.Messages
                             return TrainDetectionSystemVersionCheckCommand.Parse(senderId, receiverId, message);
                         case TrainDetectionSystemMessageType.VersionCheckMessage:
                             return TrainDetectionSystemVersionCheckMessage.Parse(senderId, receiverId, message);
+                        case TrainDetectionSystemMessageType.PDIAvailable:
+                            return TrainDetectionSystemPDIAvailableMessage.Parse(senderId, receiverId, message);
                         case TrainDetectionSystemMessageType.PDINotAvailable:
                             return TrainDetectionSystemPDINotAvailableMessage.Parse(senderId, receiverId, message);
                         case TrainDetectionSystemMessageType.InitializationRequest:
@@ -89,6 +91,8 @@ namespace EulynxLive.Messages
                             return LightSignalVersionCheckCommand.Parse(senderId, receiverId, message);
                         case LightSignalMessageType.VersionCheckMessage:
                             return LightSignalVersionCheckMessage.Parse(senderId, receiverId, message);
+                        case LightSignalMessageType.PDIAvailable:
+                            return LightSignalPDIAvailableMessage.Parse(senderId, receiverId, message);
                         case LightSignalMessageType.PDINotAvailable:
                             return LightSignalPDINotAvailableMessage.Parse(senderId, receiverId, message);
                         case LightSignalMessageType.InitializationRequest:
@@ -118,6 +122,8 @@ namespace EulynxLive.Messages
                             return PointVersionCheckCommand.Parse(senderId, receiverId, message);
                         case PointMessageType.VersionCheckMessage:
                             return PointVersionCheckMessage.Parse(senderId, receiverId, message);
+                        case PointMessageType.PDIAvailable:
+                            return PointPDIAvailableMessage.Parse(senderId, receiverId, message);
                         case PointMessageType.PDINotAvailable:
                             return PointPDINotAvailableMessage.Parse(senderId, receiverId, message);
                         case PointMessageType.InitializationRequest:

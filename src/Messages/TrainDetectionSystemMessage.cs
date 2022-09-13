@@ -8,6 +8,7 @@ namespace EulynxLive.Messages
         InitializationCompleted = 0x0023,
         VersionCheckCommand = 0x0024,
         VersionCheckMessage = 0x0025,
+        PDIAvailable = 0x0029,
         PDINotAvailable = 0x002A,
         ForceClearCommand = 0x0001,
         UpdateFillingLevelCommand = 0x0002,
@@ -87,6 +88,24 @@ namespace EulynxLive.Messages
             bytes[RESULT_PDI_VERSION_CHECK_OFFSET] = (byte)ResultPdiVersionCheck;
             bytes[SENDER_PDI_VERSION_OFFSET] = SenderPdiVersion;
             bytes[CHECKSUM_LENGTH_OFFSET] = ChecksumLength;
+        }
+    }
+    public class TrainDetectionSystemPDIAvailableMessage : PointMessage
+    {
+        public TrainDetectionSystemPDIAvailableMessage(string senderId, string receiverId) : base(senderId, receiverId)
+        {
+        }
+
+        public override PointMessageType MessageType => PointMessageType.PDIAvailable;
+
+        public byte SenderPdiVersion { get; }
+
+        public override int Size => 43;
+
+        internal static EulynxMessage Parse(string senderId, string receiverId, byte[] message) => new TrainDetectionSystemPDIAvailableMessage(senderId, receiverId);
+
+        protected override void WritePayloadToByteArray(byte[] bytes)
+        {
         }
     }
 
