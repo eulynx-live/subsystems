@@ -90,13 +90,13 @@ namespace EulynxLive.Messages
             bytes[CHECKSUM_LENGTH_OFFSET] = ChecksumLength;
         }
     }
-    public class TrainDetectionSystemPDIAvailableMessage : PointMessage
+    public class TrainDetectionSystemPDIAvailableMessage : TrainDetectionSystemMessage
     {
         public TrainDetectionSystemPDIAvailableMessage(string senderId, string receiverId) : base(senderId, receiverId)
         {
         }
 
-        public override PointMessageType MessageType => PointMessageType.PDIAvailable;
+        public override TrainDetectionSystemMessageType MessageType => TrainDetectionSystemMessageType.PDIAvailable;
 
         public byte SenderPdiVersion { get; }
 

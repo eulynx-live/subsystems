@@ -29,9 +29,6 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore src/Messages
 
-    - name: Set VERSION variable
-      run: echo "VERSION=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-
     - name: Build
       run: dotnet pack -c Release --no-restore src/Messages /p:Version=1.0.1-build.${{ github.run_number }}
 

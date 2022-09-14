@@ -83,13 +83,13 @@ namespace EulynxLive.Messages
         }
     }
 
-    public class LightSignalPDIAvailableMessage : PointMessage
+    public class LightSignalPDIAvailableMessage : LightSignalMessage
     {
         public LightSignalPDIAvailableMessage(string senderId, string receiverId) : base(senderId, receiverId)
         {
         }
 
-        public override PointMessageType MessageType => PointMessageType.PDIAvailable;
+        public override LightSignalMessageType MessageType => LightSignalMessageType.PDIAvailable;
 
         public byte SenderPdiVersion { get; }
 
