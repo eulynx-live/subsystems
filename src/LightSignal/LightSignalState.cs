@@ -171,6 +171,8 @@ namespace EulynxLive.Messages
     {
         /// Whether the light signal was set up (aufgerüstet).
         public bool setup { get; set; }
+        public string id { get; set; }
+        public bool suspended { get; set; }
         public MainAspect mainAspect { get; set; }
         public SecondaryAspect secondaryAspect { get; set; }
         public Zs3v zs3 { get; set; }

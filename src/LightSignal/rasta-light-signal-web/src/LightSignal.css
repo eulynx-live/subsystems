@@ -1,10 +1,20 @@
+.light-signal-wrapper {
+    text-align: center;
+}
+
+.light-signal-wrapper button {
+    padding: 5px;
+    margin: 10px; 
+}
+
 .light-signal {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    height: 80vh;
+    height: 85vh;
     width: 25vh;
+    margin: 0 5vh;
 }
 
 .break {
@@ -15,7 +25,7 @@
 .plate {
     position: relative;
     background-color: black;
-    height: 56.52%;
+    height: 50%;
     width: 100%;
 }
 

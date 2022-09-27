@@ -156,6 +156,8 @@ export interface SimulatorState
 {
     /// Whether the light signal was set up (aufgerüstet).
     setup: boolean;
+    id: string;
+    suspended: boolean;
     mainAspect: MainAspect;
     secondaryAspect: SecondaryAspect;
     zs3: Zs3v;

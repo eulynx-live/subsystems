@@ -1,20 +1,22 @@
 using System;
-using System.Net.WebSockets;
+using System.Collections.Generic;
+using System.Linq;
+using EulynxLive.Messages;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace EulynxLive.LightSignal
 {
-    enum SignalTypeTypes
+    public enum SignalTypeTypes
     {
-        main,
-        mainShunting,
-        multiSection,
-        multiSectionShunting,
-        shunting,
-        distant,
-        repeater,
-        trainProtection
+        Main,
+        MainShunting,
+        MultiSection,
+        MultiSectionShunting,
+        Shunting,
+        Distant,
+        Repeater,
+        TrainProtection
     }
 
     public class LightSignalFactory
@@ -28,26 +30,36 @@ namespace EulynxLive.LightSignal
             _configuration = configuration;
         }
 
-        public EulynxLightSignal getInstance()
+        public class LightSignalConfig
+        {
+            public string Id { get; set; }
+            public SignalTypeTypes Type { get; set; }   
+        }
+
+        public List<EulynxLightSignal> Create(System.Threading.Channels.Channel<EulynxMessage> outgoingMessages)
         {
 
-            var signalType = _configuration["signal_type"];
+            var signalType = _configuration.GetSection("LightSignals").Get<List<LightSignalConfig>>();
             if (signalType == null)
             {
-                throw new Exception("Missing --signal_type command line parameter.");
+                throw new Exception("Missing light signals configuration.");
             }
 
-            var _signalType = Enum.Parse(typeof(SignalTypeTypes), signalType);
 
-            switch (_signalType)
+            // Command line argument parsing.
+
+            var remoteId = _configuration["remote-id"];
+            if (remoteId == null)
             {
-                case SignalTypeTypes.multiSection:
-                    return new MultiSectionLightSignal(_logger, _configuration);
-                case SignalTypeTypes.distant:
-                    return new DistantLightSignal(_logger, _configuration);
-                default:
-                    return new MultiSectionLightSignal(_logger, _configuration);
+                throw new Exception("Missing --remote-id command line parameter.");
             }
+
+            return signalType.Select<LightSignalConfig, EulynxLightSignal>(x => x.Type switch
+            {
+                SignalTypeTypes.MultiSection => new MultiSectionLightSignal(_logger, x.Id, remoteId, outgoingMessages),
+                SignalTypeTypes.Distant => new DistantLightSignal(_logger, x.Id, remoteId, outgoingMessages),
+                _ => new MultiSectionLightSignal(_logger, x.Id, remoteId, outgoingMessages),
+            }).ToList();
         }
     }
 }

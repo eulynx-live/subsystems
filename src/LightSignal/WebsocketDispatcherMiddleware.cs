@@ -13,7 +13,7 @@ namespace EulynxLive.LightSignal
             _next = next;
         }
 
-        public async Task InvokeAsync(HttpContext context, EulynxLightSignal lightSignal)
+        public async Task InvokeAsync(HttpContext context, LightSignalHostedService lightSignal)
         {
             if (context.Request.Path == "/ws")
             {

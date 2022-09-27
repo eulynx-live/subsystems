@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using EulynxLive.LightSignal.Services;
+using Microsoft.AspNetCore.Http;
 
 namespace EulynxLive.LightSignal
 {
@@ -32,9 +33,9 @@ namespace EulynxLive.LightSignal
             });
 
             services.AddTransient<LightSignalFactory>();
-            services.AddSingleton<EulynxLightSignal>(provider => provider.GetService<LightSignalFactory>().getInstance());
+            services.AddSingleton<LightSignalHostedService>();
 
-            services.AddHostedService(provider => provider.GetService<EulynxLightSignal>());
+            services.AddHostedService(provider => provider.GetService<LightSignalHostedService>());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -58,6 +59,22 @@ namespace EulynxLive.LightSignal
             app.UseWebSockets();
             // Sends the websockets to the Simulator.
             app.UseMiddleware<WebsocketDispatcherMiddleware>();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapPost("/suspend/{lightSignal}", (HttpContext context, string lightSignal) =>
+                {
+                    var _service = context.RequestServices.GetService<LightSignalHostedService>();
+                    _service.Suspend(lightSignal);
+                    return Results.Ok();
+                });
+                endpoints.MapPost("/activate/{lightSignal}", async (HttpContext context, string lightSignal) =>
+                {
+                    var _service = context.RequestServices.GetService<LightSignalHostedService>();
+                    await _service.Unsuspend(lightSignal);
+                    return Results.Ok();
+                });
+            });
 
             app.UseGrpcWeb();
 
