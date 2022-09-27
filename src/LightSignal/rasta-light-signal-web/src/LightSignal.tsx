@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import './LightSignal.css';
-import { SimulatorState, MainAspect } from './SimulatorState';
 
 interface BulbProps {
     color: string;
@@ -51,10 +50,6 @@ export interface LightSignalProps {
 }
 
 export class LightSignal extends Component<LightSignalProps, {}> {
-    constructor(p: LightSignalProps) {
-        super(p);
-    }
-
     suspend() {
         var loc = window.location, new_uri;
         new_uri = loc.protocol;
