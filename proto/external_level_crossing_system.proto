@@ -1,0 +1,5 @@
+syntax = "proto3";
+
+option csharp_namespace = "EulynxLive.ExternalLevelCrossingSystem.Proto";
+service ExternalLevelCrossingSystem {
+}
