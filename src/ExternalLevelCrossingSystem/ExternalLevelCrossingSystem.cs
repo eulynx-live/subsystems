@@ -27,7 +27,6 @@ namespace EulynxLive.ExternalLevelCrossingSystem
         private string _localRastaId;
         private string _remoteId;
         private string _remoteEndpoint;
-        private readonly Random _random;
 
         private bool _initialized;
         AsyncDuplexStreamingCall<SciPacket, SciPacket> _currentConnection;

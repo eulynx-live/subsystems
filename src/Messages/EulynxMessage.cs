@@ -134,6 +134,69 @@ namespace EulynxLive.Messages
                             return PointInitializationCompletedMessage.Parse(senderId, receiverId, message);
                     }
                     break;
+                case ProtocolType.ExternalLevelCrossingSystem:
+                    switch ((ExternalLevelCrossingSystemMessageType)messageType) {
+                        case ExternalLevelCrossingSystemMessageType.LxActivationCommand:
+                            return ExternalLevelCrossingSystemLxActivationCommand.Parse(senderId, receiverId, message);
+                        case ExternalLevelCrossingSystemMessageType.TrActivationCommand:
+                            return ExternalLevelCrossingSystemTrActivationCommand.Parse(senderId, receiverId, message);
+                        case ExternalLevelCrossingSystemMessageType.LxDeactivationCommand:
+                            return ExternalLevelCrossingSystemLxDeactivationCommand.Parse(senderId, receiverId, message);
+                        case ExternalLevelCrossingSystemMessageType.TrDeactivationCommand:
+                            return ExternalLevelCrossingSystemTrDeactivationCommand.Parse(senderId, receiverId, message);
+                        case ExternalLevelCrossingSystemMessageType.ControlActivationPointCommand:
+                            return ExternalLevelCrossingSystemControlActivationPointCommand.Parse(senderId, receiverId, message);
+                        case ExternalLevelCrossingSystemMessageType.TrackRelatedProlongActivationCommand:
+                            return ExternalLevelCrossingSystemTrackRelatedProlongActivationCommand.Parse(senderId, receiverId, message);
+                        case ExternalLevelCrossingSystemMessageType.CrossingClearCommand:
+                            return ExternalLevelCrossingSystemCrossingClearCommand.Parse(senderId, receiverId, message);
+                        case ExternalLevelCrossingSystemMessageType.BlockLxCommand:
+                            return ExternalLevelCrossingSystemBlockLxCommand.Parse(senderId, receiverId, message);
+                        case ExternalLevelCrossingSystemMessageType.TrackRelatedIsolationCommand:
+                            return ExternalLevelCrossingSystemTrackRelatedIsolationCommand.Parse(senderId, receiverId, message);
+                        case ExternalLevelCrossingSystemMessageType.LxFunctionalStatusMessage:
+                            return ExternalLevelCrossingSystemLxFunctionalStatusMessage.Parse(senderId, receiverId, message);
+                        case ExternalLevelCrossingSystemMessageType.TrFunctionalStatusMessage:
+                            return ExternalLevelCrossingSystemTrFunctionalStatusMessage.Parse(senderId, receiverId, message);
+                        case ExternalLevelCrossingSystemMessageType.ObstacleDetectionStatusMessage:
+                            return ExternalLevelCrossingSystemObstacleDetectionStatusMessage.Parse(senderId, receiverId, message);
+                        case ExternalLevelCrossingSystemMessageType.DetectionElementStatusMessage:
+                            return ExternalLevelCrossingSystemDetectionElementStatusMessage.Parse(senderId, receiverId, message);
+                        case ExternalLevelCrossingSystemMessageType.LxMonitoringStatusMessage:
+                            return ExternalLevelCrossingSystemLxMonitoringStatusMessage.Parse(senderId, receiverId, message);
+                        case ExternalLevelCrossingSystemMessageType.TrMonitoringStatusMessage:
+                            return ExternalLevelCrossingSystemTrMonitoringStatusMessage.Parse(senderId, receiverId, message);
+                        case ExternalLevelCrossingSystemMessageType.LxFailureStatusMessage:
+                            return ExternalLevelCrossingSystemLxFailureStatusMessage.Parse(senderId, receiverId, message);
+                        case ExternalLevelCrossingSystemMessageType.TrFailureStatusMessage:
+                            return ExternalLevelCrossingSystemTrFailureStatusMessage.Parse(senderId, receiverId, message);
+                        case ExternalLevelCrossingSystemMessageType.TrackRelatedCommandAdmissabilityMessage:
+                            return ExternalLevelCrossingSystemTrackRelatedCommandAdmissabilityMessage.Parse(senderId, receiverId, message);
+                        case ExternalLevelCrossingSystemMessageType.LxCommandAdmissibilityMessage:
+                            return ExternalLevelCrossingSystemLxCommandAdmissibilityMessage.Parse(senderId, receiverId, message);
+                        case ExternalLevelCrossingSystemMessageType.StatusOfActivationPointMessage:
+                            return ExternalLevelCrossingSystemStatusOfActivationPointMessage.Parse(senderId, receiverId, message);
+                        case ExternalLevelCrossingSystemMessageType.InitializationRequest:
+                            return ExternalLevelCrossingSystemInitializationRequestMessage.Parse(senderId, receiverId, message);
+                        case ExternalLevelCrossingSystemMessageType.StartInitialization:
+                            return ExternalLevelCrossingSystemStartInitializationMessage.Parse(senderId, receiverId, message);
+                        case ExternalLevelCrossingSystemMessageType.InitializationCompleted:
+                            return ExternalLevelCrossingSystemInitializationCompletedMessage.Parse(senderId, receiverId, message);
+                        case ExternalLevelCrossingSystemMessageType.VersionCheckCommand:
+                            return ExternalLevelCrossingSystemVersionCheckCommand.Parse(senderId, receiverId, message);
+                        case ExternalLevelCrossingSystemMessageType.VersionCheckMessage:
+                            return ExternalLevelCrossingSystemVersionCheckMessage.Parse(senderId, receiverId, message);
+                        case ExternalLevelCrossingSystemMessageType.PDIAvailable:
+                            return ExternalLevelCrossingSystemPDIAvailableMessage.Parse(senderId, receiverId, message);
+                        case ExternalLevelCrossingSystemMessageType.PDINotAvailable:
+                            return ExternalLevelCrossingSystemPDINotAvailableMessage.Parse(senderId, receiverId, message);
+                    }
+                    // NeuPro
+                    if ((NeuPro.ExternalLevelCrossingSystemMessageType)messageType == NeuPro.ExternalLevelCrossingSystemMessageType.TrActivationCommandUE) {
+                        return NeuPro.ExternalLevelCrossingSystemTrActivationCommandUE.Parse(senderId, receiverId, message);
+                    }
+
+                    break;
             }
 
             throw new ArgumentException("Invalid EULYNX message: " + BitConverter.ToString(message));

@@ -55,12 +55,13 @@ namespace EulynxLive.Messages
 
         public override int Size => 44;
 
-        internal static EulynxMessage Parse(string senderId, string receiverId) => new ExternalLevelCrossingSystemLxActivationCommand(senderId, receiverId);
+        internal static EulynxMessage Parse(string senderId, string receiverId, byte[] message) => new ExternalLevelCrossingSystemLxActivationCommand(senderId, receiverId);
 
         protected override void WritePayloadToByteArray(byte[] bytes)
         {
         }
     }
+
     public class ExternalLevelCrossingSystemTrActivationCommand : ExternalLevelCrossingSystemMessage
     {
         public ExternalLevelCrossingSystemTrActivationCommand(string senderId, string receiverId) : base(senderId, receiverId)
@@ -71,12 +72,13 @@ namespace EulynxLive.Messages
 
         public override int Size => 45;
 
-        internal static EulynxMessage Parse(string senderId, string receiverId) => new ExternalLevelCrossingSystemTrActivationCommand(senderId, receiverId);
+        internal static EulynxMessage Parse(string senderId, string receiverId, byte[] message) => new ExternalLevelCrossingSystemTrActivationCommand(senderId, receiverId);
 
         protected override void WritePayloadToByteArray(byte[] bytes)
         {
         }
     }
+
     public class ExternalLevelCrossingSystemLxDeactivationCommand : ExternalLevelCrossingSystemMessage
     {
         public ExternalLevelCrossingSystemLxDeactivationCommand(string senderId, string receiverId) : base(senderId, receiverId)
@@ -87,12 +89,13 @@ namespace EulynxLive.Messages
 
         public override int Size => 44;
 
-        internal static EulynxMessage Parse(string senderId, string receiverId) => new ExternalLevelCrossingSystemLxDeactivationCommand(senderId, receiverId);
+        internal static EulynxMessage Parse(string senderId, string receiverId, byte[] message) => new ExternalLevelCrossingSystemLxDeactivationCommand(senderId, receiverId);
 
         protected override void WritePayloadToByteArray(byte[] bytes)
         {
         }
     }
+
     public class ExternalLevelCrossingSystemTrDeactivationCommand : ExternalLevelCrossingSystemMessage
     {
         public ExternalLevelCrossingSystemTrDeactivationCommand(string senderId, string receiverId) : base(senderId, receiverId)
@@ -103,12 +106,13 @@ namespace EulynxLive.Messages
 
         public override int Size => 45;
 
-        internal static EulynxMessage Parse(string senderId, string receiverId) => new ExternalLevelCrossingSystemTrDeactivationCommand(senderId, receiverId);
+        internal static EulynxMessage Parse(string senderId, string receiverId, byte[] message) => new ExternalLevelCrossingSystemTrDeactivationCommand(senderId, receiverId);
 
         protected override void WritePayloadToByteArray(byte[] bytes)
         {
         }
     }
+
     public class ExternalLevelCrossingSystemControlActivationPointCommand : ExternalLevelCrossingSystemMessage
     {
         public ExternalLevelCrossingSystemControlActivationPointCommand(string senderId, string receiverId) : base(senderId, receiverId)
@@ -119,12 +123,13 @@ namespace EulynxLive.Messages
 
         public override int Size => 46;
 
-        internal static EulynxMessage Parse(string senderId, string receiverId) => new ExternalLevelCrossingSystemControlActivationPointCommand(senderId, receiverId);
+        internal static EulynxMessage Parse(string senderId, string receiverId, byte[] message) => new ExternalLevelCrossingSystemControlActivationPointCommand(senderId, receiverId);
 
         protected override void WritePayloadToByteArray(byte[] bytes)
         {
         }
     }
+
     public class ExternalLevelCrossingSystemTrackRelatedProlongActivationCommand : ExternalLevelCrossingSystemMessage
     {
         public ExternalLevelCrossingSystemTrackRelatedProlongActivationCommand(string senderId, string receiverId) : base(senderId, receiverId)
@@ -135,12 +140,13 @@ namespace EulynxLive.Messages
 
         public override int Size => 45;
 
-        internal static EulynxMessage Parse(string senderId, string receiverId) => new ExternalLevelCrossingSystemTrackRelatedProlongActivationCommand(senderId, receiverId);
+        internal static EulynxMessage Parse(string senderId, string receiverId, byte[] message) => new ExternalLevelCrossingSystemTrackRelatedProlongActivationCommand(senderId, receiverId);
 
         protected override void WritePayloadToByteArray(byte[] bytes)
         {
         }
     }
+
     public class ExternalLevelCrossingSystemCrossingClearCommand : ExternalLevelCrossingSystemMessage
     {
         public ExternalLevelCrossingSystemCrossingClearCommand(string senderId, string receiverId) : base(senderId, receiverId)
@@ -151,12 +157,13 @@ namespace EulynxLive.Messages
 
         public override int Size => 43;
 
-        internal static EulynxMessage Parse(string senderId, string receiverId) => new ExternalLevelCrossingSystemCrossingClearCommand(senderId, receiverId);
+        internal static EulynxMessage Parse(string senderId, string receiverId, byte[] message) => new ExternalLevelCrossingSystemCrossingClearCommand(senderId, receiverId);
 
         protected override void WritePayloadToByteArray(byte[] bytes)
         {
         }
     }
+
     public class ExternalLevelCrossingSystemBlockLxCommand : ExternalLevelCrossingSystemMessage
     {
         public ExternalLevelCrossingSystemBlockLxCommand(string senderId, string receiverId) : base(senderId, receiverId)
@@ -167,12 +174,13 @@ namespace EulynxLive.Messages
 
         public override int Size => 44;
 
-        internal static EulynxMessage Parse(string senderId, string receiverId) => new ExternalLevelCrossingSystemBlockLxCommand(senderId, receiverId);
+        internal static EulynxMessage Parse(string senderId, string receiverId, byte[] message) => new ExternalLevelCrossingSystemBlockLxCommand(senderId, receiverId);
 
         protected override void WritePayloadToByteArray(byte[] bytes)
         {
         }
     }
+
     public class ExternalLevelCrossingSystemTrackRelatedIsolationCommand : ExternalLevelCrossingSystemMessage
     {
         public ExternalLevelCrossingSystemTrackRelatedIsolationCommand(string senderId, string receiverId) : base(senderId, receiverId)
@@ -183,12 +191,13 @@ namespace EulynxLive.Messages
 
         public override int Size => 44;
 
-        internal static EulynxMessage Parse(string senderId, string receiverId) => new ExternalLevelCrossingSystemTrackRelatedIsolationCommand(senderId, receiverId);
+        internal static EulynxMessage Parse(string senderId, string receiverId, byte[] message) => new ExternalLevelCrossingSystemTrackRelatedIsolationCommand(senderId, receiverId);
 
         protected override void WritePayloadToByteArray(byte[] bytes)
         {
         }
     }
+
     public class ExternalLevelCrossingSystemLxFunctionalStatusMessage : ExternalLevelCrossingSystemMessage
     {
         public ExternalLevelCrossingSystemLxFunctionalStatusMessage(string senderId, string receiverId) : base(senderId, receiverId)
@@ -199,12 +208,13 @@ namespace EulynxLive.Messages
 
         public override int Size => 48;
 
-        internal static EulynxMessage Parse(string senderId, string receiverId) => new ExternalLevelCrossingSystemLxFunctionalStatusMessage(senderId, receiverId);
+        internal static EulynxMessage Parse(string senderId, string receiverId, byte[] message) => new ExternalLevelCrossingSystemLxFunctionalStatusMessage(senderId, receiverId);
 
         protected override void WritePayloadToByteArray(byte[] bytes)
         {
         }
     }
+
     public class ExternalLevelCrossingSystemTrFunctionalStatusMessage : ExternalLevelCrossingSystemMessage
     {
         public ExternalLevelCrossingSystemTrFunctionalStatusMessage(string senderId, string receiverId) : base(senderId, receiverId)
@@ -215,12 +225,13 @@ namespace EulynxLive.Messages
 
         public override int Size => 51;
 
-        internal static EulynxMessage Parse(string senderId, string receiverId) => new ExternalLevelCrossingSystemTrFunctionalStatusMessage(senderId, receiverId);
+        internal static EulynxMessage Parse(string senderId, string receiverId, byte[] message) => new ExternalLevelCrossingSystemTrFunctionalStatusMessage(senderId, receiverId);
 
         protected override void WritePayloadToByteArray(byte[] bytes)
         {
         }
     }
+
     public class ExternalLevelCrossingSystemObstacleDetectionStatusMessage : ExternalLevelCrossingSystemMessage
     {
         public ExternalLevelCrossingSystemObstacleDetectionStatusMessage(string senderId, string receiverId) : base(senderId, receiverId)
@@ -231,12 +242,13 @@ namespace EulynxLive.Messages
 
         public override int Size => 44;
 
-        internal static EulynxMessage Parse(string senderId, string receiverId) => new ExternalLevelCrossingSystemObstacleDetectionStatusMessage(senderId, receiverId);
+        internal static EulynxMessage Parse(string senderId, string receiverId, byte[] message) => new ExternalLevelCrossingSystemObstacleDetectionStatusMessage(senderId, receiverId);
 
         protected override void WritePayloadToByteArray(byte[] bytes)
         {
         }
     }
+
     public class ExternalLevelCrossingSystemDetectionElementStatusMessage : ExternalLevelCrossingSystemMessage
     {
         public ExternalLevelCrossingSystemDetectionElementStatusMessage(string senderId, string receiverId) : base(senderId, receiverId)
@@ -248,12 +260,13 @@ namespace EulynxLive.Messages
         // TODO: Dynamic size based on number of detection elements, here: k=0
         public override int Size => 44;
 
-        internal static EulynxMessage Parse(string senderId, string receiverId) => new ExternalLevelCrossingSystemDetectionElementStatusMessage(senderId, receiverId);
+        internal static EulynxMessage Parse(string senderId, string receiverId, byte[] message) => new ExternalLevelCrossingSystemDetectionElementStatusMessage(senderId, receiverId);
 
         protected override void WritePayloadToByteArray(byte[] bytes)
         {
         }
     }
+
     public class ExternalLevelCrossingSystemLxMonitoringStatusMessage : ExternalLevelCrossingSystemMessage
     {
         public ExternalLevelCrossingSystemLxMonitoringStatusMessage(string senderId, string receiverId) : base(senderId, receiverId)
@@ -264,12 +277,13 @@ namespace EulynxLive.Messages
 
         public override int Size => 49;
 
-        internal static EulynxMessage Parse(string senderId, string receiverId) => new ExternalLevelCrossingSystemLxMonitoringStatusMessage(senderId, receiverId);
+        internal static EulynxMessage Parse(string senderId, string receiverId, byte[] message) => new ExternalLevelCrossingSystemLxMonitoringStatusMessage(senderId, receiverId);
 
         protected override void WritePayloadToByteArray(byte[] bytes)
         {
         }
     }
+
     public class ExternalLevelCrossingSystemTrMonitoringStatusMessage : ExternalLevelCrossingSystemMessage
     {
         public ExternalLevelCrossingSystemTrMonitoringStatusMessage(string senderId, string receiverId) : base(senderId, receiverId)
@@ -280,12 +294,13 @@ namespace EulynxLive.Messages
 
         public override int Size => 46;
 
-        internal static EulynxMessage Parse(string senderId, string receiverId) => new ExternalLevelCrossingSystemTrMonitoringStatusMessage(senderId, receiverId);
+        internal static EulynxMessage Parse(string senderId, string receiverId, byte[] message) => new ExternalLevelCrossingSystemTrMonitoringStatusMessage(senderId, receiverId);
 
         protected override void WritePayloadToByteArray(byte[] bytes)
         {
         }
     }
+
     public class ExternalLevelCrossingSystemLxFailureStatusMessage : ExternalLevelCrossingSystemMessage
     {
         public ExternalLevelCrossingSystemLxFailureStatusMessage(string senderId, string receiverId) : base(senderId, receiverId)
@@ -296,12 +311,13 @@ namespace EulynxLive.Messages
 
         public override int Size => 45;
 
-        internal static EulynxMessage Parse(string senderId, string receiverId) => new ExternalLevelCrossingSystemLxFailureStatusMessage(senderId, receiverId);
+        internal static EulynxMessage Parse(string senderId, string receiverId, byte[] message) => new ExternalLevelCrossingSystemLxFailureStatusMessage(senderId, receiverId);
 
         protected override void WritePayloadToByteArray(byte[] bytes)
         {
         }
     }
+
     public class ExternalLevelCrossingSystemTrFailureStatusMessage : ExternalLevelCrossingSystemMessage
     {
         public ExternalLevelCrossingSystemTrFailureStatusMessage(string senderId, string receiverId) : base(senderId, receiverId)
@@ -312,12 +328,13 @@ namespace EulynxLive.Messages
 
         public override int Size => 45;
 
-        internal static EulynxMessage Parse(string senderId, string receiverId) => new ExternalLevelCrossingSystemTrFailureStatusMessage(senderId, receiverId);
+        internal static EulynxMessage Parse(string senderId, string receiverId, byte[] message) => new ExternalLevelCrossingSystemTrFailureStatusMessage(senderId, receiverId);
 
         protected override void WritePayloadToByteArray(byte[] bytes)
         {
         }
     }
+
     public class ExternalLevelCrossingSystemTrackRelatedCommandAdmissabilityMessage : ExternalLevelCrossingSystemMessage
     {
         public ExternalLevelCrossingSystemTrackRelatedCommandAdmissabilityMessage(string senderId, string receiverId) : base(senderId, receiverId)
@@ -328,12 +345,13 @@ namespace EulynxLive.Messages
 
         public override int Size => 49;
 
-        internal static EulynxMessage Parse(string senderId, string receiverId) => new ExternalLevelCrossingSystemTrackRelatedCommandAdmissabilityMessage(senderId, receiverId);
+        internal static EulynxMessage Parse(string senderId, string receiverId, byte[] message) => new ExternalLevelCrossingSystemTrackRelatedCommandAdmissabilityMessage(senderId, receiverId);
 
         protected override void WritePayloadToByteArray(byte[] bytes)
         {
         }
     }
+
     public class ExternalLevelCrossingSystemLxCommandAdmissibilityMessage : ExternalLevelCrossingSystemMessage
     {
         public ExternalLevelCrossingSystemLxCommandAdmissibilityMessage(string senderId, string receiverId) : base(senderId, receiverId)
@@ -344,12 +362,13 @@ namespace EulynxLive.Messages
 
         public override int Size => 47;
 
-        internal static EulynxMessage Parse(string senderId, string receiverId) => new ExternalLevelCrossingSystemLxCommandAdmissibilityMessage(senderId, receiverId);
+        internal static EulynxMessage Parse(string senderId, string receiverId, byte[] message) => new ExternalLevelCrossingSystemLxCommandAdmissibilityMessage(senderId, receiverId);
 
         protected override void WritePayloadToByteArray(byte[] bytes)
         {
         }
     }
+
     public class ExternalLevelCrossingSystemStatusOfActivationPointMessage : ExternalLevelCrossingSystemMessage
     {
         public ExternalLevelCrossingSystemStatusOfActivationPointMessage(string senderId, string receiverId) : base(senderId, receiverId)
@@ -361,7 +380,7 @@ namespace EulynxLive.Messages
         // TODO: dynamic size based on number k of activation points, here k=0
         public override int Size => 44;
 
-        internal static EulynxMessage Parse(string senderId, string receiverId) => new ExternalLevelCrossingSystemStatusOfActivationPointMessage(senderId, receiverId);
+        internal static EulynxMessage Parse(string senderId, string receiverId, byte[] message) => new ExternalLevelCrossingSystemStatusOfActivationPointMessage(senderId, receiverId);
 
         protected override void WritePayloadToByteArray(byte[] bytes)
         {

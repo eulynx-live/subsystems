@@ -24,7 +24,7 @@ namespace EulynxLive.Messages.NeuPro
 
         public override int Size => 47;
 
-        internal static EulynxMessage Parse(string senderId, string receiverId) => new ExternalLevelCrossingSystemTrActivationCommandUE(senderId, receiverId);
+        internal static EulynxMessage Parse(string senderId, string receiverId, byte[] message) => new ExternalLevelCrossingSystemTrActivationCommandUE(senderId, receiverId);
 
         protected override void WritePayloadToByteArray(byte[] bytes)
         {
