@@ -1,5 +1,8 @@
 #!/bin/bash
 
+echo $LOCAL_IDS 
+LOCAL_IDS=",$LOCAL_IDS"
+
 # Find all sig to rsm references
 refs=$( xq -x "//generic:ownsTrackAsset[@xsi:type = 'sig:Signal']/sig:refersToRsmSignal/@ref"  /config/Interlocking.exml)
 # Find all types
@@ -13,9 +16,12 @@ do
    read -r f1 <&3 || break
    read -r f2 <&4 || break
    name=$( xq -x "//generic:ownsSignal/rsmCommon:id[.=\"$f1\"]/following-sibling::rsmCommon:name" /config/Interlocking.exml )
-   echo -n "LightSignals__${COUNTER}__id=$name "
-   echo -n "LightSignals__${COUNTER}__type=$f2 "
-   COUNTER=$[$COUNTER +1]
+   if [[ " ${LOCAL_IDS[*]} " =~ ",$name" ]]
+   then 
+      echo -n "LightSignals__${COUNTER}__id=$name "
+      echo -n "LightSignals__${COUNTER}__type=$f2 "
+      COUNTER=$[$COUNTER +1]
+   fi
 done 3< <(echo "$refs") 4< <(echo "$types")
 )
 echo "Found signals: $args"
