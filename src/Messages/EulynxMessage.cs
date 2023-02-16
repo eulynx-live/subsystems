@@ -134,6 +134,17 @@ namespace EulynxLive.Messages
                             return PointInitializationCompletedMessage.Parse(senderId, receiverId, message);
                     }
                     break;
+                case ProtocolType.LevelCrossing:
+                    // NeuPro
+                    switch ((NeuPro.LevelCrossingMessageType)messageType) {
+                        case NeuPro.LevelCrossingMessageType.AnFsüCommand:
+                            return NeuPro.AnFsüCommand.Parse(senderId, receiverId, message);
+                        case NeuPro.LevelCrossingMessageType.AusFsüCommand:
+                            return NeuPro.AusFsüCommand.Parse(senderId, receiverId, message);
+                        case NeuPro.LevelCrossingMessageType.MeldungZustandGleisbezogenMessage:
+                            return NeuPro.MeldungZustandGleisbezogenMessage.Parse(senderId, receiverId, message);
+                    }
+                    break;
                 case ProtocolType.ExternalLevelCrossingSystem:
                     switch ((ExternalLevelCrossingSystemMessageType)messageType) {
                         case ExternalLevelCrossingSystemMessageType.LxActivationCommand:
@@ -191,11 +202,6 @@ namespace EulynxLive.Messages
                         case ExternalLevelCrossingSystemMessageType.PDINotAvailable:
                             return ExternalLevelCrossingSystemPDINotAvailableMessage.Parse(senderId, receiverId, message);
                     }
-                    // NeuPro
-                    if ((NeuPro.ExternalLevelCrossingSystemMessageType)messageType == NeuPro.ExternalLevelCrossingSystemMessageType.TrActivationCommandUE) {
-                        return NeuPro.ExternalLevelCrossingSystemTrActivationCommandUE.Parse(senderId, receiverId, message);
-                    }
-
                     break;
             }
 

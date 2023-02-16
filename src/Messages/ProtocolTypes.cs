@@ -7,6 +7,7 @@ namespace EulynxLive.Messages
         LightSignal = 0x30,
         Point = 0x40,
         RadioBlockCenter = 0x50,
+        LevelCrossing = 0x60,
         SubsystemLevelCrossing = 0x70,
         TrackworkerSafetySystem = 0x80,
         GenericIO = 0x90,

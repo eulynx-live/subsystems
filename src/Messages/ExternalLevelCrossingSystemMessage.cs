@@ -198,20 +198,84 @@ namespace EulynxLive.Messages
         }
     }
 
+    public enum LxActivationStatus : byte {
+        DeactivatedAndUnprotected = 0x1,
+        ActivatedAndUnprotected = 0x2,
+        ActivatedAndProtected = 0x3
+    }
+
+    public enum LxActivationType : byte {
+        UnconditionalActivation = 0x1,
+        LocalActivationForShunting = 0x2,
+    }
+
+    public enum LxBlockedForActivation : byte {
+        BlockedForActivation = 0x1,
+        NotBlockedForActivation = 0x2,
+        NotApplicable = 0x3,
+    }
+
+    public enum LxBlockedForDeactivation : byte {
+        NotBlockedForDeactivation = 0x1,
+        BlockedForDeactivation = 0x2,
+        NotApplicable = 0x3,
+    }
+
+    public enum LxMinimumOpenTimer : byte {
+        TimerNotRunning = 0x1,
+        TimerRunning = 0x2,
+        NotApplicable = 0x3,
+    }
+
     public class ExternalLevelCrossingSystemLxFunctionalStatusMessage : ExternalLevelCrossingSystemMessage
     {
-        public ExternalLevelCrossingSystemLxFunctionalStatusMessage(string senderId, string receiverId) : base(senderId, receiverId)
+        private const int ACTIVATION_STATUS_OFFSET = 43;
+        private const int ACTIVATION_TYPE_OFFSET = 44;
+        private const int BLOCKED_FOR_ACTIVATION_OFFSET = 45;
+        private const int BLOCKED_FOR_DEACTIVATION_OFFSET = 46;
+        private const int MINIMUM_OPEN_TIMER_OFFSET = 47;
+
+        public ExternalLevelCrossingSystemLxFunctionalStatusMessage(string senderId, string receiverId, LxActivationStatus activationStatus, LxActivationType activationType, LxBlockedForActivation blockedForActivation, LxBlockedForDeactivation blockedForDeactivation, LxMinimumOpenTimer minimumOpenTimer) : base(senderId, receiverId)
         {
+            ActivationStatus = activationStatus;
+            ActivationType = activationType;
+            BlockedForActivation = blockedForActivation;
+            BlockedForDeactivation = blockedForDeactivation;
+            MinimumOpenTimer = minimumOpenTimer;
         }
+
+        public LxActivationStatus ActivationStatus { get; }
+
+        public LxActivationType ActivationType { get; }
+
+        public LxBlockedForActivation BlockedForActivation { get; }
+
+        public LxBlockedForDeactivation BlockedForDeactivation { get; }
+
+        public LxMinimumOpenTimer MinimumOpenTimer { get; }
 
         public override ExternalLevelCrossingSystemMessageType MessageType => ExternalLevelCrossingSystemMessageType.LxFunctionalStatusMessage;
 
         public override int Size => 48;
 
-        internal static EulynxMessage Parse(string senderId, string receiverId, byte[] message) => new ExternalLevelCrossingSystemLxFunctionalStatusMessage(senderId, receiverId);
+        internal static EulynxMessage Parse(string senderId, string receiverId, byte[] message)
+        {
+            var activationStatus = (LxActivationStatus) message[ACTIVATION_STATUS_OFFSET];
+            var activationType = (LxActivationType) message[ACTIVATION_TYPE_OFFSET];
+            var blockedForActivation = (LxBlockedForActivation) message[BLOCKED_FOR_ACTIVATION_OFFSET];
+            var blockedForDeactivation = (LxBlockedForDeactivation) message[BLOCKED_FOR_DEACTIVATION_OFFSET];
+            var minimumOpenTimer = (LxMinimumOpenTimer) message[MINIMUM_OPEN_TIMER_OFFSET];
+
+            return new ExternalLevelCrossingSystemLxFunctionalStatusMessage(senderId, receiverId, activationStatus, activationType, blockedForActivation, blockedForDeactivation, minimumOpenTimer);
+        }
 
         protected override void WritePayloadToByteArray(byte[] bytes)
         {
+            bytes[ACTIVATION_STATUS_OFFSET] = (byte)ActivationStatus;
+            bytes[ACTIVATION_TYPE_OFFSET] = (byte)ActivationType;
+            bytes[BLOCKED_FOR_ACTIVATION_OFFSET] = (byte)BlockedForActivation;
+            bytes[BLOCKED_FOR_DEACTIVATION_OFFSET] = (byte)BlockedForDeactivation;
+            bytes[MINIMUM_OPEN_TIMER_OFFSET] = (byte)MinimumOpenTimer;
         }
     }
 
