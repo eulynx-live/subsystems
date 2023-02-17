@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Net.WebSockets;
@@ -141,7 +141,7 @@ namespace EulynxLive.TrainDetectionSystem
                             break;
                         }
 
-                        var startInitialization = new TrainDetectionSystemStartInitializationMessage(_localIdTvps, _remoteId);
+                        var startInitialization = new TrainDetectionSystemStartInitializationMessage(_localIdTps, _remoteId);
                         await _currentConnection.RequestStream.WriteAsync(new SciPacket() { Message = ByteString.CopyFrom(startInitialization.ToByteArray()) });
 
                         foreach (var tps in _localIdTvpses) {
