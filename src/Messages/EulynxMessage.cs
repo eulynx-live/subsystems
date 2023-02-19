@@ -143,6 +143,22 @@ namespace EulynxLive.Messages
                             return NeuPro.AusFsüCommand.Parse(senderId, receiverId, message);
                         case NeuPro.LevelCrossingMessageType.MeldungZustandGleisbezogenMessage:
                             return NeuPro.MeldungZustandGleisbezogenMessage.Parse(senderId, receiverId, message);
+
+                        case NeuPro.LevelCrossingMessageType.InitializationRequest:
+                            return NeuPro.LevelCrossingInitializationRequestMessage.Parse(senderId, receiverId, message);
+                        case NeuPro.LevelCrossingMessageType.StartInitialization:
+                            return NeuPro.LevelCrossingStartInitializationMessage.Parse(senderId, receiverId, message);
+                        case NeuPro.LevelCrossingMessageType.InitializationCompleted:
+                            return NeuPro.LevelCrossingInitializationCompletedMessage.Parse(senderId, receiverId, message);
+                        case NeuPro.LevelCrossingMessageType.VersionCheckCommand:
+                            return NeuPro.LevelCrossingVersionCheckCommand.Parse(senderId, receiverId, message);
+                        case NeuPro.LevelCrossingMessageType.VersionCheckMessage:
+                            return NeuPro.LevelCrossingVersionCheckMessage.Parse(senderId, receiverId, message);
+                        // Not sure if these exist:
+                        case NeuPro.LevelCrossingMessageType.PDIAvailable:
+                            return NeuPro.LevelCrossingPDIAvailableMessage.Parse(senderId, receiverId, message);
+                        case NeuPro.LevelCrossingMessageType.PDINotAvailable:
+                            return NeuPro.LevelCrossingPDINotAvailableMessage.Parse(senderId, receiverId, message);
                     }
                     break;
                 case ProtocolType.ExternalLevelCrossingSystem:
