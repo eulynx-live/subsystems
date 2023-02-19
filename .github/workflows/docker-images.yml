@@ -27,6 +27,8 @@ jobs:
             image: point
           - subsystem: TrainDetectionSystem
             image: train-detection-system
+          - subsystem: LevelCrossing
+            image: level-crossing
 
     steps:
 
