@@ -4,7 +4,7 @@ namespace EulynxLive.Messages.NeuPro {
         {
         }
 
-        public override int Size => 128;
+        public override sealed int Size => 128;
 
         protected sealed override void WritePayloadToByteArray(byte[] bytes)
         {
