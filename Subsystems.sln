@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Messages", "src\Messages\Me
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{5C734A56-C3B1-4C3D-B141-3CE3749631C1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExternalLevelCrossingSystem", "src\ExternalLevelCrossingSystem\ExternalLevelCrossingSystem.csproj", "{E44CCF44-8E58-43E1-A2E4-7826D28BEC5C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LevelCrossing", "src\LevelCrossing\LevelCrossing.csproj", "{E44CCF44-8E58-43E1-A2E4-7826D28BEC5C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

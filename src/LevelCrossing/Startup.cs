@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using EulynxLive.ExternalLevelCrossingSystem.Services;
+using EulynxLive.LevelCrossing.Services;
 
-namespace EulynxLive.ExternalLevelCrossingSystem
+namespace EulynxLive.LevelCrossing
 {
     public class Startup
     {
@@ -27,10 +27,10 @@ namespace EulynxLive.ExternalLevelCrossingSystem
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
-                configuration.RootPath = "rasta-lx-web/build";
+                configuration.RootPath = "rasta-levelcrossing-web/build";
             });
-            services.AddSingleton<ExternalLevelCrossingSystem>();
-            services.AddHostedService<ExternalLevelCrossingSystem>(provider => provider.GetService<ExternalLevelCrossingSystem>());
+            services.AddSingleton<LevelCrossing>();
+            services.AddHostedService<LevelCrossing>(provider => provider.GetService<LevelCrossing>());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -59,7 +59,7 @@ namespace EulynxLive.ExternalLevelCrossingSystem
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcService<ExternalLevelCrossingSystemService>().EnableGrpcWeb();
+                endpoints.MapGrpcService<LevelCrossingService>().EnableGrpcWeb();
                 if (env.IsDevelopment())
                 {
                     endpoints.MapGrpcReflectionService();
@@ -68,7 +68,7 @@ namespace EulynxLive.ExternalLevelCrossingSystem
 
             app.UseSpa(spa =>
             {
-                spa.Options.SourcePath = "rasta-lx-web";
+                spa.Options.SourcePath = "rasta-levelcrossing-web";
 
                 if (env.IsDevelopment())
                 {

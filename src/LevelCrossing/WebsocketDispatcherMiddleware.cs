@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Http;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
 
-namespace EulynxLive.ExternalLevelCrossingSystem
+namespace EulynxLive.LevelCrossing
 {
     public class WebsocketDispatcherMiddleware
     {
@@ -13,7 +13,7 @@ namespace EulynxLive.ExternalLevelCrossingSystem
             _next = next;
         }
 
-        public async Task InvokeAsync(HttpContext context, ExternalLevelCrossingSystem simulator)
+        public async Task InvokeAsync(HttpContext context, LevelCrossing simulator)
         {
             if (context.Request.Path == "/ws")
             {

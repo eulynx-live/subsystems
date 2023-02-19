@@ -5,7 +5,7 @@
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
     <TypeScriptToolsVersion>latest</TypeScriptToolsVersion>
     <IsPackable>false</IsPackable>
-    <SpaRoot>rasta-lx-web\</SpaRoot>
+    <SpaRoot>rasta-levelcrossing-web\</SpaRoot>
     <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
   </PropertyGroup>
 
@@ -25,7 +25,7 @@
 
   <ItemGroup>
     <Protobuf Include="..\..\proto\rasta.proto" />
-    <Protobuf Include="..\..\proto\external_level_crossing_system.proto" />
+    <Protobuf Include="..\..\proto\level_crossing.proto" />
   </ItemGroup>
 
   <ItemGroup>

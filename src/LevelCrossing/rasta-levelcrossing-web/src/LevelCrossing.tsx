@@ -1,18 +1,20 @@
 import React, { Component } from 'react';
-import './ExternalLevelCrossingSystem.css';
+import './LevelCrossing.css';
 import { SimulatorState } from './SimulatorState';
 
-interface ExternalLevelCrossingSystemState {
+interface LevelCrossingState {
     webSocket: WebSocket | null,
     connected: boolean;
+    states: {[key: string]: string};
 }
 
-class ExternalLevelCrossingSystem extends Component<{}, ExternalLevelCrossingSystemState> {
+class LevelCrossing extends Component<{}, LevelCrossingState> {
     constructor(p: {}) {
         super(p);
         this.state = {
             webSocket: null,
             connected: false,
+            states: {},
         };
     }
 
@@ -58,24 +60,32 @@ class ExternalLevelCrossingSystem extends Component<{}, ExternalLevelCrossingSys
             return;
         }
         const state = JSON.parse(event.data) as SimulatorState;
-        this.showPointState(state);
+        this.showLevelCrossingState(state);
     }
 
-    private showPointState(state: SimulatorState) {
+    private showLevelCrossingState(state: SimulatorState) {
         this.setState({
             connected: state.initialized ?? false,
+            states: state.states,
         });
     }
 
     render() {
         return (
-            <div className="point">
-                <h1>EULYNX External Level Crossing System Simulator</h1>
+            <div>
+                <h1>NeuPro Level Crossing Simulator</h1>
                 <h2>Connection to Interlocking</h2>
                 <p>{this.state.connected ? 'connected' : 'disconnected'}</p>
+                <h2>Track States</h2>
+                {Object.entries(this.state.states).map(([id, state]) =>
+                    <div key={id}>
+                        <h3>{id}</h3>
+                        <p>{state}</p>
+                    </div>
+                )}
             </div>
         );
     }
 }
 
-export default ExternalLevelCrossingSystem;
+export default LevelCrossing;

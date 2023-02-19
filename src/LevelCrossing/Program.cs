@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace EulynxLive.ExternalLevelCrossingSystem
+namespace EulynxLive.LevelCrossing
 {
     public class Program
     {

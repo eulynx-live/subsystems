@@ -12,31 +12,64 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Sci;
 using EulynxLive.Messages;
+using NeuPro = EulynxLive.Messages.NeuPro;
 using static Sci.Rasta;
 using System.Text;
 using Grpc.Net.Client;
 
-namespace EulynxLive.ExternalLevelCrossingSystem
+namespace EulynxLive.LevelCrossing
 {
-    public class ExternalLevelCrossingSystem : BackgroundService
+    public class LevelCrossing : BackgroundService
     {
-        private readonly ILogger<ExternalLevelCrossingSystem> _logger;
+        private readonly ILogger<LevelCrossing> _logger;
         private readonly IConfiguration _configuration;
         private readonly List<WebSocket> _webSockets;
         private string _localId;
+        private string[] _localIdTracks;
         private string _localRastaId;
         private string _remoteId;
         private string _remoteEndpoint;
 
         private bool _initialized;
         AsyncDuplexStreamingCall<SciPacket, SciPacket> _currentConnection;
+        private Dictionary<string, byte> _trackStatuses;
 
-        public ExternalLevelCrossingSystem(ILogger<ExternalLevelCrossingSystem> logger, IConfiguration configuration)
+        public LevelCrossing(ILogger<LevelCrossing> logger, IConfiguration configuration)
         {
             _logger = logger;
             _configuration = configuration;
             _webSockets = new List<WebSocket>();
             _currentConnection = null;
+            _trackStatuses = null;
+
+            // Command line argument parsing.
+            _localId = _configuration["local-id"];
+            if (_localId == null) {
+                throw new Exception("Missing --local-id command line parameter.");
+            }
+
+            var localIdTracks = _configuration["local-id-tracks"];
+            if (localIdTracks == null) {
+                throw new Exception("Missing --local-id-tracks command line parameter.");
+            }
+            _localIdTracks = localIdTracks.Split(",");
+
+            _localRastaId = _configuration["local-rasta-id"];
+            if (_localRastaId == null) {
+                throw new Exception("Missing --local-rasta-id command line parameter.");
+            }
+
+            _remoteId = _configuration["remote-id"];
+            if (_remoteId == null) {
+                throw new Exception("Missing --remote-id command line parameter.");
+            }
+
+            _remoteEndpoint = _configuration["remote-endpoint"];
+            if (_remoteEndpoint == null) {
+                throw new Exception("Missing --remote-endpoint command line parameter.");
+            }
+
+            _trackStatuses = _localIdTracks.Select(x => new { Key = x, Value = (byte)0 }).ToDictionary(x => x.Key, x => x.Value);
         }
 
         public async Task HandleWebSocket(WebSocket webSocket)
@@ -66,29 +99,6 @@ namespace EulynxLive.ExternalLevelCrossingSystem
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            // Command line argument parsing.
-            _localId = _configuration["local-id"];
-            if (_localId == null) {
-                throw new Exception("Missing --local-id command line parameter.");
-            }
-
-            _localRastaId = _configuration["local-rasta-id"];
-            if (_localRastaId == null) {
-                throw new Exception("Missing --local-rasta-id command line parameter.");
-            }
-
-            _remoteId = _configuration["remote-id"];
-            if (_remoteId == null) {
-                throw new Exception("Missing --remote-id command line parameter.");
-            }
-
-            _remoteEndpoint = _configuration["remote-endpoint"];
-            if (_remoteEndpoint == null) {
-                throw new Exception("Missing --remote-endpoint command line parameter.");
-            }
-
-            var simulateRandomTimeouts = _configuration["simulate-timeouts"];
-
             // Main loop.
 
             while (true)
@@ -106,31 +116,36 @@ namespace EulynxLive.ExternalLevelCrossingSystem
                     {
                         _logger.LogTrace("Connected. Waiting for request...");
                         if (!await _currentConnection.ResponseStream.MoveNext(cancellationTokenSource.Token)
-                            || !(EulynxMessage.FromBytes(_currentConnection.ResponseStream.Current.Message.ToByteArray()) is ExternalLevelCrossingSystemVersionCheckCommand))
+                            || !(EulynxMessage.FromBytes(_currentConnection.ResponseStream.Current.Message.ToByteArray()) is NeuPro.LevelCrossingVersionCheckCommand))
                         {
                             _logger.LogError("Unexpected message.");
                             break;
                         }
 
-                        var versionCheckResponse = new ExternalLevelCrossingSystemVersionCheckMessage(_localId, _remoteId, PdiVersionCheckResult.Match, /* TODO */ 0, 0);
+                        var versionCheckResponse = new NeuPro.LevelCrossingVersionCheckMessage(_localId, _remoteId, PdiVersionCheckResult.Match, /* TODO */ 0, 0);
                         await _currentConnection.RequestStream.WriteAsync(new SciPacket() { Message = ByteString.CopyFrom(versionCheckResponse.ToByteArray()) });
 
                         if (!await _currentConnection.ResponseStream.MoveNext(cancellationTokenSource.Token)
-                            || !(EulynxMessage.FromBytes(_currentConnection.ResponseStream.Current.Message.ToByteArray()) is ExternalLevelCrossingSystemInitializationRequestMessage))
+                            || !(EulynxMessage.FromBytes(_currentConnection.ResponseStream.Current.Message.ToByteArray()) is NeuPro.LevelCrossingInitializationRequestMessage))
                         {
                             _logger.LogError("Unexpected message.");
                             break;
                         }
 
-                        var startInitialization = new ExternalLevelCrossingSystemStartInitializationMessage(_localId, _remoteId);
+                        var startInitialization = new NeuPro.LevelCrossingStartInitializationMessage(_localId, _remoteId);
                         await _currentConnection.RequestStream.WriteAsync(new SciPacket() { Message = ByteString.CopyFrom(startInitialization.ToByteArray()) });
 
-                        // var initialPosition = new ExternalLevelCrossingSystemPositionMessage(_localId, _remoteId, _position);
-                        // await _currentConnection.RequestStream.WriteAsync(new SciPacket() { Message = ByteString.CopyFrom(initialPosition.ToByteArray()) });
+                        var lxState = new NeuPro.MeldungZustandBüBezogenMessage(_localId, _remoteId);
+                        await _currentConnection.RequestStream.WriteAsync(new SciPacket() { Message = ByteString.CopyFrom(lxState.ToByteArray()) });
+
+                        foreach (var track in _localIdTracks) {
+                            var trackStatus = new NeuPro.MeldungZustandGleisbezogenMessage(track, _remoteId, _trackStatuses[track]);
+                            await _currentConnection.RequestStream.WriteAsync(new SciPacket() { Message = ByteString.CopyFrom(trackStatus.ToByteArray()) });
+                        }
 
                         _initialized = true;
 
-                        var completeInitialization = new ExternalLevelCrossingSystemInitializationCompletedMessage(_localId, _remoteId);
+                        var completeInitialization = new NeuPro.LevelCrossingInitializationCompletedMessage(_localId, _remoteId);
                         await _currentConnection.RequestStream.WriteAsync(new SciPacket() { Message = ByteString.CopyFrom(completeInitialization.ToByteArray()) });
 
                         await UpdateConnectedWebClients();
@@ -142,6 +157,24 @@ namespace EulynxLive.ExternalLevelCrossingSystem
                                 break;
                             }
                             var message = EulynxMessage.FromBytes(_currentConnection.ResponseStream.Current.Message.ToByteArray());
+                            if (message is NeuPro.AnFsüCommand)
+                            {
+                                var track = message.ReceiverId.TrimEnd('_');
+                                if (_trackStatuses.ContainsKey(track)) {
+                                    _trackStatuses[track] = 1;
+                                    var trackStatus = new NeuPro.MeldungZustandGleisbezogenMessage(track, _remoteId, _trackStatuses[track]);
+                                    await _currentConnection.RequestStream.WriteAsync(new SciPacket() { Message = ByteString.CopyFrom(trackStatus.ToByteArray()) });
+                                    await UpdateConnectedWebClients();
+                                }
+                            } else if (message is NeuPro.AusFsüCommand) {
+                                var track = message.ReceiverId.TrimEnd('_');
+                                if (_trackStatuses.ContainsKey(track)) {
+                                    _trackStatuses[track] = 0;
+                                    var trackStatus = new NeuPro.MeldungZustandGleisbezogenMessage(track, _remoteId, _trackStatuses[track]);
+                                    await _currentConnection.RequestStream.WriteAsync(new SciPacket() { Message = ByteString.CopyFrom(trackStatus.ToByteArray()) });
+                                    await UpdateConnectedWebClients();
+                                }
+                            }
 
                             _logger.LogInformation($"Received unknown message {message.GetType().ToString()}");
                         }
@@ -180,6 +213,7 @@ namespace EulynxLive.ExternalLevelCrossingSystem
             var options = new JsonSerializerOptions { WriteIndented = true };
             var serializedState = JsonSerializer.Serialize(new {
                 initialized = _initialized,
+                states = _trackStatuses.Select(x => new { Key = x.Key, Value = x.Value.ToString() }).ToDictionary(x => x.Key, x => x.Value)
             }, options);
             var serializedStateBytes = Encoding.UTF8.GetBytes(serializedState);
             await webSocket.SendAsync(serializedStateBytes, WebSocketMessageType.Text, true, CancellationToken.None);
