@@ -7,9 +7,9 @@ namespace EulynxLive.Messages.NeuPro
         MeldungZustandBüBezogenMessage = 0x0040,
 
         // Generic
-        InitializationRequest = 0x0021,
-        StartInitialization = 0x0022,
-        InitializationCompleted = 0x0023,
+        InitializationRequest = 0x0011,
+        StartInitialization = 0x0021,
+        InitializationCompleted = 0x0022,
         VersionCheckCommand = 0x0010,
         VersionCheckMessage = 0x0020,
         // Not sure if these exist:
