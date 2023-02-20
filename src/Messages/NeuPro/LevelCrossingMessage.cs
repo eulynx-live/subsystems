@@ -4,14 +4,14 @@ namespace EulynxLive.Messages.NeuPro
         AnFsüCommand = 0x0055,
         AusFsüCommand = 0x0057,
         MeldungZustandGleisbezogenMessage = 0x0060,
-        MeldungZustandBüBezogenMessage = 0x4711,
+        MeldungZustandBüBezogenMessage = 0x0040,
 
         // Generic
         InitializationRequest = 0x0021,
         StartInitialization = 0x0022,
         InitializationCompleted = 0x0023,
-        VersionCheckCommand = 0x0024,
-        VersionCheckMessage = 0x0025,
+        VersionCheckCommand = 0x0010,
+        VersionCheckMessage = 0x0020,
         // Not sure if these exist:
         PDIAvailable = 0x0029,
         PDINotAvailable = 0x002A,

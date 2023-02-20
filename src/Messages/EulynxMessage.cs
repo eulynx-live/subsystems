@@ -143,6 +143,8 @@ namespace EulynxLive.Messages
                             return NeuPro.AusFsüCommand.Parse(senderId, receiverId, message);
                         case NeuPro.LevelCrossingMessageType.MeldungZustandGleisbezogenMessage:
                             return NeuPro.MeldungZustandGleisbezogenMessage.Parse(senderId, receiverId, message);
+                        case NeuPro.LevelCrossingMessageType.MeldungZustandBüBezogenMessage:
+                            return NeuPro.MeldungZustandBüBezogenMessage.Parse(senderId, receiverId, message);
 
                         case NeuPro.LevelCrossingMessageType.InitializationRequest:
                             return NeuPro.LevelCrossingInitializationRequestMessage.Parse(senderId, receiverId, message);
