@@ -11,7 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Sci;
-using EulynxLive.Messages;
+using EulynxLive.Messages.Baseline4R1;
 using static Sci.Rasta;
 using System.Text;
 using Grpc.Net.Client;
@@ -31,9 +31,9 @@ namespace EulynxLive.Point
 
         private bool _initialized;
         AsyncDuplexStreamingCall<SciPacket, SciPacket> _currentConnection;
-        private ReportedPointPosition _position;
+        private PointPointPositionMessageReportedPointPosition _position;
 
-        public ReportedPointPosition Position { get { return _position; } }
+        public PointPointPositionMessageReportedPointPosition Position { get { return _position; } }
 
         public Point(ILogger<Point> logger, IConfiguration configuration)
         {
@@ -44,7 +44,7 @@ namespace EulynxLive.Point
             _random = new Random();
 
             // Initialize with position=right
-            _position = ReportedPointPosition.Right;
+            _position = PointPointPositionMessageReportedPointPosition.PointIsInARightHandPositionDefinedEndPosition;
         }
 
         public async Task HandleWebSocket(WebSocket webSocket)
@@ -73,10 +73,10 @@ namespace EulynxLive.Point
         }
 
         public async Task SimulateTrailed() {
-            _position = ReportedPointPosition.Trailed;
+            _position = PointPointPositionMessageReportedPointPosition.PointIsTrailed;
 
             if (_currentConnection != null) {
-                var occupancyStatus = new PointPositionMessage(_localId, _remoteId, _position);
+                var occupancyStatus = new PointPointPositionMessage(_localId, _remoteId, _position, PointPointPositionMessageReportedDegradedPointPosition.PointIsNotInADegradedPosition);
                 await _currentConnection.RequestStream.WriteAsync(new SciPacket() { Message = ByteString.CopyFrom(occupancyStatus.ToByteArray()) });
             }
 
@@ -125,31 +125,31 @@ namespace EulynxLive.Point
                     {
                         _logger.LogTrace("Connected. Waiting for request...");
                         if (!await _currentConnection.ResponseStream.MoveNext(cancellationTokenSource.Token)
-                            || !(EulynxMessage.FromBytes(_currentConnection.ResponseStream.Current.Message.ToByteArray()) is PointVersionCheckCommand))
+                            || !(Message.FromBytes(_currentConnection.ResponseStream.Current.Message.ToByteArray()) is PointPdiVersionCheckCommand))
                         {
                             _logger.LogError("Unexpected message.");
                             break;
                         }
 
-                        var versionCheckResponse = new PointVersionCheckMessage(_localId, _remoteId, PdiVersionCheckResult.Match, /* TODO */ 0, 0);
+                        var versionCheckResponse = new PointPdiVersionCheckMessage(_localId, _remoteId, PointPdiVersionCheckMessageResultPdiVersionCheck.PDIVersionsFromReceiverAndSenderDoMatch, /* TODO */ 0, 0, new byte[]{});
                         await _currentConnection.RequestStream.WriteAsync(new SciPacket() { Message = ByteString.CopyFrom(versionCheckResponse.ToByteArray()) });
 
                         if (!await _currentConnection.ResponseStream.MoveNext(cancellationTokenSource.Token)
-                            || !(EulynxMessage.FromBytes(_currentConnection.ResponseStream.Current.Message.ToByteArray()) is PointInitializationRequestMessage))
+                            || !(Message.FromBytes(_currentConnection.ResponseStream.Current.Message.ToByteArray()) is PointInitialisationRequestCommand))
                         {
                             _logger.LogError("Unexpected message.");
                             break;
                         }
 
-                        var startInitialization = new PointStartInitializationMessage(_localId, _remoteId);
+                        var startInitialization = new PointStartInitialisationMessage(_localId, _remoteId);
                         await _currentConnection.RequestStream.WriteAsync(new SciPacket() { Message = ByteString.CopyFrom(startInitialization.ToByteArray()) });
 
-                        var initialPosition = new PointPositionMessage(_localId, _remoteId, _position);
+                        var initialPosition = new PointPointPositionMessage(_localId, _remoteId, _position, PointPointPositionMessageReportedDegradedPointPosition.PointIsNotInADegradedPosition);
                         await _currentConnection.RequestStream.WriteAsync(new SciPacket() { Message = ByteString.CopyFrom(initialPosition.ToByteArray()) });
 
                         _initialized = true;
 
-                        var completeInitialization = new PointInitializationCompletedMessage(_localId, _remoteId);
+                        var completeInitialization = new PointInitialisationCompletedMessage(_localId, _remoteId);
                         await _currentConnection.RequestStream.WriteAsync(new SciPacket() { Message = ByteString.CopyFrom(completeInitialization.ToByteArray()) });
 
                         await UpdateConnectedWebClients();
@@ -160,18 +160,18 @@ namespace EulynxLive.Point
                             {
                                 break;
                             }
-                            var message = EulynxMessage.FromBytes(_currentConnection.ResponseStream.Current.Message.ToByteArray());
+                            var message = Message.FromBytes(_currentConnection.ResponseStream.Current.Message.ToByteArray());
 
                             if (message is PointMovePointCommand movePointCommand)
                             {
-                                if ((movePointCommand.CommandedPointPosition == CommandedPointPosition.Right && _position == ReportedPointPosition.Right)
-                                    || (movePointCommand.CommandedPointPosition == CommandedPointPosition.Left && _position == ReportedPointPosition.Left)) {
-                                    var response = new PointPositionMessage(_localId, _remoteId, _position);
+                                if ((movePointCommand.CommandedPointPosition == PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsARightHandPointMoving && _position == PointPointPositionMessageReportedPointPosition.PointIsInARightHandPositionDefinedEndPosition)
+                                    || (movePointCommand.CommandedPointPosition == PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsALeftHandPointMoving && _position == PointPointPositionMessageReportedPointPosition.PointIsInALeftHandPositionDefinedEndPosition)) {
+                                    var response = new PointPointPositionMessage(_localId, _remoteId, _position, PointPointPositionMessageReportedDegradedPointPosition.PointIsNotInADegradedPosition);
                                     await _currentConnection.RequestStream.WriteAsync(new SciPacket() { Message = ByteString.CopyFrom(response.ToByteArray()) });
                                     continue;
                                 }
 
-                                _position = ReportedPointPosition.NoEndPosition;
+                                _position = PointPointPositionMessageReportedPointPosition.PointIsInNoEndPosition;
                                 await UpdateConnectedWebClients();
 
                                 // Simulate point movement
@@ -185,14 +185,14 @@ namespace EulynxLive.Point
                                     if (await Task.WhenAny(transitioningTask, Task.Delay(timeout)) == transitioningTask) {
                                         // transition completed within timeout
                                         _position =
-                                            movePointCommand.CommandedPointPosition == CommandedPointPosition.Right
-                                                ? ReportedPointPosition.Right
-                                                : ReportedPointPosition.Left;
+                                            movePointCommand.CommandedPointPosition == PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsARightHandPointMoving
+                                                ? PointPointPositionMessageReportedPointPosition.PointIsInARightHandPositionDefinedEndPosition
+                                                : PointPointPositionMessageReportedPointPosition.PointIsInALeftHandPositionDefinedEndPosition;
 
                                         await UpdateConnectedWebClients();
 
                                         _logger.LogDebug("End position reached.");
-                                        var response = new PointPositionMessage(_localId, _remoteId, _position);
+                                        var response = new PointPointPositionMessage(_localId, _remoteId, _position, PointPointPositionMessageReportedDegradedPointPosition.PointIsNotInADegradedPosition);
                                         await _currentConnection.RequestStream.WriteAsync(new SciPacket() { Message = ByteString.CopyFrom(response.ToByteArray()) });
                                     } else {
                                         // timeout
@@ -203,14 +203,14 @@ namespace EulynxLive.Point
                                 } else {
                                     await transitioningTask;
                                     _position =
-                                        movePointCommand.CommandedPointPosition == CommandedPointPosition.Right
-                                            ? ReportedPointPosition.Right
-                                            : ReportedPointPosition.Left;
+                                        movePointCommand.CommandedPointPosition == PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsARightHandPointMoving
+                                            ? PointPointPositionMessageReportedPointPosition.PointIsInARightHandPositionDefinedEndPosition
+                                            : PointPointPositionMessageReportedPointPosition.PointIsInALeftHandPositionDefinedEndPosition;
 
                                     await UpdateConnectedWebClients();
 
                                     _logger.LogDebug("End position reached.");
-                                    var response = new PointPositionMessage(_localId, _remoteId, _position);
+                                    var response = new PointPointPositionMessage(_localId, _remoteId, _position, PointPointPositionMessageReportedDegradedPointPosition.PointIsNotInADegradedPosition);
                                     await _currentConnection.RequestStream.WriteAsync(new SciPacket() { Message = ByteString.CopyFrom(response.ToByteArray()) });
                                 }
                             } else {
@@ -249,11 +249,11 @@ namespace EulynxLive.Point
 
         private async Task UpdateWebClient(WebSocket webSocket)
         {
-            var positions = new Dictionary<ReportedPointPosition, string> {
-                {ReportedPointPosition.Right, "right"},
-                {ReportedPointPosition.Left, "left"},
-                {ReportedPointPosition.NoEndPosition, "noEndPosition"},
-                {ReportedPointPosition.Trailed, "trailed"},
+            var positions = new Dictionary<PointPointPositionMessageReportedPointPosition, string> {
+                {PointPointPositionMessageReportedPointPosition.PointIsInARightHandPositionDefinedEndPosition, "right"},
+                {PointPointPositionMessageReportedPointPosition.PointIsInALeftHandPositionDefinedEndPosition, "left"},
+                {PointPointPositionMessageReportedPointPosition.PointIsInNoEndPosition, "noEndPosition"},
+                {PointPointPositionMessageReportedPointPosition.PointIsTrailed, "trailed"},
             };
             var options = new JsonSerializerOptions { WriteIndented = true };
             var serializedState = JsonSerializer.Serialize(new {

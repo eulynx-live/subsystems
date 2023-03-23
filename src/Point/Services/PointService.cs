@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using Grpc.Core;
-using EulynxLive.Messages;
+using EulynxLive.Messages.Baseline4R1;
 using static EulynxLive.Point.Proto.Point;
 using EulynxLive.Point.Proto;
 using Proto = EulynxLive.Point.Proto;
@@ -24,17 +24,17 @@ namespace EulynxLive.Point.Services {
         {
             var response = new Proto.PointPositionMessage();
             switch (_point.Position) {
-                case ReportedPointPosition.Right:
+                case PointPointPositionMessageReportedPointPosition.PointIsInARightHandPositionDefinedEndPosition:
                     response.Position = PointPosition.Right;
                     break;
-                case ReportedPointPosition.Left:
+                case PointPointPositionMessageReportedPointPosition.PointIsInALeftHandPositionDefinedEndPosition:
                     response.Position = PointPosition.Left;
                     break;
-                case ReportedPointPosition.Trailed:
-                    response.Position = PointPosition.Trailed;
-                    break;
-                case ReportedPointPosition.NoEndPosition:
+                case PointPointPositionMessageReportedPointPosition.PointIsInNoEndPosition:
                     response.Position = PointPosition.NoEndPosition;
+                    break;
+                case PointPointPositionMessageReportedPointPosition.PointIsTrailed:
+                    response.Position = PointPosition.Trailed;
                     break;
             }
 
