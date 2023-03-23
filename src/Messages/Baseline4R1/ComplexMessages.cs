@@ -13,7 +13,7 @@ public record AdjacentInterlockingSystemPdiVersionCheckMessage (string SenderIde
     private const int ChecksumLengthOffset = 45;
     private const int ChecksumOffset = 46;
 
-    public static new AdjacentInterlockingSystemPdiVersionCheckMessage FromBytes(byte[] message) {
+    public new static AdjacentInterlockingSystemPdiVersionCheckMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var ResultPdiVersionCheck = (AdjacentInterlockingSystemPdiVersionCheckMessageResultPdiVersionCheck)message[ResultPdiVersionCheckOffset];
@@ -51,7 +51,7 @@ public record TrainDetectionSystemPdiVersionCheckMessage (string SenderIdentifie
     private const int ChecksumLengthOffset = 45;
     private const int ChecksumOffset = 46;
 
-    public static new TrainDetectionSystemPdiVersionCheckMessage FromBytes(byte[] message) {
+    public new static TrainDetectionSystemPdiVersionCheckMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var ResultPdiVersionCheck = (TrainDetectionSystemPdiVersionCheckMessageResultPdiVersionCheck)message[ResultPdiVersionCheckOffset];
@@ -90,7 +90,7 @@ public record LightSignalPdiVersionCheckMessage (string SenderIdentifier, string
     private const int ChecksumLengthOffset = 45;
     private const int ChecksumOffset = 46;
 
-    public static new LightSignalPdiVersionCheckMessage FromBytes(byte[] message) {
+    public new static LightSignalPdiVersionCheckMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var ResultPdiVersionCheck = (LightSignalPdiVersionCheckMessageResultPdiVersionCheck)message[ResultPdiVersionCheckOffset];
@@ -128,7 +128,7 @@ public record PointPdiVersionCheckMessage (string SenderIdentifier, string Recei
     private const int ChecksumLengthOffset = 45;
     private const int ChecksumOffset = 46;
 
-    public static new PointPdiVersionCheckMessage FromBytes(byte[] message) {
+    public new static PointPdiVersionCheckMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var ResultPdiVersionCheck = (PointPdiVersionCheckMessageResultPdiVersionCheck)message[ResultPdiVersionCheckOffset];
@@ -166,7 +166,7 @@ public record RadioBlockCenterPdiVersionCheckMessage (string SenderIdentifier, s
     private const int ChecksumLengthOffset = 45;
     private const int ChecksumOffset = 46;
 
-    public static new RadioBlockCenterPdiVersionCheckMessage FromBytes(byte[] message) {
+    public new static RadioBlockCenterPdiVersionCheckMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var ResultPdiVersionCheck = (RadioBlockCenterPdiVersionCheckMessageResultPdiVersionCheck)message[ResultPdiVersionCheckOffset];
@@ -205,7 +205,7 @@ public record LevelCrossingPdiVersionCheckMessage (string SenderIdentifier, stri
     private const int ChecksumLengthOffset = 45;
     private const int ChecksumOffset = 46;
 
-    public static new LevelCrossingPdiVersionCheckMessage FromBytes(byte[] message) {
+    public new static LevelCrossingPdiVersionCheckMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var ResultPdiVersionCheck = (LevelCrossingPdiVersionCheckMessageResultPdiVersionCheck)message[ResultPdiVersionCheckOffset];
@@ -244,7 +244,7 @@ public record CCPdiVersionCheckMessage (string SenderIdentifier, string Receiver
     private const int ChecksumLengthOffset = 45;
     private const int ChecksumOffset = 46;
 
-    public static new CCPdiVersionCheckMessage FromBytes(byte[] message) {
+    public new static CCPdiVersionCheckMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var ResultPdiVersionCheck = (CCPdiVersionCheckMessageResultPdiVersionCheck)message[ResultPdiVersionCheckOffset];
@@ -283,7 +283,7 @@ public record GenericIOPdiVersionCheckMessage (string SenderIdentifier, string R
     private const int ChecksumLengthOffset = 45;
     private const int ChecksumOffset = 46;
 
-    public static new GenericIOPdiVersionCheckMessage FromBytes(byte[] message) {
+    public new static GenericIOPdiVersionCheckMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var ResultPdiVersionCheck = (GenericIOPdiVersionCheckMessageResultPdiVersionCheck)message[ResultPdiVersionCheckOffset];
@@ -322,7 +322,7 @@ public record ExternalLevelCrossingSystemPdiVersionCheckMessage (string SenderId
     private const int ChecksumLengthOffset = 45;
     private const int ChecksumOffset = 46;
 
-    public static new ExternalLevelCrossingSystemPdiVersionCheckMessage FromBytes(byte[] message) {
+    public new static ExternalLevelCrossingSystemPdiVersionCheckMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var ResultPdiVersionCheck = (ExternalLevelCrossingSystemPdiVersionCheckMessageResultPdiVersionCheck)message[ResultPdiVersionCheckOffset];
