@@ -9,7 +9,7 @@ public record LevelCrossingDeactivationCommand (string SenderIdentifier, string 
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new LevelCrossingDeactivationCommand FromBytes(byte[] message) {
+    public new static LevelCrossingDeactivationCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         

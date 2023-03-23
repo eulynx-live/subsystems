@@ -10,7 +10,7 @@ public record CCAbortCommandCommand (string SenderIdentifier, string ReceiverIde
     private const int ReceiverIdentifierOffset = 23;
     private const int ConfirmationTanOffset = 43;
 
-    public static new CCAbortCommandCommand FromBytes(byte[] message) {
+    public new static CCAbortCommandCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var ConfirmationTan = (byte)message[ConfirmationTanOffset];
@@ -38,7 +38,7 @@ public record CCReleaseForNormalOperationCommand (string SenderIdentifier, strin
     private const int TanOffset = 43;
     private const int InformationTypeOffset = 45;
 
-    public static new CCReleaseForNormalOperationCommand FromBytes(byte[] message) {
+    public new static CCReleaseForNormalOperationCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var Tan = (byte)message[TanOffset];
@@ -66,7 +66,7 @@ public record CCCommandAcceptedMessage (string SenderIdentifier, string Receiver
     private const int ReceiverIdentifierOffset = 23;
     private const int ConfirmationTanOffset = 43;
 
-    public static new CCCommandAcceptedMessage FromBytes(byte[] message) {
+    public new static CCCommandAcceptedMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var ConfirmationTan = (byte)message[ConfirmationTanOffset];

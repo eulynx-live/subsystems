@@ -10,7 +10,7 @@ public record TrainDetectionSystemFcCommand (string SenderIdentifier, string Rec
     private const int ReceiverIdentifierOffset = 23;
     private const int ModeOfFcOffset = 43;
 
-    public static new TrainDetectionSystemFcCommand FromBytes(byte[] message) {
+    public new static TrainDetectionSystemFcCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var ModeOfFc = (TrainDetectionSystemFcCommandModeOfFc)message[ModeOfFcOffset];
@@ -42,7 +42,7 @@ public record TrainDetectionSystemUpdateFillingLevelCommand (string SenderIdenti
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new TrainDetectionSystemUpdateFillingLevelCommand FromBytes(byte[] message) {
+    public new static TrainDetectionSystemUpdateFillingLevelCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -68,7 +68,7 @@ public record TrainDetectionSystemCancelCommand (string SenderIdentifier, string
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new TrainDetectionSystemCancelCommand FromBytes(byte[] message) {
+    public new static TrainDetectionSystemCancelCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -94,7 +94,7 @@ public record TrainDetectionSystemDisableTheRestrictionToForceSectionStatusToCle
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new TrainDetectionSystemDisableTheRestrictionToForceSectionStatusToClearCommand FromBytes(byte[] message) {
+    public new static TrainDetectionSystemDisableTheRestrictionToForceSectionStatusToClearCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -122,7 +122,7 @@ public record TrainDetectionSystemCommandRejectedMessage (string SenderIdentifie
     private const int ReceiverIdentifierOffset = 23;
     private const int ReasonForRejectionOffset = 43;
 
-    public static new TrainDetectionSystemCommandRejectedMessage FromBytes(byte[] message) {
+    public new static TrainDetectionSystemCommandRejectedMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var ReasonForRejection = (TrainDetectionSystemCommandRejectedMessageReasonForRejection)message[ReasonForRejectionOffset];
@@ -152,7 +152,7 @@ public record TrainDetectionSystemTvpsFcPFailedMessage (string SenderIdentifier,
     private const int ReceiverIdentifierOffset = 23;
     private const int ReasonForFailureOffset = 43;
 
-    public static new TrainDetectionSystemTvpsFcPFailedMessage FromBytes(byte[] message) {
+    public new static TrainDetectionSystemTvpsFcPFailedMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var ReasonForFailure = (TrainDetectionSystemTvpsFcPFailedMessageReasonForFailure)message[ReasonForFailureOffset];
@@ -186,7 +186,7 @@ public record TrainDetectionSystemTvpsFcPAFailedMessage (string SenderIdentifier
     private const int ReceiverIdentifierOffset = 23;
     private const int ReasonForFailureOffset = 43;
 
-    public static new TrainDetectionSystemTvpsFcPAFailedMessage FromBytes(byte[] message) {
+    public new static TrainDetectionSystemTvpsFcPAFailedMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var ReasonForFailure = (TrainDetectionSystemTvpsFcPAFailedMessageReasonForFailure)message[ReasonForFailureOffset];
@@ -221,7 +221,7 @@ public record TrainDetectionSystemTdpStatusMessage (string SenderIdentifier, str
     private const int StateOfPassingOffset = 43;
     private const int DirectionOfPassingOffset = 44;
 
-    public static new TrainDetectionSystemTdpStatusMessage FromBytes(byte[] message) {
+    public new static TrainDetectionSystemTdpStatusMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var StateOfPassing = (TrainDetectionSystemTdpStatusMessageStateOfPassing)message[StateOfPassingOffset];

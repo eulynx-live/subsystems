@@ -9,7 +9,7 @@ public record ExternalLevelCrossingSystemCrossingClearCommand (string SenderIden
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new ExternalLevelCrossingSystemCrossingClearCommand FromBytes(byte[] message) {
+    public new static ExternalLevelCrossingSystemCrossingClearCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         

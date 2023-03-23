@@ -10,7 +10,7 @@ public record AdjacentInterlockingSystemPdiVersionCheckCommand (string SenderIde
     private const int ReceiverIdentifierOffset = 23;
     private const int PdiVersionOfSenderOffset = 43;
 
-    public static new AdjacentInterlockingSystemPdiVersionCheckCommand FromBytes(byte[] message) {
+    public new static AdjacentInterlockingSystemPdiVersionCheckCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var PdiVersionOfSender = (byte)message[PdiVersionOfSenderOffset];
@@ -37,7 +37,7 @@ public record TrainDetectionSystemPdiVersionCheckCommand (string SenderIdentifie
     private const int ReceiverIdentifierOffset = 23;
     private const int PdiVersionOfSenderOffset = 43;
 
-    public static new TrainDetectionSystemPdiVersionCheckCommand FromBytes(byte[] message) {
+    public new static TrainDetectionSystemPdiVersionCheckCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var PdiVersionOfSender = (byte)message[PdiVersionOfSenderOffset];
@@ -64,7 +64,7 @@ public record LightSignalPdiVersionCheckCommand (string SenderIdentifier, string
     private const int ReceiverIdentifierOffset = 23;
     private const int PdiVersionOfSenderOffset = 43;
 
-    public static new LightSignalPdiVersionCheckCommand FromBytes(byte[] message) {
+    public new static LightSignalPdiVersionCheckCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var PdiVersionOfSender = (byte)message[PdiVersionOfSenderOffset];
@@ -91,7 +91,7 @@ public record PointPdiVersionCheckCommand (string SenderIdentifier, string Recei
     private const int ReceiverIdentifierOffset = 23;
     private const int PdiVersionOfSenderOffset = 43;
 
-    public static new PointPdiVersionCheckCommand FromBytes(byte[] message) {
+    public new static PointPdiVersionCheckCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var PdiVersionOfSender = (byte)message[PdiVersionOfSenderOffset];
@@ -118,7 +118,7 @@ public record RadioBlockCenterPdiVersionCheckCommand (string SenderIdentifier, s
     private const int ReceiverIdentifierOffset = 23;
     private const int PdiVersionOfSenderOffset = 43;
 
-    public static new RadioBlockCenterPdiVersionCheckCommand FromBytes(byte[] message) {
+    public new static RadioBlockCenterPdiVersionCheckCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var PdiVersionOfSender = (byte)message[PdiVersionOfSenderOffset];
@@ -145,7 +145,7 @@ public record LevelCrossingPdiVersionCheckCommand (string SenderIdentifier, stri
     private const int ReceiverIdentifierOffset = 23;
     private const int PdiVersionOfSenderOffset = 43;
 
-    public static new LevelCrossingPdiVersionCheckCommand FromBytes(byte[] message) {
+    public new static LevelCrossingPdiVersionCheckCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var PdiVersionOfSender = (byte)message[PdiVersionOfSenderOffset];
@@ -172,7 +172,7 @@ public record CCPdiVersionCheckCommand (string SenderIdentifier, string Receiver
     private const int ReceiverIdentifierOffset = 23;
     private const int PdiVersionOfSenderOffset = 43;
 
-    public static new CCPdiVersionCheckCommand FromBytes(byte[] message) {
+    public new static CCPdiVersionCheckCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var PdiVersionOfSender = (byte)message[PdiVersionOfSenderOffset];
@@ -199,7 +199,7 @@ public record GenericIOPdiVersionCheckCommand (string SenderIdentifier, string R
     private const int ReceiverIdentifierOffset = 23;
     private const int PdiVersionOfSenderOffset = 43;
 
-    public static new GenericIOPdiVersionCheckCommand FromBytes(byte[] message) {
+    public new static GenericIOPdiVersionCheckCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var PdiVersionOfSender = (byte)message[PdiVersionOfSenderOffset];
@@ -226,7 +226,7 @@ public record ExternalLevelCrossingSystemPdiVersionCheckCommand (string SenderId
     private const int ReceiverIdentifierOffset = 23;
     private const int PdiVersionOfSenderOffset = 43;
 
-    public static new ExternalLevelCrossingSystemPdiVersionCheckCommand FromBytes(byte[] message) {
+    public new static ExternalLevelCrossingSystemPdiVersionCheckCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var PdiVersionOfSender = (byte)message[PdiVersionOfSenderOffset];
@@ -252,7 +252,7 @@ public record AdjacentInterlockingSystemInitialisationRequestCommand (string Sen
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new AdjacentInterlockingSystemInitialisationRequestCommand FromBytes(byte[] message) {
+    public new static AdjacentInterlockingSystemInitialisationRequestCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -278,7 +278,7 @@ public record TrainDetectionSystemInitialisationRequestCommand (string SenderIde
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new TrainDetectionSystemInitialisationRequestCommand FromBytes(byte[] message) {
+    public new static TrainDetectionSystemInitialisationRequestCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -304,7 +304,7 @@ public record LightSignalInitialisationRequestCommand (string SenderIdentifier, 
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new LightSignalInitialisationRequestCommand FromBytes(byte[] message) {
+    public new static LightSignalInitialisationRequestCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -330,7 +330,7 @@ public record PointInitialisationRequestCommand (string SenderIdentifier, string
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new PointInitialisationRequestCommand FromBytes(byte[] message) {
+    public new static PointInitialisationRequestCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -356,7 +356,7 @@ public record RadioBlockCenterInitialisationRequestCommand (string SenderIdentif
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new RadioBlockCenterInitialisationRequestCommand FromBytes(byte[] message) {
+    public new static RadioBlockCenterInitialisationRequestCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -382,7 +382,7 @@ public record LevelCrossingInitialisationRequestCommand (string SenderIdentifier
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new LevelCrossingInitialisationRequestCommand FromBytes(byte[] message) {
+    public new static LevelCrossingInitialisationRequestCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -408,7 +408,7 @@ public record CCInitialisationRequestCommand (string SenderIdentifier, string Re
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new CCInitialisationRequestCommand FromBytes(byte[] message) {
+    public new static CCInitialisationRequestCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -434,7 +434,7 @@ public record GenericIOInitialisationRequestCommand (string SenderIdentifier, st
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new GenericIOInitialisationRequestCommand FromBytes(byte[] message) {
+    public new static GenericIOInitialisationRequestCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -460,7 +460,7 @@ public record ExternalLevelCrossingSystemInitialisationRequestCommand (string Se
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new ExternalLevelCrossingSystemInitialisationRequestCommand FromBytes(byte[] message) {
+    public new static ExternalLevelCrossingSystemInitialisationRequestCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -487,7 +487,7 @@ public record AdjacentInterlockingSystemClosePdiCommand (string SenderIdentifier
     private const int ReceiverIdentifierOffset = 23;
     private const int CloseReasonOffset = 43;
 
-    public static new AdjacentInterlockingSystemClosePdiCommand FromBytes(byte[] message) {
+    public new static AdjacentInterlockingSystemClosePdiCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var CloseReason = (AdjacentInterlockingSystemClosePdiCommandCloseReason)message[CloseReasonOffset];
@@ -522,7 +522,7 @@ public record TrainDetectionSystemClosePdiCommand (string SenderIdentifier, stri
     private const int ReceiverIdentifierOffset = 23;
     private const int CloseReasonOffset = 43;
 
-    public static new TrainDetectionSystemClosePdiCommand FromBytes(byte[] message) {
+    public new static TrainDetectionSystemClosePdiCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var CloseReason = (TrainDetectionSystemClosePdiCommandCloseReason)message[CloseReasonOffset];
@@ -557,7 +557,7 @@ public record LightSignalClosePdiCommand (string SenderIdentifier, string Receiv
     private const int ReceiverIdentifierOffset = 23;
     private const int CloseReasonOffset = 43;
 
-    public static new LightSignalClosePdiCommand FromBytes(byte[] message) {
+    public new static LightSignalClosePdiCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var CloseReason = (LightSignalClosePdiCommandCloseReason)message[CloseReasonOffset];
@@ -592,7 +592,7 @@ public record PointClosePdiCommand (string SenderIdentifier, string ReceiverIden
     private const int ReceiverIdentifierOffset = 23;
     private const int CloseReasonOffset = 43;
 
-    public static new PointClosePdiCommand FromBytes(byte[] message) {
+    public new static PointClosePdiCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var CloseReason = (PointClosePdiCommandCloseReason)message[CloseReasonOffset];
@@ -627,7 +627,7 @@ public record RadioBlockCenterClosePdiCommand (string SenderIdentifier, string R
     private const int ReceiverIdentifierOffset = 23;
     private const int CloseReasonOffset = 43;
 
-    public static new RadioBlockCenterClosePdiCommand FromBytes(byte[] message) {
+    public new static RadioBlockCenterClosePdiCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var CloseReason = (RadioBlockCenterClosePdiCommandCloseReason)message[CloseReasonOffset];
@@ -662,7 +662,7 @@ public record LevelCrossingClosePdiCommand (string SenderIdentifier, string Rece
     private const int ReceiverIdentifierOffset = 23;
     private const int CloseReasonOffset = 43;
 
-    public static new LevelCrossingClosePdiCommand FromBytes(byte[] message) {
+    public new static LevelCrossingClosePdiCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var CloseReason = (LevelCrossingClosePdiCommandCloseReason)message[CloseReasonOffset];
@@ -697,7 +697,7 @@ public record CCClosePdiCommand (string SenderIdentifier, string ReceiverIdentif
     private const int ReceiverIdentifierOffset = 23;
     private const int CloseReasonOffset = 43;
 
-    public static new CCClosePdiCommand FromBytes(byte[] message) {
+    public new static CCClosePdiCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var CloseReason = (CCClosePdiCommandCloseReason)message[CloseReasonOffset];
@@ -732,7 +732,7 @@ public record GenericIOClosePdiCommand (string SenderIdentifier, string Receiver
     private const int ReceiverIdentifierOffset = 23;
     private const int CloseReasonOffset = 43;
 
-    public static new GenericIOClosePdiCommand FromBytes(byte[] message) {
+    public new static GenericIOClosePdiCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var CloseReason = (GenericIOClosePdiCommandCloseReason)message[CloseReasonOffset];
@@ -767,7 +767,7 @@ public record ExternalLevelCrossingSystemClosePdiCommand (string SenderIdentifie
     private const int ReceiverIdentifierOffset = 23;
     private const int CloseReasonOffset = 43;
 
-    public static new ExternalLevelCrossingSystemClosePdiCommand FromBytes(byte[] message) {
+    public new static ExternalLevelCrossingSystemClosePdiCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var CloseReason = (ExternalLevelCrossingSystemClosePdiCommandCloseReason)message[CloseReasonOffset];
@@ -801,7 +801,7 @@ public record AdjacentInterlockingSystemReleasePdiForMaintenanceCommand (string 
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new AdjacentInterlockingSystemReleasePdiForMaintenanceCommand FromBytes(byte[] message) {
+    public new static AdjacentInterlockingSystemReleasePdiForMaintenanceCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -827,7 +827,7 @@ public record TrainDetectionSystemReleasePdiForMaintenanceCommand (string Sender
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new TrainDetectionSystemReleasePdiForMaintenanceCommand FromBytes(byte[] message) {
+    public new static TrainDetectionSystemReleasePdiForMaintenanceCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -853,7 +853,7 @@ public record LightSignalReleasePdiForMaintenanceCommand (string SenderIdentifie
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new LightSignalReleasePdiForMaintenanceCommand FromBytes(byte[] message) {
+    public new static LightSignalReleasePdiForMaintenanceCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -879,7 +879,7 @@ public record PointReleasePdiForMaintenanceCommand (string SenderIdentifier, str
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new PointReleasePdiForMaintenanceCommand FromBytes(byte[] message) {
+    public new static PointReleasePdiForMaintenanceCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -905,7 +905,7 @@ public record RadioBlockCenterReleasePdiForMaintenanceCommand (string SenderIden
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new RadioBlockCenterReleasePdiForMaintenanceCommand FromBytes(byte[] message) {
+    public new static RadioBlockCenterReleasePdiForMaintenanceCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -931,7 +931,7 @@ public record LevelCrossingReleasePdiForMaintenanceCommand (string SenderIdentif
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new LevelCrossingReleasePdiForMaintenanceCommand FromBytes(byte[] message) {
+    public new static LevelCrossingReleasePdiForMaintenanceCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -957,7 +957,7 @@ public record CCReleasePdiForMaintenanceCommand (string SenderIdentifier, string
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new CCReleasePdiForMaintenanceCommand FromBytes(byte[] message) {
+    public new static CCReleasePdiForMaintenanceCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -983,7 +983,7 @@ public record GenericIOReleasePdiForMaintenanceCommand (string SenderIdentifier,
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new GenericIOReleasePdiForMaintenanceCommand FromBytes(byte[] message) {
+    public new static GenericIOReleasePdiForMaintenanceCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -1009,7 +1009,7 @@ public record ExternalLevelCrossingSystemReleasePdiForMaintenanceCommand (string
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new ExternalLevelCrossingSystemReleasePdiForMaintenanceCommand FromBytes(byte[] message) {
+    public new static ExternalLevelCrossingSystemReleasePdiForMaintenanceCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -1037,7 +1037,7 @@ public record AdjacentInterlockingSystemStartInitialisationMessage (string Sende
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new AdjacentInterlockingSystemStartInitialisationMessage FromBytes(byte[] message) {
+    public new static AdjacentInterlockingSystemStartInitialisationMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -1063,7 +1063,7 @@ public record TrainDetectionSystemStartInitialisationMessage (string SenderIdent
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new TrainDetectionSystemStartInitialisationMessage FromBytes(byte[] message) {
+    public new static TrainDetectionSystemStartInitialisationMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -1089,7 +1089,7 @@ public record LightSignalStartInitialisationMessage (string SenderIdentifier, st
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new LightSignalStartInitialisationMessage FromBytes(byte[] message) {
+    public new static LightSignalStartInitialisationMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -1115,7 +1115,7 @@ public record PointStartInitialisationMessage (string SenderIdentifier, string R
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new PointStartInitialisationMessage FromBytes(byte[] message) {
+    public new static PointStartInitialisationMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -1141,7 +1141,7 @@ public record RadioBlockCenterStartInitialisationMessage (string SenderIdentifie
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new RadioBlockCenterStartInitialisationMessage FromBytes(byte[] message) {
+    public new static RadioBlockCenterStartInitialisationMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -1167,7 +1167,7 @@ public record LevelCrossingStartInitialisationMessage (string SenderIdentifier, 
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new LevelCrossingStartInitialisationMessage FromBytes(byte[] message) {
+    public new static LevelCrossingStartInitialisationMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -1193,7 +1193,7 @@ public record CCStartInitialisationMessage (string SenderIdentifier, string Rece
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new CCStartInitialisationMessage FromBytes(byte[] message) {
+    public new static CCStartInitialisationMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -1219,7 +1219,7 @@ public record GenericIOStartInitialisationMessage (string SenderIdentifier, stri
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new GenericIOStartInitialisationMessage FromBytes(byte[] message) {
+    public new static GenericIOStartInitialisationMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -1245,7 +1245,7 @@ public record ExternalLevelCrossingSystemStartInitialisationMessage (string Send
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new ExternalLevelCrossingSystemStartInitialisationMessage FromBytes(byte[] message) {
+    public new static ExternalLevelCrossingSystemStartInitialisationMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -1271,7 +1271,7 @@ public record AdjacentInterlockingSystemStatusReportCompletedMessage (string Sen
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new AdjacentInterlockingSystemStatusReportCompletedMessage FromBytes(byte[] message) {
+    public new static AdjacentInterlockingSystemStatusReportCompletedMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -1297,7 +1297,7 @@ public record TrainDetectionSystemStatusReportCompletedMessage (string SenderIde
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new TrainDetectionSystemStatusReportCompletedMessage FromBytes(byte[] message) {
+    public new static TrainDetectionSystemStatusReportCompletedMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -1323,7 +1323,7 @@ public record LightSignalStatusReportCompletedMessage (string SenderIdentifier, 
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new LightSignalStatusReportCompletedMessage FromBytes(byte[] message) {
+    public new static LightSignalStatusReportCompletedMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -1349,7 +1349,7 @@ public record PointStatusReportCompletedMessage (string SenderIdentifier, string
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new PointStatusReportCompletedMessage FromBytes(byte[] message) {
+    public new static PointStatusReportCompletedMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -1375,7 +1375,7 @@ public record RadioBlockCenterStatusReportCompletedMessage (string SenderIdentif
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new RadioBlockCenterStatusReportCompletedMessage FromBytes(byte[] message) {
+    public new static RadioBlockCenterStatusReportCompletedMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -1401,7 +1401,7 @@ public record LevelCrossingStatusReportCompletedMessage (string SenderIdentifier
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new LevelCrossingStatusReportCompletedMessage FromBytes(byte[] message) {
+    public new static LevelCrossingStatusReportCompletedMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -1427,7 +1427,7 @@ public record CCStatusReportCompletedMessage (string SenderIdentifier, string Re
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new CCStatusReportCompletedMessage FromBytes(byte[] message) {
+    public new static CCStatusReportCompletedMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -1453,7 +1453,7 @@ public record GenericIOStatusReportCompletedMessage (string SenderIdentifier, st
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new GenericIOStatusReportCompletedMessage FromBytes(byte[] message) {
+    public new static GenericIOStatusReportCompletedMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -1479,7 +1479,7 @@ public record ExternalLevelCrossingSystemStatusReportCompletedMessage (string Se
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new ExternalLevelCrossingSystemStatusReportCompletedMessage FromBytes(byte[] message) {
+    public new static ExternalLevelCrossingSystemStatusReportCompletedMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -1505,7 +1505,7 @@ public record AdjacentInterlockingSystemInitialisationCompletedMessage (string S
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new AdjacentInterlockingSystemInitialisationCompletedMessage FromBytes(byte[] message) {
+    public new static AdjacentInterlockingSystemInitialisationCompletedMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -1531,7 +1531,7 @@ public record TrainDetectionSystemInitialisationCompletedMessage (string SenderI
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new TrainDetectionSystemInitialisationCompletedMessage FromBytes(byte[] message) {
+    public new static TrainDetectionSystemInitialisationCompletedMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -1557,7 +1557,7 @@ public record LightSignalInitialisationCompletedMessage (string SenderIdentifier
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new LightSignalInitialisationCompletedMessage FromBytes(byte[] message) {
+    public new static LightSignalInitialisationCompletedMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -1583,7 +1583,7 @@ public record PointInitialisationCompletedMessage (string SenderIdentifier, stri
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new PointInitialisationCompletedMessage FromBytes(byte[] message) {
+    public new static PointInitialisationCompletedMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -1609,7 +1609,7 @@ public record RadioBlockCenterInitialisationCompletedMessage (string SenderIdent
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new RadioBlockCenterInitialisationCompletedMessage FromBytes(byte[] message) {
+    public new static RadioBlockCenterInitialisationCompletedMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -1635,7 +1635,7 @@ public record LevelCrossingInitialisationCompletedMessage (string SenderIdentifi
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new LevelCrossingInitialisationCompletedMessage FromBytes(byte[] message) {
+    public new static LevelCrossingInitialisationCompletedMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -1661,7 +1661,7 @@ public record CCInitialisationCompletedMessage (string SenderIdentifier, string 
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new CCInitialisationCompletedMessage FromBytes(byte[] message) {
+    public new static CCInitialisationCompletedMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -1687,7 +1687,7 @@ public record GenericIOInitialisationCompletedMessage (string SenderIdentifier, 
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new GenericIOInitialisationCompletedMessage FromBytes(byte[] message) {
+    public new static GenericIOInitialisationCompletedMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -1713,7 +1713,7 @@ public record ExternalLevelCrossingSystemInitialisationCompletedMessage (string 
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new ExternalLevelCrossingSystemInitialisationCompletedMessage FromBytes(byte[] message) {
+    public new static ExternalLevelCrossingSystemInitialisationCompletedMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -1739,7 +1739,7 @@ public record AdjacentInterlockingSystemPdiAvailableMessage (string SenderIdenti
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new AdjacentInterlockingSystemPdiAvailableMessage FromBytes(byte[] message) {
+    public new static AdjacentInterlockingSystemPdiAvailableMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -1765,7 +1765,7 @@ public record TrainDetectionSystemPdiAvailableMessage (string SenderIdentifier, 
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new TrainDetectionSystemPdiAvailableMessage FromBytes(byte[] message) {
+    public new static TrainDetectionSystemPdiAvailableMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -1791,7 +1791,7 @@ public record LightSignalPdiAvailableMessage (string SenderIdentifier, string Re
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new LightSignalPdiAvailableMessage FromBytes(byte[] message) {
+    public new static LightSignalPdiAvailableMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -1817,7 +1817,7 @@ public record PointPdiAvailableMessage (string SenderIdentifier, string Receiver
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new PointPdiAvailableMessage FromBytes(byte[] message) {
+    public new static PointPdiAvailableMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -1843,7 +1843,7 @@ public record RadioBlockCenterPdiAvailableMessage (string SenderIdentifier, stri
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new RadioBlockCenterPdiAvailableMessage FromBytes(byte[] message) {
+    public new static RadioBlockCenterPdiAvailableMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -1869,7 +1869,7 @@ public record LevelCrossingPdiAvailableMessage (string SenderIdentifier, string 
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new LevelCrossingPdiAvailableMessage FromBytes(byte[] message) {
+    public new static LevelCrossingPdiAvailableMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -1895,7 +1895,7 @@ public record CCPdiAvailableMessage (string SenderIdentifier, string ReceiverIde
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new CCPdiAvailableMessage FromBytes(byte[] message) {
+    public new static CCPdiAvailableMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -1921,7 +1921,7 @@ public record GenericIOPdiAvailableMessage (string SenderIdentifier, string Rece
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new GenericIOPdiAvailableMessage FromBytes(byte[] message) {
+    public new static GenericIOPdiAvailableMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -1947,7 +1947,7 @@ public record ExternalLevelCrossingSystemPdiAvailableMessage (string SenderIdent
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new ExternalLevelCrossingSystemPdiAvailableMessage FromBytes(byte[] message) {
+    public new static ExternalLevelCrossingSystemPdiAvailableMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -1973,7 +1973,7 @@ public record AdjacentInterlockingSystemPdiNotAvailableMessage (string SenderIde
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new AdjacentInterlockingSystemPdiNotAvailableMessage FromBytes(byte[] message) {
+    public new static AdjacentInterlockingSystemPdiNotAvailableMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -1999,7 +1999,7 @@ public record TrainDetectionSystemPdiNotAvailableMessage (string SenderIdentifie
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new TrainDetectionSystemPdiNotAvailableMessage FromBytes(byte[] message) {
+    public new static TrainDetectionSystemPdiNotAvailableMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -2025,7 +2025,7 @@ public record LightSignalPdiNotAvailableMessage (string SenderIdentifier, string
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new LightSignalPdiNotAvailableMessage FromBytes(byte[] message) {
+    public new static LightSignalPdiNotAvailableMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -2051,7 +2051,7 @@ public record PointPdiNotAvailableMessage (string SenderIdentifier, string Recei
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new PointPdiNotAvailableMessage FromBytes(byte[] message) {
+    public new static PointPdiNotAvailableMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -2077,7 +2077,7 @@ public record RadioBlockCenterPdiNotAvailableMessage (string SenderIdentifier, s
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new RadioBlockCenterPdiNotAvailableMessage FromBytes(byte[] message) {
+    public new static RadioBlockCenterPdiNotAvailableMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -2103,7 +2103,7 @@ public record LevelCrossingPdiNotAvailableMessage (string SenderIdentifier, stri
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new LevelCrossingPdiNotAvailableMessage FromBytes(byte[] message) {
+    public new static LevelCrossingPdiNotAvailableMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -2129,7 +2129,7 @@ public record CCPdiNotAvailableMessage (string SenderIdentifier, string Receiver
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new CCPdiNotAvailableMessage FromBytes(byte[] message) {
+    public new static CCPdiNotAvailableMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -2155,7 +2155,7 @@ public record GenericIOPdiNotAvailableMessage (string SenderIdentifier, string R
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new GenericIOPdiNotAvailableMessage FromBytes(byte[] message) {
+    public new static GenericIOPdiNotAvailableMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -2181,7 +2181,7 @@ public record ExternalLevelCrossingSystemPdiNotAvailableMessage (string SenderId
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new ExternalLevelCrossingSystemPdiNotAvailableMessage FromBytes(byte[] message) {
+    public new static ExternalLevelCrossingSystemPdiNotAvailableMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -2208,7 +2208,7 @@ public record AdjacentInterlockingSystemResetPdiMessage (string SenderIdentifier
     private const int ReceiverIdentifierOffset = 23;
     private const int ResetReasonOffset = 43;
 
-    public static new AdjacentInterlockingSystemResetPdiMessage FromBytes(byte[] message) {
+    public new static AdjacentInterlockingSystemResetPdiMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var ResetReason = (AdjacentInterlockingSystemResetPdiMessageResetReason)message[ResetReasonOffset];
@@ -2239,7 +2239,7 @@ public record TrainDetectionSystemResetPdiMessage (string SenderIdentifier, stri
     private const int ReceiverIdentifierOffset = 23;
     private const int ResetReasonOffset = 43;
 
-    public static new TrainDetectionSystemResetPdiMessage FromBytes(byte[] message) {
+    public new static TrainDetectionSystemResetPdiMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var ResetReason = (TrainDetectionSystemResetPdiMessageResetReason)message[ResetReasonOffset];
@@ -2270,7 +2270,7 @@ public record LightSignalResetPdiMessage (string SenderIdentifier, string Receiv
     private const int ReceiverIdentifierOffset = 23;
     private const int ResetReasonOffset = 43;
 
-    public static new LightSignalResetPdiMessage FromBytes(byte[] message) {
+    public new static LightSignalResetPdiMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var ResetReason = (LightSignalResetPdiMessageResetReason)message[ResetReasonOffset];
@@ -2301,7 +2301,7 @@ public record PointResetPdiMessage (string SenderIdentifier, string ReceiverIden
     private const int ReceiverIdentifierOffset = 23;
     private const int ResetReasonOffset = 43;
 
-    public static new PointResetPdiMessage FromBytes(byte[] message) {
+    public new static PointResetPdiMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var ResetReason = (PointResetPdiMessageResetReason)message[ResetReasonOffset];
@@ -2332,7 +2332,7 @@ public record RadioBlockCenterResetPdiMessage (string SenderIdentifier, string R
     private const int ReceiverIdentifierOffset = 23;
     private const int ResetReasonOffset = 43;
 
-    public static new RadioBlockCenterResetPdiMessage FromBytes(byte[] message) {
+    public new static RadioBlockCenterResetPdiMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var ResetReason = (RadioBlockCenterResetPdiMessageResetReason)message[ResetReasonOffset];
@@ -2363,7 +2363,7 @@ public record LevelCrossingResetPdiMessage (string SenderIdentifier, string Rece
     private const int ReceiverIdentifierOffset = 23;
     private const int ResetReasonOffset = 43;
 
-    public static new LevelCrossingResetPdiMessage FromBytes(byte[] message) {
+    public new static LevelCrossingResetPdiMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var ResetReason = (LevelCrossingResetPdiMessageResetReason)message[ResetReasonOffset];
@@ -2394,7 +2394,7 @@ public record CCResetPdiMessage (string SenderIdentifier, string ReceiverIdentif
     private const int ReceiverIdentifierOffset = 23;
     private const int ResetReasonOffset = 43;
 
-    public static new CCResetPdiMessage FromBytes(byte[] message) {
+    public new static CCResetPdiMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var ResetReason = (CCResetPdiMessageResetReason)message[ResetReasonOffset];
@@ -2425,7 +2425,7 @@ public record GenericIOResetPdiMessage (string SenderIdentifier, string Receiver
     private const int ReceiverIdentifierOffset = 23;
     private const int ResetReasonOffset = 43;
 
-    public static new GenericIOResetPdiMessage FromBytes(byte[] message) {
+    public new static GenericIOResetPdiMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var ResetReason = (GenericIOResetPdiMessageResetReason)message[ResetReasonOffset];
@@ -2456,7 +2456,7 @@ public record ExternalLevelCrossingSystemResetPdiMessage (string SenderIdentifie
     private const int ReceiverIdentifierOffset = 23;
     private const int ResetReasonOffset = 43;
 
-    public static new ExternalLevelCrossingSystemResetPdiMessage FromBytes(byte[] message) {
+    public new static ExternalLevelCrossingSystemResetPdiMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var ResetReason = (ExternalLevelCrossingSystemResetPdiMessageResetReason)message[ResetReasonOffset];

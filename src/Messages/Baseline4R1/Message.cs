@@ -21,7 +21,8 @@ public abstract record Message() {
                 0x0023 => AdjacentInterlockingSystemInitialisationCompletedMessage.FromBytes(message),
                 0x0029 => AdjacentInterlockingSystemPdiAvailableMessage.FromBytes(message),
                 0x002A => AdjacentInterlockingSystemPdiNotAvailableMessage.FromBytes(message),
-                0x002B => AdjacentInterlockingSystemResetPdiMessage.FromBytes(message)
+                0x002B => AdjacentInterlockingSystemResetPdiMessage.FromBytes(message),
+                _ => throw new Exception($"Unknown protocol and message type {protocolType} / {messageType}")
             },
             ProtocolType.TrainDetectionSystem => messageType switch {
                 0x0001 => TrainDetectionSystemFcCommand.FromBytes(message),
@@ -42,7 +43,8 @@ public abstract record Message() {
                 0x0023 => TrainDetectionSystemInitialisationCompletedMessage.FromBytes(message),
                 0x0029 => TrainDetectionSystemPdiAvailableMessage.FromBytes(message),
                 0x002A => TrainDetectionSystemPdiNotAvailableMessage.FromBytes(message),
-                0x002B => TrainDetectionSystemResetPdiMessage.FromBytes(message)
+                0x002B => TrainDetectionSystemResetPdiMessage.FromBytes(message),
+                _ => throw new Exception($"Unknown protocol and message type {protocolType} / {messageType}")
             },
             ProtocolType.LightSignal => messageType switch {
                 0x0002 => LightSignalSetLuminosityCommand.FromBytes(message),
@@ -57,7 +59,8 @@ public abstract record Message() {
                 0x0023 => LightSignalInitialisationCompletedMessage.FromBytes(message),
                 0x0029 => LightSignalPdiAvailableMessage.FromBytes(message),
                 0x002A => LightSignalPdiNotAvailableMessage.FromBytes(message),
-                0x002B => LightSignalResetPdiMessage.FromBytes(message)
+                0x002B => LightSignalResetPdiMessage.FromBytes(message),
+                _ => throw new Exception($"Unknown protocol and message type {protocolType} / {messageType}")
             },
             ProtocolType.Point => messageType switch {
                 0x0001 => PointMovePointCommand.FromBytes(message),
@@ -74,7 +77,8 @@ public abstract record Message() {
                 0x0023 => PointInitialisationCompletedMessage.FromBytes(message),
                 0x0029 => PointPdiAvailableMessage.FromBytes(message),
                 0x002A => PointPdiNotAvailableMessage.FromBytes(message),
-                0x002B => PointResetPdiMessage.FromBytes(message)
+                0x002B => PointResetPdiMessage.FromBytes(message),
+                _ => throw new Exception($"Unknown protocol and message type {protocolType} / {messageType}")
             },
             ProtocolType.RadioBlockCenter => messageType switch {
                 0x0024 => RadioBlockCenterPdiVersionCheckCommand.FromBytes(message),
@@ -87,7 +91,8 @@ public abstract record Message() {
                 0x0023 => RadioBlockCenterInitialisationCompletedMessage.FromBytes(message),
                 0x0029 => RadioBlockCenterPdiAvailableMessage.FromBytes(message),
                 0x002A => RadioBlockCenterPdiNotAvailableMessage.FromBytes(message),
-                0x002B => RadioBlockCenterResetPdiMessage.FromBytes(message)
+                0x002B => RadioBlockCenterResetPdiMessage.FromBytes(message),
+                _ => throw new Exception($"Unknown protocol and message type {protocolType} / {messageType}")
             },
             ProtocolType.LevelCrossing => messageType switch {
                 0x0002 => LevelCrossingDeactivationCommand.FromBytes(message),
@@ -101,7 +106,8 @@ public abstract record Message() {
                 0x0023 => LevelCrossingInitialisationCompletedMessage.FromBytes(message),
                 0x0029 => LevelCrossingPdiAvailableMessage.FromBytes(message),
                 0x002A => LevelCrossingPdiNotAvailableMessage.FromBytes(message),
-                0x002B => LevelCrossingResetPdiMessage.FromBytes(message)
+                0x002B => LevelCrossingResetPdiMessage.FromBytes(message),
+                _ => throw new Exception($"Unknown protocol and message type {protocolType} / {messageType}")
             },
             ProtocolType.CC => messageType switch {
                 0x0065 => CCAbortCommandCommand.FromBytes(message),
@@ -117,7 +123,8 @@ public abstract record Message() {
                 0x0023 => CCInitialisationCompletedMessage.FromBytes(message),
                 0x0029 => CCPdiAvailableMessage.FromBytes(message),
                 0x002A => CCPdiNotAvailableMessage.FromBytes(message),
-                0x002B => CCResetPdiMessage.FromBytes(message)
+                0x002B => CCResetPdiMessage.FromBytes(message),
+                _ => throw new Exception($"Unknown protocol and message type {protocolType} / {messageType}")
             },
             ProtocolType.GenericIO => messageType switch {
                 0x0024 => GenericIOPdiVersionCheckCommand.FromBytes(message),
@@ -130,7 +137,8 @@ public abstract record Message() {
                 0x0023 => GenericIOInitialisationCompletedMessage.FromBytes(message),
                 0x0029 => GenericIOPdiAvailableMessage.FromBytes(message),
                 0x002A => GenericIOPdiNotAvailableMessage.FromBytes(message),
-                0x002B => GenericIOResetPdiMessage.FromBytes(message)
+                0x002B => GenericIOResetPdiMessage.FromBytes(message),
+                _ => throw new Exception($"Unknown protocol and message type {protocolType} / {messageType}")
             },
             ProtocolType.ExternalLevelCrossingSystem => messageType switch {
                 0x0007 => ExternalLevelCrossingSystemCrossingClearCommand.FromBytes(message),
@@ -144,8 +152,10 @@ public abstract record Message() {
                 0x0023 => ExternalLevelCrossingSystemInitialisationCompletedMessage.FromBytes(message),
                 0x0029 => ExternalLevelCrossingSystemPdiAvailableMessage.FromBytes(message),
                 0x002A => ExternalLevelCrossingSystemPdiNotAvailableMessage.FromBytes(message),
-                0x002B => ExternalLevelCrossingSystemResetPdiMessage.FromBytes(message)
-            }
+                0x002B => ExternalLevelCrossingSystemResetPdiMessage.FromBytes(message),
+                _ => throw new Exception($"Unknown protocol and message type {protocolType} / {messageType}")
+            },
+            _ => throw new Exception($"Unknown protocol and message type {protocolType} / {messageType}")
         };
     }
 }

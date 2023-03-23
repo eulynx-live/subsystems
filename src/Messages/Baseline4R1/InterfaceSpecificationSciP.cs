@@ -10,7 +10,7 @@ public record PointMovePointCommand (string SenderIdentifier, string ReceiverIde
     private const int ReceiverIdentifierOffset = 23;
     private const int CommandedPointPositionOffset = 43;
 
-    public static new PointMovePointCommand FromBytes(byte[] message) {
+    public new static PointMovePointCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var CommandedPointPosition = (PointMovePointCommandCommandedPointPosition)message[CommandedPointPositionOffset];
@@ -42,7 +42,7 @@ public record PointPointPositionMessage (string SenderIdentifier, string Receive
     private const int ReportedPointPositionOffset = 43;
     private const int ReportedDegradedPointPositionOffset = 44;
 
-    public static new PointPointPositionMessage FromBytes(byte[] message) {
+    public new static PointPointPositionMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var ReportedPointPosition = (PointPointPositionMessageReportedPointPosition)message[ReportedPointPositionOffset];
@@ -82,7 +82,7 @@ public record PointTimeoutMessage (string SenderIdentifier, string ReceiverIdent
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static new PointTimeoutMessage FromBytes(byte[] message) {
+    public new static PointTimeoutMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
@@ -109,7 +109,7 @@ public record PointAbilityToMovePointMessage (string SenderIdentifier, string Re
     private const int ReceiverIdentifierOffset = 23;
     private const int ReportedAbilityToMovePointStatusOffset = 43;
 
-    public static new PointAbilityToMovePointMessage FromBytes(byte[] message) {
+    public new static PointAbilityToMovePointMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var ReportedAbilityToMovePointStatus = (PointAbilityToMovePointMessageReportedAbilityToMovePointStatus)message[ReportedAbilityToMovePointStatusOffset];

@@ -10,7 +10,7 @@ public record LightSignalSetLuminosityCommand (string SenderIdentifier, string R
     private const int ReceiverIdentifierOffset = 23;
     private const int LuminosityOffset = 43;
 
-    public static new LightSignalSetLuminosityCommand FromBytes(byte[] message) {
+    public new static LightSignalSetLuminosityCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var Luminosity = (LightSignalSetLuminosityCommandLuminosity)message[LuminosityOffset];
@@ -42,7 +42,7 @@ public record LightSignalSetLuminosityMessage (string SenderIdentifier, string R
     private const int ReceiverIdentifierOffset = 23;
     private const int LuminosityOffset = 43;
 
-    public static new LightSignalSetLuminosityMessage FromBytes(byte[] message) {
+    public new static LightSignalSetLuminosityMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var Luminosity = (LightSignalSetLuminosityMessageLuminosity)message[LuminosityOffset];
