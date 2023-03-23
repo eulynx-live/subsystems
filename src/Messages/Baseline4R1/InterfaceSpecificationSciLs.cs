@@ -4,20 +4,20 @@ using System.Linq;
 
 namespace EulynxLive.Messages.Baseline4R1;
 
-public record LightSignalSetLuminosityCommand (string SenderIdentifier, string ReceiverIdentifier, LightSignalSetLuminosityCommandLuminosity Luminosity) : IByteSerializable {
+public record LightSignalSetLuminosityCommand (string SenderIdentifier, string ReceiverIdentifier, LightSignalSetLuminosityCommandLuminosity Luminosity) : Message {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
     private const int LuminosityOffset = 43;
 
-    public static LightSignalSetLuminosityCommand FromBytes(byte[] message) {
+    public static new LightSignalSetLuminosityCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var Luminosity = (LightSignalSetLuminosityCommandLuminosity)message[LuminosityOffset];
         return new LightSignalSetLuminosityCommand(SenderIdentifier, ReceiverIdentifier, Luminosity);
     }
 
-    public byte[] ToByteArray() {
+    public override byte[] ToByteArray() {
         var result = new byte[44];
         result[0] = (byte)ProtocolType.LightSignal;
         BitConverter.GetBytes(0x0002).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
@@ -36,20 +36,20 @@ public enum LightSignalSetLuminosityCommandLuminosity : byte {
 
 
 
-public record LightSignalSetLuminosityMessage (string SenderIdentifier, string ReceiverIdentifier, LightSignalSetLuminosityMessageLuminosity Luminosity) : IByteSerializable {
+public record LightSignalSetLuminosityMessage (string SenderIdentifier, string ReceiverIdentifier, LightSignalSetLuminosityMessageLuminosity Luminosity) : Message {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
     private const int LuminosityOffset = 43;
 
-    public static LightSignalSetLuminosityMessage FromBytes(byte[] message) {
+    public static new LightSignalSetLuminosityMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var Luminosity = (LightSignalSetLuminosityMessageLuminosity)message[LuminosityOffset];
         return new LightSignalSetLuminosityMessage(SenderIdentifier, ReceiverIdentifier, Luminosity);
     }
 
-    public byte[] ToByteArray() {
+    public override byte[] ToByteArray() {
         var result = new byte[44];
         result[0] = (byte)ProtocolType.LightSignal;
         BitConverter.GetBytes(0x0004).Take(2).ToArray().CopyTo(result, MessageTypeOffset);

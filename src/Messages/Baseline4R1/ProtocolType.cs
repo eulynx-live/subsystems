@@ -1,9 +1,5 @@
 namespace EulynxLive.Messages.Baseline4R1;
 
-public interface IByteSerializable {
-    byte[] ToByteArray();
-}
-
 public enum ProtocolType : byte
 {
     // From: EU.SCI-XX.PDI.53

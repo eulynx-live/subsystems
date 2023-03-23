@@ -2,8 +2,11 @@ using System;
 
 namespace EulynxLive.Messages.Baseline4R1;
 
-public static class Message {
-    public static IByteSerializable FromBytes(byte[] message) {
+public abstract record Message() {
+
+    public abstract byte[] ToByteArray();
+
+    public static Message FromBytes(byte[] message) {
         var protocolType = (ProtocolType)message[0];
         var messageType = BitConverter.ToUInt16(new byte[2] { message[1], message[2] });
         return protocolType switch {
@@ -12,6 +15,7 @@ public static class Message {
                 0x0021 => AdjacentInterlockingSystemInitialisationRequestCommand.FromBytes(message),
                 0x0027 => AdjacentInterlockingSystemClosePdiCommand.FromBytes(message),
                 0x0028 => AdjacentInterlockingSystemReleasePdiForMaintenanceCommand.FromBytes(message),
+                0x0025 => AdjacentInterlockingSystemPdiVersionCheckMessage.FromBytes(message),
                 0x0022 => AdjacentInterlockingSystemStartInitialisationMessage.FromBytes(message),
                 0x0026 => AdjacentInterlockingSystemStatusReportCompletedMessage.FromBytes(message),
                 0x0023 => AdjacentInterlockingSystemInitialisationCompletedMessage.FromBytes(message),
@@ -32,6 +36,7 @@ public static class Message {
                 0x0010 => TrainDetectionSystemTvpsFcPFailedMessage.FromBytes(message),
                 0x0011 => TrainDetectionSystemTvpsFcPAFailedMessage.FromBytes(message),
                 0x000B => TrainDetectionSystemTdpStatusMessage.FromBytes(message),
+                0x0025 => TrainDetectionSystemPdiVersionCheckMessage.FromBytes(message),
                 0x0022 => TrainDetectionSystemStartInitialisationMessage.FromBytes(message),
                 0x0026 => TrainDetectionSystemStatusReportCompletedMessage.FromBytes(message),
                 0x0023 => TrainDetectionSystemInitialisationCompletedMessage.FromBytes(message),
@@ -46,6 +51,7 @@ public static class Message {
                 0x0027 => LightSignalClosePdiCommand.FromBytes(message),
                 0x0028 => LightSignalReleasePdiForMaintenanceCommand.FromBytes(message),
                 0x0004 => LightSignalSetLuminosityMessage.FromBytes(message),
+                0x0025 => LightSignalPdiVersionCheckMessage.FromBytes(message),
                 0x0022 => LightSignalStartInitialisationMessage.FromBytes(message),
                 0x0026 => LightSignalStatusReportCompletedMessage.FromBytes(message),
                 0x0023 => LightSignalInitialisationCompletedMessage.FromBytes(message),
@@ -62,6 +68,7 @@ public static class Message {
                 0x000B => PointPointPositionMessage.FromBytes(message),
                 0x000C => PointTimeoutMessage.FromBytes(message),
                 0x000D => PointAbilityToMovePointMessage.FromBytes(message),
+                0x0025 => PointPdiVersionCheckMessage.FromBytes(message),
                 0x0022 => PointStartInitialisationMessage.FromBytes(message),
                 0x0026 => PointStatusReportCompletedMessage.FromBytes(message),
                 0x0023 => PointInitialisationCompletedMessage.FromBytes(message),
@@ -74,6 +81,7 @@ public static class Message {
                 0x0021 => RadioBlockCenterInitialisationRequestCommand.FromBytes(message),
                 0x0027 => RadioBlockCenterClosePdiCommand.FromBytes(message),
                 0x0028 => RadioBlockCenterReleasePdiForMaintenanceCommand.FromBytes(message),
+                0x0025 => RadioBlockCenterPdiVersionCheckMessage.FromBytes(message),
                 0x0022 => RadioBlockCenterStartInitialisationMessage.FromBytes(message),
                 0x0026 => RadioBlockCenterStatusReportCompletedMessage.FromBytes(message),
                 0x0023 => RadioBlockCenterInitialisationCompletedMessage.FromBytes(message),
@@ -87,6 +95,7 @@ public static class Message {
                 0x0021 => LevelCrossingInitialisationRequestCommand.FromBytes(message),
                 0x0027 => LevelCrossingClosePdiCommand.FromBytes(message),
                 0x0028 => LevelCrossingReleasePdiForMaintenanceCommand.FromBytes(message),
+                0x0025 => LevelCrossingPdiVersionCheckMessage.FromBytes(message),
                 0x0022 => LevelCrossingStartInitialisationMessage.FromBytes(message),
                 0x0026 => LevelCrossingStatusReportCompletedMessage.FromBytes(message),
                 0x0023 => LevelCrossingInitialisationCompletedMessage.FromBytes(message),
@@ -102,6 +111,7 @@ public static class Message {
                 0x0027 => CCClosePdiCommand.FromBytes(message),
                 0x0028 => CCReleasePdiForMaintenanceCommand.FromBytes(message),
                 0x0044 => CCCommandAcceptedMessage.FromBytes(message),
+                0x0025 => CCPdiVersionCheckMessage.FromBytes(message),
                 0x0022 => CCStartInitialisationMessage.FromBytes(message),
                 0x0026 => CCStatusReportCompletedMessage.FromBytes(message),
                 0x0023 => CCInitialisationCompletedMessage.FromBytes(message),
@@ -114,6 +124,7 @@ public static class Message {
                 0x0021 => GenericIOInitialisationRequestCommand.FromBytes(message),
                 0x0027 => GenericIOClosePdiCommand.FromBytes(message),
                 0x0028 => GenericIOReleasePdiForMaintenanceCommand.FromBytes(message),
+                0x0025 => GenericIOPdiVersionCheckMessage.FromBytes(message),
                 0x0022 => GenericIOStartInitialisationMessage.FromBytes(message),
                 0x0026 => GenericIOStatusReportCompletedMessage.FromBytes(message),
                 0x0023 => GenericIOInitialisationCompletedMessage.FromBytes(message),
@@ -127,6 +138,7 @@ public static class Message {
                 0x0021 => ExternalLevelCrossingSystemInitialisationRequestCommand.FromBytes(message),
                 0x0027 => ExternalLevelCrossingSystemClosePdiCommand.FromBytes(message),
                 0x0028 => ExternalLevelCrossingSystemReleasePdiForMaintenanceCommand.FromBytes(message),
+                0x0025 => ExternalLevelCrossingSystemPdiVersionCheckMessage.FromBytes(message),
                 0x0022 => ExternalLevelCrossingSystemStartInitialisationMessage.FromBytes(message),
                 0x0026 => ExternalLevelCrossingSystemStatusReportCompletedMessage.FromBytes(message),
                 0x0023 => ExternalLevelCrossingSystemInitialisationCompletedMessage.FromBytes(message),

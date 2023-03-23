@@ -4,20 +4,20 @@ using System.Linq;
 
 namespace EulynxLive.Messages.Baseline4R1;
 
-public record PointMovePointCommand (string SenderIdentifier, string ReceiverIdentifier, PointMovePointCommandCommandedPointPosition CommandedPointPosition) : IByteSerializable {
+public record PointMovePointCommand (string SenderIdentifier, string ReceiverIdentifier, PointMovePointCommandCommandedPointPosition CommandedPointPosition) : Message {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
     private const int CommandedPointPositionOffset = 43;
 
-    public static PointMovePointCommand FromBytes(byte[] message) {
+    public static new PointMovePointCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var CommandedPointPosition = (PointMovePointCommandCommandedPointPosition)message[CommandedPointPositionOffset];
         return new PointMovePointCommand(SenderIdentifier, ReceiverIdentifier, CommandedPointPosition);
     }
 
-    public byte[] ToByteArray() {
+    public override byte[] ToByteArray() {
         var result = new byte[44];
         result[0] = (byte)ProtocolType.Point;
         BitConverter.GetBytes(0x0001).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
@@ -35,14 +35,14 @@ public enum PointMovePointCommandCommandedPointPosition : byte {
 
 
 
-public record PointPointPositionMessage (string SenderIdentifier, string ReceiverIdentifier, PointPointPositionMessageReportedPointPosition ReportedPointPosition, PointPointPositionMessageReportedDegradedPointPosition ReportedDegradedPointPosition) : IByteSerializable {
+public record PointPointPositionMessage (string SenderIdentifier, string ReceiverIdentifier, PointPointPositionMessageReportedPointPosition ReportedPointPosition, PointPointPositionMessageReportedDegradedPointPosition ReportedDegradedPointPosition) : Message {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
     private const int ReportedPointPositionOffset = 43;
     private const int ReportedDegradedPointPositionOffset = 44;
 
-    public static PointPointPositionMessage FromBytes(byte[] message) {
+    public static new PointPointPositionMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var ReportedPointPosition = (PointPointPositionMessageReportedPointPosition)message[ReportedPointPositionOffset];
@@ -50,7 +50,7 @@ public record PointPointPositionMessage (string SenderIdentifier, string Receive
         return new PointPointPositionMessage(SenderIdentifier, ReceiverIdentifier, ReportedPointPosition, ReportedDegradedPointPosition);
     }
 
-    public byte[] ToByteArray() {
+    public override byte[] ToByteArray() {
         var result = new byte[45];
         result[0] = (byte)ProtocolType.Point;
         BitConverter.GetBytes(0x000B).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
@@ -77,19 +77,19 @@ public enum PointPointPositionMessageReportedDegradedPointPosition : byte {
 }
 
 
-public record PointTimeoutMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
+public record PointTimeoutMessage (string SenderIdentifier, string ReceiverIdentifier) : Message {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public static PointTimeoutMessage FromBytes(byte[] message) {
+    public static new PointTimeoutMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
         return new PointTimeoutMessage(SenderIdentifier, ReceiverIdentifier);
     }
 
-    public byte[] ToByteArray() {
+    public override byte[] ToByteArray() {
         var result = new byte[43];
         result[0] = (byte)ProtocolType.Point;
         BitConverter.GetBytes(0x000C).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
@@ -103,20 +103,20 @@ public record PointTimeoutMessage (string SenderIdentifier, string ReceiverIdent
 
 
 
-public record PointAbilityToMovePointMessage (string SenderIdentifier, string ReceiverIdentifier, PointAbilityToMovePointMessageReportedAbilityToMovePointStatus ReportedAbilityToMovePointStatus) : IByteSerializable {
+public record PointAbilityToMovePointMessage (string SenderIdentifier, string ReceiverIdentifier, PointAbilityToMovePointMessageReportedAbilityToMovePointStatus ReportedAbilityToMovePointStatus) : Message {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
     private const int ReportedAbilityToMovePointStatusOffset = 43;
 
-    public static PointAbilityToMovePointMessage FromBytes(byte[] message) {
+    public static new PointAbilityToMovePointMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var ReportedAbilityToMovePointStatus = (PointAbilityToMovePointMessageReportedAbilityToMovePointStatus)message[ReportedAbilityToMovePointStatusOffset];
         return new PointAbilityToMovePointMessage(SenderIdentifier, ReceiverIdentifier, ReportedAbilityToMovePointStatus);
     }
 
-    public byte[] ToByteArray() {
+    public override byte[] ToByteArray() {
         var result = new byte[44];
         result[0] = (byte)ProtocolType.Point;
         BitConverter.GetBytes(0x000D).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
