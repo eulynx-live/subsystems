@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace EulynxLive.Messages.Baseline4R1;
 
-public record CCAbortCommandCommand (string SenderIdentifier, string ReceiverIdentifier, byte ConfirmationTan) {
+public record CCAbortCommandCommand (string SenderIdentifier, string ReceiverIdentifier, byte ConfirmationTan) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -31,7 +31,7 @@ public record CCAbortCommandCommand (string SenderIdentifier, string ReceiverIde
 
 
 
-public record CCReleaseForNormalOperationCommand (string SenderIdentifier, string ReceiverIdentifier, byte Tan) {
+public record CCReleaseForNormalOperationCommand (string SenderIdentifier, string ReceiverIdentifier, byte Tan) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -60,7 +60,7 @@ public record CCReleaseForNormalOperationCommand (string SenderIdentifier, strin
 
 
 
-public record CCCommandAcceptedMessage (string SenderIdentifier, string ReceiverIdentifier, byte ConfirmationTan) {
+public record CCCommandAcceptedMessage (string SenderIdentifier, string ReceiverIdentifier, byte ConfirmationTan) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;

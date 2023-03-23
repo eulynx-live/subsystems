@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace EulynxLive.Messages.Baseline4R1;
 
-public record TrainDetectionSystemFcCommand (string SenderIdentifier, string ReceiverIdentifier, TrainDetectionSystemFcCommandModeOfFc ModeOfFc) {
+public record TrainDetectionSystemFcCommand (string SenderIdentifier, string ReceiverIdentifier, TrainDetectionSystemFcCommandModeOfFc ModeOfFc) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -37,7 +37,7 @@ public enum TrainDetectionSystemFcCommandModeOfFc : byte {
 }
 
 
-public record TrainDetectionSystemUpdateFillingLevelCommand (string SenderIdentifier, string ReceiverIdentifier) {
+public record TrainDetectionSystemUpdateFillingLevelCommand (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -63,7 +63,7 @@ public record TrainDetectionSystemUpdateFillingLevelCommand (string SenderIdenti
 
 
 
-public record TrainDetectionSystemCancelCommand (string SenderIdentifier, string ReceiverIdentifier) {
+public record TrainDetectionSystemCancelCommand (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -89,7 +89,7 @@ public record TrainDetectionSystemCancelCommand (string SenderIdentifier, string
 
 
 
-public record TrainDetectionSystemDisableTheRestrictionToForceSectionStatusToClearCommand (string SenderIdentifier, string ReceiverIdentifier) {
+public record TrainDetectionSystemDisableTheRestrictionToForceSectionStatusToClearCommand (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -116,7 +116,7 @@ public record TrainDetectionSystemDisableTheRestrictionToForceSectionStatusToCle
 
 
 
-public record TrainDetectionSystemCommandRejectedMessage (string SenderIdentifier, string ReceiverIdentifier, TrainDetectionSystemCommandRejectedMessageReasonForRejection ReasonForRejection) {
+public record TrainDetectionSystemCommandRejectedMessage (string SenderIdentifier, string ReceiverIdentifier, TrainDetectionSystemCommandRejectedMessageReasonForRejection ReasonForRejection) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -146,7 +146,7 @@ public enum TrainDetectionSystemCommandRejectedMessageReasonForRejection : byte 
 }
 
 
-public record TrainDetectionSystemTvpsFcPFailedMessage (string SenderIdentifier, string ReceiverIdentifier, TrainDetectionSystemTvpsFcPFailedMessageReasonForFailure ReasonForFailure) {
+public record TrainDetectionSystemTvpsFcPFailedMessage (string SenderIdentifier, string ReceiverIdentifier, TrainDetectionSystemTvpsFcPFailedMessageReasonForFailure ReasonForFailure) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -180,7 +180,7 @@ public enum TrainDetectionSystemTvpsFcPFailedMessageReasonForFailure : byte {
 }
 
 
-public record TrainDetectionSystemTvpsFcPAFailedMessage (string SenderIdentifier, string ReceiverIdentifier, TrainDetectionSystemTvpsFcPAFailedMessageReasonForFailure ReasonForFailure) {
+public record TrainDetectionSystemTvpsFcPAFailedMessage (string SenderIdentifier, string ReceiverIdentifier, TrainDetectionSystemTvpsFcPAFailedMessageReasonForFailure ReasonForFailure) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -214,7 +214,7 @@ public enum TrainDetectionSystemTvpsFcPAFailedMessageReasonForFailure : byte {
 }
 
 
-public record TrainDetectionSystemTdpStatusMessage (string SenderIdentifier, string ReceiverIdentifier, TrainDetectionSystemTdpStatusMessageStateOfPassing StateOfPassing, TrainDetectionSystemTdpStatusMessageDirectionOfPassing DirectionOfPassing) {
+public record TrainDetectionSystemTdpStatusMessage (string SenderIdentifier, string ReceiverIdentifier, TrainDetectionSystemTdpStatusMessageStateOfPassing StateOfPassing, TrainDetectionSystemTdpStatusMessageDirectionOfPassing DirectionOfPassing) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;

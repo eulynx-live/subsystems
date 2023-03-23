@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace EulynxLive.Messages.Baseline4R1;
 
-public record LightSignalSetLuminosityCommand (string SenderIdentifier, string ReceiverIdentifier, LightSignalSetLuminosityCommandLuminosity Luminosity) {
+public record LightSignalSetLuminosityCommand (string SenderIdentifier, string ReceiverIdentifier, LightSignalSetLuminosityCommandLuminosity Luminosity) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -36,7 +36,7 @@ public enum LightSignalSetLuminosityCommandLuminosity : byte {
 
 
 
-public record LightSignalSetLuminosityMessage (string SenderIdentifier, string ReceiverIdentifier, LightSignalSetLuminosityMessageLuminosity Luminosity) {
+public record LightSignalSetLuminosityMessage (string SenderIdentifier, string ReceiverIdentifier, LightSignalSetLuminosityMessageLuminosity Luminosity) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;

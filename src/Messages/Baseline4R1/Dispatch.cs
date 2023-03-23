@@ -3,7 +3,7 @@ using System;
 namespace EulynxLive.Messages.Baseline4R1;
 
 public static class Message {
-    public static object FromBytes(byte[] message) {
+    public static IByteSerializable FromBytes(byte[] message) {
         var protocolType = (ProtocolType)message[0];
         var messageType = BitConverter.ToUInt16(new byte[2] { message[1], message[2] });
         return protocolType switch {

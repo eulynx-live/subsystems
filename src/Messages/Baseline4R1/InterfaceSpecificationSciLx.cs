@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace EulynxLive.Messages.Baseline4R1;
 
-public record ExternalLevelCrossingSystemCrossingClearCommand (string SenderIdentifier, string ReceiverIdentifier) {
+public record ExternalLevelCrossingSystemCrossingClearCommand (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;

@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace EulynxLive.Messages.Baseline4R1;
 
-public record AdjacentInterlockingSystemPdiVersionCheckCommand (string SenderIdentifier, string ReceiverIdentifier, byte PdiVersionOfSender) {
+public record AdjacentInterlockingSystemPdiVersionCheckCommand (string SenderIdentifier, string ReceiverIdentifier, byte PdiVersionOfSender) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -31,7 +31,7 @@ public record AdjacentInterlockingSystemPdiVersionCheckCommand (string SenderIde
 
 
 
-public record TrainDetectionSystemPdiVersionCheckCommand (string SenderIdentifier, string ReceiverIdentifier, byte PdiVersionOfSender) {
+public record TrainDetectionSystemPdiVersionCheckCommand (string SenderIdentifier, string ReceiverIdentifier, byte PdiVersionOfSender) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -58,7 +58,7 @@ public record TrainDetectionSystemPdiVersionCheckCommand (string SenderIdentifie
 
 
 
-public record LightSignalPdiVersionCheckCommand (string SenderIdentifier, string ReceiverIdentifier, byte PdiVersionOfSender) {
+public record LightSignalPdiVersionCheckCommand (string SenderIdentifier, string ReceiverIdentifier, byte PdiVersionOfSender) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -85,7 +85,7 @@ public record LightSignalPdiVersionCheckCommand (string SenderIdentifier, string
 
 
 
-public record PointPdiVersionCheckCommand (string SenderIdentifier, string ReceiverIdentifier, byte PdiVersionOfSender) {
+public record PointPdiVersionCheckCommand (string SenderIdentifier, string ReceiverIdentifier, byte PdiVersionOfSender) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -112,7 +112,7 @@ public record PointPdiVersionCheckCommand (string SenderIdentifier, string Recei
 
 
 
-public record RadioBlockCenterPdiVersionCheckCommand (string SenderIdentifier, string ReceiverIdentifier, byte PdiVersionOfSender) {
+public record RadioBlockCenterPdiVersionCheckCommand (string SenderIdentifier, string ReceiverIdentifier, byte PdiVersionOfSender) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -139,7 +139,7 @@ public record RadioBlockCenterPdiVersionCheckCommand (string SenderIdentifier, s
 
 
 
-public record LevelCrossingPdiVersionCheckCommand (string SenderIdentifier, string ReceiverIdentifier, byte PdiVersionOfSender) {
+public record LevelCrossingPdiVersionCheckCommand (string SenderIdentifier, string ReceiverIdentifier, byte PdiVersionOfSender) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -166,7 +166,7 @@ public record LevelCrossingPdiVersionCheckCommand (string SenderIdentifier, stri
 
 
 
-public record CCPdiVersionCheckCommand (string SenderIdentifier, string ReceiverIdentifier, byte PdiVersionOfSender) {
+public record CCPdiVersionCheckCommand (string SenderIdentifier, string ReceiverIdentifier, byte PdiVersionOfSender) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -193,7 +193,7 @@ public record CCPdiVersionCheckCommand (string SenderIdentifier, string Receiver
 
 
 
-public record GenericIOPdiVersionCheckCommand (string SenderIdentifier, string ReceiverIdentifier, byte PdiVersionOfSender) {
+public record GenericIOPdiVersionCheckCommand (string SenderIdentifier, string ReceiverIdentifier, byte PdiVersionOfSender) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -220,7 +220,7 @@ public record GenericIOPdiVersionCheckCommand (string SenderIdentifier, string R
 
 
 
-public record ExternalLevelCrossingSystemPdiVersionCheckCommand (string SenderIdentifier, string ReceiverIdentifier, byte PdiVersionOfSender) {
+public record ExternalLevelCrossingSystemPdiVersionCheckCommand (string SenderIdentifier, string ReceiverIdentifier, byte PdiVersionOfSender) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -247,7 +247,7 @@ public record ExternalLevelCrossingSystemPdiVersionCheckCommand (string SenderId
 
 
 
-public record AdjacentInterlockingSystemInitialisationRequestCommand (string SenderIdentifier, string ReceiverIdentifier) {
+public record AdjacentInterlockingSystemInitialisationRequestCommand (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -273,7 +273,7 @@ public record AdjacentInterlockingSystemInitialisationRequestCommand (string Sen
 
 
 
-public record TrainDetectionSystemInitialisationRequestCommand (string SenderIdentifier, string ReceiverIdentifier) {
+public record TrainDetectionSystemInitialisationRequestCommand (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -299,7 +299,7 @@ public record TrainDetectionSystemInitialisationRequestCommand (string SenderIde
 
 
 
-public record LightSignalInitialisationRequestCommand (string SenderIdentifier, string ReceiverIdentifier) {
+public record LightSignalInitialisationRequestCommand (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -325,7 +325,7 @@ public record LightSignalInitialisationRequestCommand (string SenderIdentifier, 
 
 
 
-public record PointInitialisationRequestCommand (string SenderIdentifier, string ReceiverIdentifier) {
+public record PointInitialisationRequestCommand (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -351,7 +351,7 @@ public record PointInitialisationRequestCommand (string SenderIdentifier, string
 
 
 
-public record RadioBlockCenterInitialisationRequestCommand (string SenderIdentifier, string ReceiverIdentifier) {
+public record RadioBlockCenterInitialisationRequestCommand (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -377,7 +377,7 @@ public record RadioBlockCenterInitialisationRequestCommand (string SenderIdentif
 
 
 
-public record LevelCrossingInitialisationRequestCommand (string SenderIdentifier, string ReceiverIdentifier) {
+public record LevelCrossingInitialisationRequestCommand (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -403,7 +403,7 @@ public record LevelCrossingInitialisationRequestCommand (string SenderIdentifier
 
 
 
-public record CCInitialisationRequestCommand (string SenderIdentifier, string ReceiverIdentifier) {
+public record CCInitialisationRequestCommand (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -429,7 +429,7 @@ public record CCInitialisationRequestCommand (string SenderIdentifier, string Re
 
 
 
-public record GenericIOInitialisationRequestCommand (string SenderIdentifier, string ReceiverIdentifier) {
+public record GenericIOInitialisationRequestCommand (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -455,7 +455,7 @@ public record GenericIOInitialisationRequestCommand (string SenderIdentifier, st
 
 
 
-public record ExternalLevelCrossingSystemInitialisationRequestCommand (string SenderIdentifier, string ReceiverIdentifier) {
+public record ExternalLevelCrossingSystemInitialisationRequestCommand (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -481,7 +481,7 @@ public record ExternalLevelCrossingSystemInitialisationRequestCommand (string Se
 
 
 
-public record AdjacentInterlockingSystemClosePdiCommand (string SenderIdentifier, string ReceiverIdentifier, AdjacentInterlockingSystemClosePdiCommandCloseReason CloseReason) {
+public record AdjacentInterlockingSystemClosePdiCommand (string SenderIdentifier, string ReceiverIdentifier, AdjacentInterlockingSystemClosePdiCommandCloseReason CloseReason) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -516,7 +516,7 @@ public enum AdjacentInterlockingSystemClosePdiCommandCloseReason : byte {
 }
 
 
-public record TrainDetectionSystemClosePdiCommand (string SenderIdentifier, string ReceiverIdentifier, TrainDetectionSystemClosePdiCommandCloseReason CloseReason) {
+public record TrainDetectionSystemClosePdiCommand (string SenderIdentifier, string ReceiverIdentifier, TrainDetectionSystemClosePdiCommandCloseReason CloseReason) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -551,7 +551,7 @@ public enum TrainDetectionSystemClosePdiCommandCloseReason : byte {
 }
 
 
-public record LightSignalClosePdiCommand (string SenderIdentifier, string ReceiverIdentifier, LightSignalClosePdiCommandCloseReason CloseReason) {
+public record LightSignalClosePdiCommand (string SenderIdentifier, string ReceiverIdentifier, LightSignalClosePdiCommandCloseReason CloseReason) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -586,7 +586,7 @@ public enum LightSignalClosePdiCommandCloseReason : byte {
 }
 
 
-public record PointClosePdiCommand (string SenderIdentifier, string ReceiverIdentifier, PointClosePdiCommandCloseReason CloseReason) {
+public record PointClosePdiCommand (string SenderIdentifier, string ReceiverIdentifier, PointClosePdiCommandCloseReason CloseReason) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -621,7 +621,7 @@ public enum PointClosePdiCommandCloseReason : byte {
 }
 
 
-public record RadioBlockCenterClosePdiCommand (string SenderIdentifier, string ReceiverIdentifier, RadioBlockCenterClosePdiCommandCloseReason CloseReason) {
+public record RadioBlockCenterClosePdiCommand (string SenderIdentifier, string ReceiverIdentifier, RadioBlockCenterClosePdiCommandCloseReason CloseReason) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -656,7 +656,7 @@ public enum RadioBlockCenterClosePdiCommandCloseReason : byte {
 }
 
 
-public record LevelCrossingClosePdiCommand (string SenderIdentifier, string ReceiverIdentifier, LevelCrossingClosePdiCommandCloseReason CloseReason) {
+public record LevelCrossingClosePdiCommand (string SenderIdentifier, string ReceiverIdentifier, LevelCrossingClosePdiCommandCloseReason CloseReason) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -691,7 +691,7 @@ public enum LevelCrossingClosePdiCommandCloseReason : byte {
 }
 
 
-public record CCClosePdiCommand (string SenderIdentifier, string ReceiverIdentifier, CCClosePdiCommandCloseReason CloseReason) {
+public record CCClosePdiCommand (string SenderIdentifier, string ReceiverIdentifier, CCClosePdiCommandCloseReason CloseReason) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -726,7 +726,7 @@ public enum CCClosePdiCommandCloseReason : byte {
 }
 
 
-public record GenericIOClosePdiCommand (string SenderIdentifier, string ReceiverIdentifier, GenericIOClosePdiCommandCloseReason CloseReason) {
+public record GenericIOClosePdiCommand (string SenderIdentifier, string ReceiverIdentifier, GenericIOClosePdiCommandCloseReason CloseReason) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -761,7 +761,7 @@ public enum GenericIOClosePdiCommandCloseReason : byte {
 }
 
 
-public record ExternalLevelCrossingSystemClosePdiCommand (string SenderIdentifier, string ReceiverIdentifier, ExternalLevelCrossingSystemClosePdiCommandCloseReason CloseReason) {
+public record ExternalLevelCrossingSystemClosePdiCommand (string SenderIdentifier, string ReceiverIdentifier, ExternalLevelCrossingSystemClosePdiCommandCloseReason CloseReason) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -796,7 +796,7 @@ public enum ExternalLevelCrossingSystemClosePdiCommandCloseReason : byte {
 }
 
 
-public record AdjacentInterlockingSystemReleasePdiForMaintenanceCommand (string SenderIdentifier, string ReceiverIdentifier) {
+public record AdjacentInterlockingSystemReleasePdiForMaintenanceCommand (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -822,7 +822,7 @@ public record AdjacentInterlockingSystemReleasePdiForMaintenanceCommand (string 
 
 
 
-public record TrainDetectionSystemReleasePdiForMaintenanceCommand (string SenderIdentifier, string ReceiverIdentifier) {
+public record TrainDetectionSystemReleasePdiForMaintenanceCommand (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -848,7 +848,7 @@ public record TrainDetectionSystemReleasePdiForMaintenanceCommand (string Sender
 
 
 
-public record LightSignalReleasePdiForMaintenanceCommand (string SenderIdentifier, string ReceiverIdentifier) {
+public record LightSignalReleasePdiForMaintenanceCommand (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -874,7 +874,7 @@ public record LightSignalReleasePdiForMaintenanceCommand (string SenderIdentifie
 
 
 
-public record PointReleasePdiForMaintenanceCommand (string SenderIdentifier, string ReceiverIdentifier) {
+public record PointReleasePdiForMaintenanceCommand (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -900,7 +900,7 @@ public record PointReleasePdiForMaintenanceCommand (string SenderIdentifier, str
 
 
 
-public record RadioBlockCenterReleasePdiForMaintenanceCommand (string SenderIdentifier, string ReceiverIdentifier) {
+public record RadioBlockCenterReleasePdiForMaintenanceCommand (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -926,7 +926,7 @@ public record RadioBlockCenterReleasePdiForMaintenanceCommand (string SenderIden
 
 
 
-public record LevelCrossingReleasePdiForMaintenanceCommand (string SenderIdentifier, string ReceiverIdentifier) {
+public record LevelCrossingReleasePdiForMaintenanceCommand (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -952,7 +952,7 @@ public record LevelCrossingReleasePdiForMaintenanceCommand (string SenderIdentif
 
 
 
-public record CCReleasePdiForMaintenanceCommand (string SenderIdentifier, string ReceiverIdentifier) {
+public record CCReleasePdiForMaintenanceCommand (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -978,7 +978,7 @@ public record CCReleasePdiForMaintenanceCommand (string SenderIdentifier, string
 
 
 
-public record GenericIOReleasePdiForMaintenanceCommand (string SenderIdentifier, string ReceiverIdentifier) {
+public record GenericIOReleasePdiForMaintenanceCommand (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -1004,7 +1004,7 @@ public record GenericIOReleasePdiForMaintenanceCommand (string SenderIdentifier,
 
 
 
-public record ExternalLevelCrossingSystemReleasePdiForMaintenanceCommand (string SenderIdentifier, string ReceiverIdentifier) {
+public record ExternalLevelCrossingSystemReleasePdiForMaintenanceCommand (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -1031,7 +1031,7 @@ public record ExternalLevelCrossingSystemReleasePdiForMaintenanceCommand (string
 
 
 
-public record AdjacentInterlockingSystemStartInitialisationMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record AdjacentInterlockingSystemStartInitialisationMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -1057,7 +1057,7 @@ public record AdjacentInterlockingSystemStartInitialisationMessage (string Sende
 
 
 
-public record TrainDetectionSystemStartInitialisationMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record TrainDetectionSystemStartInitialisationMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -1083,7 +1083,7 @@ public record TrainDetectionSystemStartInitialisationMessage (string SenderIdent
 
 
 
-public record LightSignalStartInitialisationMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record LightSignalStartInitialisationMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -1109,7 +1109,7 @@ public record LightSignalStartInitialisationMessage (string SenderIdentifier, st
 
 
 
-public record PointStartInitialisationMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record PointStartInitialisationMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -1135,7 +1135,7 @@ public record PointStartInitialisationMessage (string SenderIdentifier, string R
 
 
 
-public record RadioBlockCenterStartInitialisationMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record RadioBlockCenterStartInitialisationMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -1161,7 +1161,7 @@ public record RadioBlockCenterStartInitialisationMessage (string SenderIdentifie
 
 
 
-public record LevelCrossingStartInitialisationMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record LevelCrossingStartInitialisationMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -1187,7 +1187,7 @@ public record LevelCrossingStartInitialisationMessage (string SenderIdentifier, 
 
 
 
-public record CCStartInitialisationMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record CCStartInitialisationMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -1213,7 +1213,7 @@ public record CCStartInitialisationMessage (string SenderIdentifier, string Rece
 
 
 
-public record GenericIOStartInitialisationMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record GenericIOStartInitialisationMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -1239,7 +1239,7 @@ public record GenericIOStartInitialisationMessage (string SenderIdentifier, stri
 
 
 
-public record ExternalLevelCrossingSystemStartInitialisationMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record ExternalLevelCrossingSystemStartInitialisationMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -1265,7 +1265,7 @@ public record ExternalLevelCrossingSystemStartInitialisationMessage (string Send
 
 
 
-public record AdjacentInterlockingSystemStatusReportCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record AdjacentInterlockingSystemStatusReportCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -1291,7 +1291,7 @@ public record AdjacentInterlockingSystemStatusReportCompletedMessage (string Sen
 
 
 
-public record TrainDetectionSystemStatusReportCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record TrainDetectionSystemStatusReportCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -1317,7 +1317,7 @@ public record TrainDetectionSystemStatusReportCompletedMessage (string SenderIde
 
 
 
-public record LightSignalStatusReportCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record LightSignalStatusReportCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -1343,7 +1343,7 @@ public record LightSignalStatusReportCompletedMessage (string SenderIdentifier, 
 
 
 
-public record PointStatusReportCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record PointStatusReportCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -1369,7 +1369,7 @@ public record PointStatusReportCompletedMessage (string SenderIdentifier, string
 
 
 
-public record RadioBlockCenterStatusReportCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record RadioBlockCenterStatusReportCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -1395,7 +1395,7 @@ public record RadioBlockCenterStatusReportCompletedMessage (string SenderIdentif
 
 
 
-public record LevelCrossingStatusReportCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record LevelCrossingStatusReportCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -1421,7 +1421,7 @@ public record LevelCrossingStatusReportCompletedMessage (string SenderIdentifier
 
 
 
-public record CCStatusReportCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record CCStatusReportCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -1447,7 +1447,7 @@ public record CCStatusReportCompletedMessage (string SenderIdentifier, string Re
 
 
 
-public record GenericIOStatusReportCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record GenericIOStatusReportCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -1473,7 +1473,7 @@ public record GenericIOStatusReportCompletedMessage (string SenderIdentifier, st
 
 
 
-public record ExternalLevelCrossingSystemStatusReportCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record ExternalLevelCrossingSystemStatusReportCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -1499,7 +1499,7 @@ public record ExternalLevelCrossingSystemStatusReportCompletedMessage (string Se
 
 
 
-public record AdjacentInterlockingSystemInitialisationCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record AdjacentInterlockingSystemInitialisationCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -1525,7 +1525,7 @@ public record AdjacentInterlockingSystemInitialisationCompletedMessage (string S
 
 
 
-public record TrainDetectionSystemInitialisationCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record TrainDetectionSystemInitialisationCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -1551,7 +1551,7 @@ public record TrainDetectionSystemInitialisationCompletedMessage (string SenderI
 
 
 
-public record LightSignalInitialisationCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record LightSignalInitialisationCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -1577,7 +1577,7 @@ public record LightSignalInitialisationCompletedMessage (string SenderIdentifier
 
 
 
-public record PointInitialisationCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record PointInitialisationCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -1603,7 +1603,7 @@ public record PointInitialisationCompletedMessage (string SenderIdentifier, stri
 
 
 
-public record RadioBlockCenterInitialisationCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record RadioBlockCenterInitialisationCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -1629,7 +1629,7 @@ public record RadioBlockCenterInitialisationCompletedMessage (string SenderIdent
 
 
 
-public record LevelCrossingInitialisationCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record LevelCrossingInitialisationCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -1655,7 +1655,7 @@ public record LevelCrossingInitialisationCompletedMessage (string SenderIdentifi
 
 
 
-public record CCInitialisationCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record CCInitialisationCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -1681,7 +1681,7 @@ public record CCInitialisationCompletedMessage (string SenderIdentifier, string 
 
 
 
-public record GenericIOInitialisationCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record GenericIOInitialisationCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -1707,7 +1707,7 @@ public record GenericIOInitialisationCompletedMessage (string SenderIdentifier, 
 
 
 
-public record ExternalLevelCrossingSystemInitialisationCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record ExternalLevelCrossingSystemInitialisationCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -1733,7 +1733,7 @@ public record ExternalLevelCrossingSystemInitialisationCompletedMessage (string 
 
 
 
-public record AdjacentInterlockingSystemPdiAvailableMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record AdjacentInterlockingSystemPdiAvailableMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -1759,7 +1759,7 @@ public record AdjacentInterlockingSystemPdiAvailableMessage (string SenderIdenti
 
 
 
-public record TrainDetectionSystemPdiAvailableMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record TrainDetectionSystemPdiAvailableMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -1785,7 +1785,7 @@ public record TrainDetectionSystemPdiAvailableMessage (string SenderIdentifier, 
 
 
 
-public record LightSignalPdiAvailableMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record LightSignalPdiAvailableMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -1811,7 +1811,7 @@ public record LightSignalPdiAvailableMessage (string SenderIdentifier, string Re
 
 
 
-public record PointPdiAvailableMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record PointPdiAvailableMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -1837,7 +1837,7 @@ public record PointPdiAvailableMessage (string SenderIdentifier, string Receiver
 
 
 
-public record RadioBlockCenterPdiAvailableMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record RadioBlockCenterPdiAvailableMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -1863,7 +1863,7 @@ public record RadioBlockCenterPdiAvailableMessage (string SenderIdentifier, stri
 
 
 
-public record LevelCrossingPdiAvailableMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record LevelCrossingPdiAvailableMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -1889,7 +1889,7 @@ public record LevelCrossingPdiAvailableMessage (string SenderIdentifier, string 
 
 
 
-public record CCPdiAvailableMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record CCPdiAvailableMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -1915,7 +1915,7 @@ public record CCPdiAvailableMessage (string SenderIdentifier, string ReceiverIde
 
 
 
-public record GenericIOPdiAvailableMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record GenericIOPdiAvailableMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -1941,7 +1941,7 @@ public record GenericIOPdiAvailableMessage (string SenderIdentifier, string Rece
 
 
 
-public record ExternalLevelCrossingSystemPdiAvailableMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record ExternalLevelCrossingSystemPdiAvailableMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -1967,7 +1967,7 @@ public record ExternalLevelCrossingSystemPdiAvailableMessage (string SenderIdent
 
 
 
-public record AdjacentInterlockingSystemPdiNotAvailableMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record AdjacentInterlockingSystemPdiNotAvailableMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -1993,7 +1993,7 @@ public record AdjacentInterlockingSystemPdiNotAvailableMessage (string SenderIde
 
 
 
-public record TrainDetectionSystemPdiNotAvailableMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record TrainDetectionSystemPdiNotAvailableMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -2019,7 +2019,7 @@ public record TrainDetectionSystemPdiNotAvailableMessage (string SenderIdentifie
 
 
 
-public record LightSignalPdiNotAvailableMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record LightSignalPdiNotAvailableMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -2045,7 +2045,7 @@ public record LightSignalPdiNotAvailableMessage (string SenderIdentifier, string
 
 
 
-public record PointPdiNotAvailableMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record PointPdiNotAvailableMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -2071,7 +2071,7 @@ public record PointPdiNotAvailableMessage (string SenderIdentifier, string Recei
 
 
 
-public record RadioBlockCenterPdiNotAvailableMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record RadioBlockCenterPdiNotAvailableMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -2097,7 +2097,7 @@ public record RadioBlockCenterPdiNotAvailableMessage (string SenderIdentifier, s
 
 
 
-public record LevelCrossingPdiNotAvailableMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record LevelCrossingPdiNotAvailableMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -2123,7 +2123,7 @@ public record LevelCrossingPdiNotAvailableMessage (string SenderIdentifier, stri
 
 
 
-public record CCPdiNotAvailableMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record CCPdiNotAvailableMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -2149,7 +2149,7 @@ public record CCPdiNotAvailableMessage (string SenderIdentifier, string Receiver
 
 
 
-public record GenericIOPdiNotAvailableMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record GenericIOPdiNotAvailableMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -2175,7 +2175,7 @@ public record GenericIOPdiNotAvailableMessage (string SenderIdentifier, string R
 
 
 
-public record ExternalLevelCrossingSystemPdiNotAvailableMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record ExternalLevelCrossingSystemPdiNotAvailableMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -2201,7 +2201,7 @@ public record ExternalLevelCrossingSystemPdiNotAvailableMessage (string SenderId
 
 
 
-public record AdjacentInterlockingSystemResetPdiMessage (string SenderIdentifier, string ReceiverIdentifier, AdjacentInterlockingSystemResetPdiMessageResetReason ResetReason) {
+public record AdjacentInterlockingSystemResetPdiMessage (string SenderIdentifier, string ReceiverIdentifier, AdjacentInterlockingSystemResetPdiMessageResetReason ResetReason) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -2232,7 +2232,7 @@ public enum AdjacentInterlockingSystemResetPdiMessageResetReason : byte {
 }
 
 
-public record TrainDetectionSystemResetPdiMessage (string SenderIdentifier, string ReceiverIdentifier, TrainDetectionSystemResetPdiMessageResetReason ResetReason) {
+public record TrainDetectionSystemResetPdiMessage (string SenderIdentifier, string ReceiverIdentifier, TrainDetectionSystemResetPdiMessageResetReason ResetReason) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -2263,7 +2263,7 @@ public enum TrainDetectionSystemResetPdiMessageResetReason : byte {
 }
 
 
-public record LightSignalResetPdiMessage (string SenderIdentifier, string ReceiverIdentifier, LightSignalResetPdiMessageResetReason ResetReason) {
+public record LightSignalResetPdiMessage (string SenderIdentifier, string ReceiverIdentifier, LightSignalResetPdiMessageResetReason ResetReason) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -2294,7 +2294,7 @@ public enum LightSignalResetPdiMessageResetReason : byte {
 }
 
 
-public record PointResetPdiMessage (string SenderIdentifier, string ReceiverIdentifier, PointResetPdiMessageResetReason ResetReason) {
+public record PointResetPdiMessage (string SenderIdentifier, string ReceiverIdentifier, PointResetPdiMessageResetReason ResetReason) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -2325,7 +2325,7 @@ public enum PointResetPdiMessageResetReason : byte {
 }
 
 
-public record RadioBlockCenterResetPdiMessage (string SenderIdentifier, string ReceiverIdentifier, RadioBlockCenterResetPdiMessageResetReason ResetReason) {
+public record RadioBlockCenterResetPdiMessage (string SenderIdentifier, string ReceiverIdentifier, RadioBlockCenterResetPdiMessageResetReason ResetReason) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -2356,7 +2356,7 @@ public enum RadioBlockCenterResetPdiMessageResetReason : byte {
 }
 
 
-public record LevelCrossingResetPdiMessage (string SenderIdentifier, string ReceiverIdentifier, LevelCrossingResetPdiMessageResetReason ResetReason) {
+public record LevelCrossingResetPdiMessage (string SenderIdentifier, string ReceiverIdentifier, LevelCrossingResetPdiMessageResetReason ResetReason) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -2387,7 +2387,7 @@ public enum LevelCrossingResetPdiMessageResetReason : byte {
 }
 
 
-public record CCResetPdiMessage (string SenderIdentifier, string ReceiverIdentifier, CCResetPdiMessageResetReason ResetReason) {
+public record CCResetPdiMessage (string SenderIdentifier, string ReceiverIdentifier, CCResetPdiMessageResetReason ResetReason) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -2418,7 +2418,7 @@ public enum CCResetPdiMessageResetReason : byte {
 }
 
 
-public record GenericIOResetPdiMessage (string SenderIdentifier, string ReceiverIdentifier, GenericIOResetPdiMessageResetReason ResetReason) {
+public record GenericIOResetPdiMessage (string SenderIdentifier, string ReceiverIdentifier, GenericIOResetPdiMessageResetReason ResetReason) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -2449,7 +2449,7 @@ public enum GenericIOResetPdiMessageResetReason : byte {
 }
 
 
-public record ExternalLevelCrossingSystemResetPdiMessage (string SenderIdentifier, string ReceiverIdentifier, ExternalLevelCrossingSystemResetPdiMessageResetReason ResetReason) {
+public record ExternalLevelCrossingSystemResetPdiMessage (string SenderIdentifier, string ReceiverIdentifier, ExternalLevelCrossingSystemResetPdiMessageResetReason ResetReason) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;

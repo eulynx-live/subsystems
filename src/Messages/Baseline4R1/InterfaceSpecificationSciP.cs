@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace EulynxLive.Messages.Baseline4R1;
 
-public record PointMovePointCommand (string SenderIdentifier, string ReceiverIdentifier, PointMovePointCommandCommandedPointPosition CommandedPointPosition) {
+public record PointMovePointCommand (string SenderIdentifier, string ReceiverIdentifier, PointMovePointCommandCommandedPointPosition CommandedPointPosition) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -35,7 +35,7 @@ public enum PointMovePointCommandCommandedPointPosition : byte {
 
 
 
-public record PointPointPositionMessage (string SenderIdentifier, string ReceiverIdentifier, PointPointPositionMessageReportedPointPosition ReportedPointPosition, PointPointPositionMessageReportedDegradedPointPosition ReportedDegradedPointPosition) {
+public record PointPointPositionMessage (string SenderIdentifier, string ReceiverIdentifier, PointPointPositionMessageReportedPointPosition ReportedPointPosition, PointPointPositionMessageReportedDegradedPointPosition ReportedDegradedPointPosition) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -77,7 +77,7 @@ public enum PointPointPositionMessageReportedDegradedPointPosition : byte {
 }
 
 
-public record PointTimeoutMessage (string SenderIdentifier, string ReceiverIdentifier) {
+public record PointTimeoutMessage (string SenderIdentifier, string ReceiverIdentifier) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -103,7 +103,7 @@ public record PointTimeoutMessage (string SenderIdentifier, string ReceiverIdent
 
 
 
-public record PointAbilityToMovePointMessage (string SenderIdentifier, string ReceiverIdentifier, PointAbilityToMovePointMessageReportedAbilityToMovePointStatus ReportedAbilityToMovePointStatus) {
+public record PointAbilityToMovePointMessage (string SenderIdentifier, string ReceiverIdentifier, PointAbilityToMovePointMessageReportedAbilityToMovePointStatus ReportedAbilityToMovePointStatus) : IByteSerializable {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
