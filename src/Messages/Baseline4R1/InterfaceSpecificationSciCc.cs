@@ -4,22 +4,22 @@ using System.Linq;
 
 namespace EulynxLive.Messages.Baseline4R1;
 
-public record AbortCommandCommand (string SenderIdentifier, string ReceiverIdentifier, byte ConfirmationTan) {
+public record CCAbortCommandCommand (string SenderIdentifier, string ReceiverIdentifier, byte ConfirmationTan) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
     private const int ConfirmationTanOffset = 43;
 
-    public AbortCommandCommand FromBytes(byte[] message) {
+    public static CCAbortCommandCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
-        var SeceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
+        var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var ConfirmationTan = (byte)message[ConfirmationTanOffset];
-        return new AbortCommandCommand(SenderIdentifier, ReceiverIdentifier, ConfirmationTan);
+        return new CCAbortCommandCommand(SenderIdentifier, ReceiverIdentifier, ConfirmationTan);
     }
 
-    public byte[] ToByteArray(byte protocolType) {
+    public byte[] ToByteArray() {
         var result = new byte[45];
-        result[0] = protocolType;
+        result[0] = (byte)ProtocolType.CC;
         BitConverter.GetBytes(0x0065).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
         Encoding.Latin1.GetBytes(SenderIdentifier.PadRight(20, '_')).CopyTo(result, SenderIdentifierOffset);
         Encoding.Latin1.GetBytes(ReceiverIdentifier.PadRight(20, '_')).CopyTo(result, ReceiverIdentifierOffset);
@@ -31,23 +31,23 @@ public record AbortCommandCommand (string SenderIdentifier, string ReceiverIdent
 
 
 
-public record ReleaseForNormalOperationCommand (string SenderIdentifier, string ReceiverIdentifier, byte Tan) {
+public record CCReleaseForNormalOperationCommand (string SenderIdentifier, string ReceiverIdentifier, byte Tan) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
     private const int TanOffset = 43;
     private const int InformationTypeOffset = 45;
 
-    public ReleaseForNormalOperationCommand FromBytes(byte[] message) {
+    public static CCReleaseForNormalOperationCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
-        var SeceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
+        var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var Tan = (byte)message[TanOffset];
-        return new ReleaseForNormalOperationCommand(SenderIdentifier, ReceiverIdentifier, Tan);
+        return new CCReleaseForNormalOperationCommand(SenderIdentifier, ReceiverIdentifier, Tan);
     }
 
-    public byte[] ToByteArray(byte protocolType) {
+    public byte[] ToByteArray() {
         var result = new byte[46];
-        result[0] = protocolType;
+        result[0] = (byte)ProtocolType.CC;
         BitConverter.GetBytes(0x0050).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
         Encoding.Latin1.GetBytes(SenderIdentifier.PadRight(20, '_')).CopyTo(result, SenderIdentifierOffset);
         Encoding.Latin1.GetBytes(ReceiverIdentifier.PadRight(20, '_')).CopyTo(result, ReceiverIdentifierOffset);
@@ -60,22 +60,22 @@ public record ReleaseForNormalOperationCommand (string SenderIdentifier, string 
 
 
 
-public record CommandAcceptedMessage (string SenderIdentifier, string ReceiverIdentifier, byte ConfirmationTan) {
+public record CCCommandAcceptedMessage (string SenderIdentifier, string ReceiverIdentifier, byte ConfirmationTan) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
     private const int ConfirmationTanOffset = 43;
 
-    public CommandAcceptedMessage FromBytes(byte[] message) {
+    public static CCCommandAcceptedMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
-        var SeceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
+        var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var ConfirmationTan = (byte)message[ConfirmationTanOffset];
-        return new CommandAcceptedMessage(SenderIdentifier, ReceiverIdentifier, ConfirmationTan);
+        return new CCCommandAcceptedMessage(SenderIdentifier, ReceiverIdentifier, ConfirmationTan);
     }
 
-    public byte[] ToByteArray(byte protocolType) {
+    public byte[] ToByteArray() {
         var result = new byte[45];
-        result[0] = protocolType;
+        result[0] = (byte)ProtocolType.CC;
         BitConverter.GetBytes(0x0044).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
         Encoding.Latin1.GetBytes(SenderIdentifier.PadRight(20, '_')).CopyTo(result, SenderIdentifierOffset);
         Encoding.Latin1.GetBytes(ReceiverIdentifier.PadRight(20, '_')).CopyTo(result, ReceiverIdentifierOffset);

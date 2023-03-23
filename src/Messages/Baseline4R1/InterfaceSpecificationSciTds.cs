@@ -4,22 +4,22 @@ using System.Linq;
 
 namespace EulynxLive.Messages.Baseline4R1;
 
-public record FcCommand (string SenderIdentifier, string ReceiverIdentifier, FcCommandModeOfFc ModeOfFc) {
+public record TrainDetectionSystemFcCommand (string SenderIdentifier, string ReceiverIdentifier, TrainDetectionSystemFcCommandModeOfFc ModeOfFc) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
     private const int ModeOfFcOffset = 43;
 
-    public FcCommand FromBytes(byte[] message) {
+    public static TrainDetectionSystemFcCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
-        var SeceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
-        var ModeOfFc = (FcCommandModeOfFc)message[ModeOfFcOffset];
-        return new FcCommand(SenderIdentifier, ReceiverIdentifier, ModeOfFc);
+        var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
+        var ModeOfFc = (TrainDetectionSystemFcCommandModeOfFc)message[ModeOfFcOffset];
+        return new TrainDetectionSystemFcCommand(SenderIdentifier, ReceiverIdentifier, ModeOfFc);
     }
 
-    public byte[] ToByteArray(byte protocolType) {
+    public byte[] ToByteArray() {
         var result = new byte[44];
-        result[0] = protocolType;
+        result[0] = (byte)ProtocolType.TrainDetectionSystem;
         BitConverter.GetBytes(0x0001).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
         Encoding.Latin1.GetBytes(SenderIdentifier.PadRight(20, '_')).CopyTo(result, SenderIdentifierOffset);
         Encoding.Latin1.GetBytes(ReceiverIdentifier.PadRight(20, '_')).CopyTo(result, ReceiverIdentifierOffset);
@@ -28,7 +28,7 @@ public record FcCommand (string SenderIdentifier, string ReceiverIdentifier, FcC
     }
 }
 
-public enum FcCommandModeOfFc : byte {
+public enum TrainDetectionSystemFcCommandModeOfFc : byte {
     FcU = 0x01,
     FcC = 0x02,
     FcPA = 0x03,
@@ -37,21 +37,21 @@ public enum FcCommandModeOfFc : byte {
 }
 
 
-public record UpdateFillingLevelCommand (string SenderIdentifier, string ReceiverIdentifier) {
+public record TrainDetectionSystemUpdateFillingLevelCommand (string SenderIdentifier, string ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public UpdateFillingLevelCommand FromBytes(byte[] message) {
+    public static TrainDetectionSystemUpdateFillingLevelCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
-        var SeceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
+        var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
-        return new UpdateFillingLevelCommand(SenderIdentifier, ReceiverIdentifier);
+        return new TrainDetectionSystemUpdateFillingLevelCommand(SenderIdentifier, ReceiverIdentifier);
     }
 
-    public byte[] ToByteArray(byte protocolType) {
+    public byte[] ToByteArray() {
         var result = new byte[43];
-        result[0] = protocolType;
+        result[0] = (byte)ProtocolType.TrainDetectionSystem;
         BitConverter.GetBytes(0x0002).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
         Encoding.Latin1.GetBytes(SenderIdentifier.PadRight(20, '_')).CopyTo(result, SenderIdentifierOffset);
         Encoding.Latin1.GetBytes(ReceiverIdentifier.PadRight(20, '_')).CopyTo(result, ReceiverIdentifierOffset);
@@ -63,21 +63,21 @@ public record UpdateFillingLevelCommand (string SenderIdentifier, string Receive
 
 
 
-public record CancelCommand (string SenderIdentifier, string ReceiverIdentifier) {
+public record TrainDetectionSystemCancelCommand (string SenderIdentifier, string ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public CancelCommand FromBytes(byte[] message) {
+    public static TrainDetectionSystemCancelCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
-        var SeceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
+        var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
-        return new CancelCommand(SenderIdentifier, ReceiverIdentifier);
+        return new TrainDetectionSystemCancelCommand(SenderIdentifier, ReceiverIdentifier);
     }
 
-    public byte[] ToByteArray(byte protocolType) {
+    public byte[] ToByteArray() {
         var result = new byte[43];
-        result[0] = protocolType;
+        result[0] = (byte)ProtocolType.TrainDetectionSystem;
         BitConverter.GetBytes(0x0008).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
         Encoding.Latin1.GetBytes(SenderIdentifier.PadRight(20, '_')).CopyTo(result, SenderIdentifierOffset);
         Encoding.Latin1.GetBytes(ReceiverIdentifier.PadRight(20, '_')).CopyTo(result, ReceiverIdentifierOffset);
@@ -89,21 +89,21 @@ public record CancelCommand (string SenderIdentifier, string ReceiverIdentifier)
 
 
 
-public record DisableTheRestrictionToForceSectionStatusToClearCommand (string SenderIdentifier, string ReceiverIdentifier) {
+public record TrainDetectionSystemDisableTheRestrictionToForceSectionStatusToClearCommand (string SenderIdentifier, string ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public DisableTheRestrictionToForceSectionStatusToClearCommand FromBytes(byte[] message) {
+    public static TrainDetectionSystemDisableTheRestrictionToForceSectionStatusToClearCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
-        var SeceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
+        var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
-        return new DisableTheRestrictionToForceSectionStatusToClearCommand(SenderIdentifier, ReceiverIdentifier);
+        return new TrainDetectionSystemDisableTheRestrictionToForceSectionStatusToClearCommand(SenderIdentifier, ReceiverIdentifier);
     }
 
-    public byte[] ToByteArray(byte protocolType) {
+    public byte[] ToByteArray() {
         var result = new byte[43];
-        result[0] = protocolType;
+        result[0] = (byte)ProtocolType.TrainDetectionSystem;
         BitConverter.GetBytes(0x0003).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
         Encoding.Latin1.GetBytes(SenderIdentifier.PadRight(20, '_')).CopyTo(result, SenderIdentifierOffset);
         Encoding.Latin1.GetBytes(ReceiverIdentifier.PadRight(20, '_')).CopyTo(result, ReceiverIdentifierOffset);
@@ -116,22 +116,22 @@ public record DisableTheRestrictionToForceSectionStatusToClearCommand (string Se
 
 
 
-public record CommandRejectedMessage (string SenderIdentifier, string ReceiverIdentifier, CommandRejectedMessageReasonForRejection ReasonForRejection) {
+public record TrainDetectionSystemCommandRejectedMessage (string SenderIdentifier, string ReceiverIdentifier, TrainDetectionSystemCommandRejectedMessageReasonForRejection ReasonForRejection) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
     private const int ReasonForRejectionOffset = 43;
 
-    public CommandRejectedMessage FromBytes(byte[] message) {
+    public static TrainDetectionSystemCommandRejectedMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
-        var SeceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
-        var ReasonForRejection = (CommandRejectedMessageReasonForRejection)message[ReasonForRejectionOffset];
-        return new CommandRejectedMessage(SenderIdentifier, ReceiverIdentifier, ReasonForRejection);
+        var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
+        var ReasonForRejection = (TrainDetectionSystemCommandRejectedMessageReasonForRejection)message[ReasonForRejectionOffset];
+        return new TrainDetectionSystemCommandRejectedMessage(SenderIdentifier, ReceiverIdentifier, ReasonForRejection);
     }
 
-    public byte[] ToByteArray(byte protocolType) {
+    public byte[] ToByteArray() {
         var result = new byte[44];
-        result[0] = protocolType;
+        result[0] = (byte)ProtocolType.TrainDetectionSystem;
         BitConverter.GetBytes(0x0006).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
         Encoding.Latin1.GetBytes(SenderIdentifier.PadRight(20, '_')).CopyTo(result, SenderIdentifierOffset);
         Encoding.Latin1.GetBytes(ReceiverIdentifier.PadRight(20, '_')).CopyTo(result, ReceiverIdentifierOffset);
@@ -140,28 +140,28 @@ public record CommandRejectedMessage (string SenderIdentifier, string ReceiverId
     }
 }
 
-public enum CommandRejectedMessageReasonForRejection : byte {
+public enum TrainDetectionSystemCommandRejectedMessageReasonForRejection : byte {
     OperationalRejected = 0x01,
     TechnicalRejected = 0x02
 }
 
 
-public record TvpsFcPFailedMessage (string SenderIdentifier, string ReceiverIdentifier, TvpsFcPFailedMessageReasonForFailure ReasonForFailure) {
+public record TrainDetectionSystemTvpsFcPFailedMessage (string SenderIdentifier, string ReceiverIdentifier, TrainDetectionSystemTvpsFcPFailedMessageReasonForFailure ReasonForFailure) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
     private const int ReasonForFailureOffset = 43;
 
-    public TvpsFcPFailedMessage FromBytes(byte[] message) {
+    public static TrainDetectionSystemTvpsFcPFailedMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
-        var SeceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
-        var ReasonForFailure = (TvpsFcPFailedMessageReasonForFailure)message[ReasonForFailureOffset];
-        return new TvpsFcPFailedMessage(SenderIdentifier, ReceiverIdentifier, ReasonForFailure);
+        var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
+        var ReasonForFailure = (TrainDetectionSystemTvpsFcPFailedMessageReasonForFailure)message[ReasonForFailureOffset];
+        return new TrainDetectionSystemTvpsFcPFailedMessage(SenderIdentifier, ReceiverIdentifier, ReasonForFailure);
     }
 
-    public byte[] ToByteArray(byte protocolType) {
+    public byte[] ToByteArray() {
         var result = new byte[44];
-        result[0] = protocolType;
+        result[0] = (byte)ProtocolType.TrainDetectionSystem;
         BitConverter.GetBytes(0x0010).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
         Encoding.Latin1.GetBytes(SenderIdentifier.PadRight(20, '_')).CopyTo(result, SenderIdentifierOffset);
         Encoding.Latin1.GetBytes(ReceiverIdentifier.PadRight(20, '_')).CopyTo(result, ReceiverIdentifierOffset);
@@ -170,7 +170,7 @@ public record TvpsFcPFailedMessage (string SenderIdentifier, string ReceiverIden
     }
 }
 
-public enum TvpsFcPFailedMessageReasonForFailure : byte {
+public enum TrainDetectionSystemTvpsFcPFailedMessageReasonForFailure : byte {
     IncorrectCountOfTheSweepingTrain = 0x01,
     TimeoutConTmaxResponseTimeFcPHadExpired = 0x02,
     BoundingDetectionPointIsConfiguredAsNotPermittedForFcP = 0x03,
@@ -180,22 +180,22 @@ public enum TvpsFcPFailedMessageReasonForFailure : byte {
 }
 
 
-public record TvpsFcPAFailedMessage (string SenderIdentifier, string ReceiverIdentifier, TvpsFcPAFailedMessageReasonForFailure ReasonForFailure) {
+public record TrainDetectionSystemTvpsFcPAFailedMessage (string SenderIdentifier, string ReceiverIdentifier, TrainDetectionSystemTvpsFcPAFailedMessageReasonForFailure ReasonForFailure) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
     private const int ReasonForFailureOffset = 43;
 
-    public TvpsFcPAFailedMessage FromBytes(byte[] message) {
+    public static TrainDetectionSystemTvpsFcPAFailedMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
-        var SeceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
-        var ReasonForFailure = (TvpsFcPAFailedMessageReasonForFailure)message[ReasonForFailureOffset];
-        return new TvpsFcPAFailedMessage(SenderIdentifier, ReceiverIdentifier, ReasonForFailure);
+        var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
+        var ReasonForFailure = (TrainDetectionSystemTvpsFcPAFailedMessageReasonForFailure)message[ReasonForFailureOffset];
+        return new TrainDetectionSystemTvpsFcPAFailedMessage(SenderIdentifier, ReceiverIdentifier, ReasonForFailure);
     }
 
-    public byte[] ToByteArray(byte protocolType) {
+    public byte[] ToByteArray() {
         var result = new byte[44];
-        result[0] = protocolType;
+        result[0] = (byte)ProtocolType.TrainDetectionSystem;
         BitConverter.GetBytes(0x0011).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
         Encoding.Latin1.GetBytes(SenderIdentifier.PadRight(20, '_')).CopyTo(result, SenderIdentifierOffset);
         Encoding.Latin1.GetBytes(ReceiverIdentifier.PadRight(20, '_')).CopyTo(result, ReceiverIdentifierOffset);
@@ -204,7 +204,7 @@ public record TvpsFcPAFailedMessage (string SenderIdentifier, string ReceiverIde
     }
 }
 
-public enum TvpsFcPAFailedMessageReasonForFailure : byte {
+public enum TrainDetectionSystemTvpsFcPAFailedMessageReasonForFailure : byte {
     IncorrectCountOfTheSweepingTrain = 0x01,
     TimeoutConTmaxResponseTimeFcPAHadExpired = 0x02,
     BoundingDetectionPointIsConfiguredAsNotPermittedForFcPA = 0x03,
@@ -214,24 +214,24 @@ public enum TvpsFcPAFailedMessageReasonForFailure : byte {
 }
 
 
-public record TdpStatusMessage (string SenderIdentifier, string ReceiverIdentifier, TdpStatusMessageStateOfPassing StateOfPassing, TdpStatusMessageDirectionOfPassing DirectionOfPassing) {
+public record TrainDetectionSystemTdpStatusMessage (string SenderIdentifier, string ReceiverIdentifier, TrainDetectionSystemTdpStatusMessageStateOfPassing StateOfPassing, TrainDetectionSystemTdpStatusMessageDirectionOfPassing DirectionOfPassing) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
     private const int StateOfPassingOffset = 43;
     private const int DirectionOfPassingOffset = 44;
 
-    public TdpStatusMessage FromBytes(byte[] message) {
+    public static TrainDetectionSystemTdpStatusMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
-        var SeceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
-        var StateOfPassing = (TdpStatusMessageStateOfPassing)message[StateOfPassingOffset];
-        var DirectionOfPassing = (TdpStatusMessageDirectionOfPassing)message[DirectionOfPassingOffset];
-        return new TdpStatusMessage(SenderIdentifier, ReceiverIdentifier, StateOfPassing, DirectionOfPassing);
+        var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
+        var StateOfPassing = (TrainDetectionSystemTdpStatusMessageStateOfPassing)message[StateOfPassingOffset];
+        var DirectionOfPassing = (TrainDetectionSystemTdpStatusMessageDirectionOfPassing)message[DirectionOfPassingOffset];
+        return new TrainDetectionSystemTdpStatusMessage(SenderIdentifier, ReceiverIdentifier, StateOfPassing, DirectionOfPassing);
     }
 
-    public byte[] ToByteArray(byte protocolType) {
+    public byte[] ToByteArray() {
         var result = new byte[45];
-        result[0] = protocolType;
+        result[0] = (byte)ProtocolType.TrainDetectionSystem;
         BitConverter.GetBytes(0x000B).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
         Encoding.Latin1.GetBytes(SenderIdentifier.PadRight(20, '_')).CopyTo(result, SenderIdentifierOffset);
         Encoding.Latin1.GetBytes(ReceiverIdentifier.PadRight(20, '_')).CopyTo(result, ReceiverIdentifierOffset);
@@ -241,13 +241,13 @@ public record TdpStatusMessage (string SenderIdentifier, string ReceiverIdentifi
     }
 }
 
-public enum TdpStatusMessageStateOfPassing : byte {
+public enum TrainDetectionSystemTdpStatusMessageStateOfPassing : byte {
     NotPassed = 0x01,
     Passed = 0x02,
     Disturbed = 0x03
 }
 
-public enum TdpStatusMessageDirectionOfPassing : byte {
+public enum TrainDetectionSystemTdpStatusMessageDirectionOfPassing : byte {
     ReferenceDirection = 0x01,
     AgainstReferenceDirection = 0x02,
     WithoutIndicatedDirection = 0x03

@@ -4,21 +4,21 @@ using System.Linq;
 
 namespace EulynxLive.Messages.Baseline4R1;
 
-public record DeactivationCommand (string SenderIdentifier, string ReceiverIdentifier) {
+public record LevelCrossingDeactivationCommand (string SenderIdentifier, string ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
 
-    public DeactivationCommand FromBytes(byte[] message) {
+    public static LevelCrossingDeactivationCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
-        var SeceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
+        var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         
-        return new DeactivationCommand(SenderIdentifier, ReceiverIdentifier);
+        return new LevelCrossingDeactivationCommand(SenderIdentifier, ReceiverIdentifier);
     }
 
-    public byte[] ToByteArray(byte protocolType) {
+    public byte[] ToByteArray() {
         var result = new byte[43];
-        result[0] = protocolType;
+        result[0] = (byte)ProtocolType.LevelCrossing;
         BitConverter.GetBytes(0x0002).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
         Encoding.Latin1.GetBytes(SenderIdentifier.PadRight(20, '_')).CopyTo(result, SenderIdentifierOffset);
         Encoding.Latin1.GetBytes(ReceiverIdentifier.PadRight(20, '_')).CopyTo(result, ReceiverIdentifierOffset);
