@@ -12,4 +12,4 @@ WORKDIR /app
 
 COPY src/LightSignal/entrypoint.sh .
 
-# ENTRYPOINT ["./entrypoint.sh"]
+ENTRYPOINT ["./entrypoint.sh"]

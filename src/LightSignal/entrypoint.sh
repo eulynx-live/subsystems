@@ -23,7 +23,7 @@ if [[ -z "${REMOTE_ENDPOINT}" ]]; then
 fi
 
 # Find all sig to rsm references
-refs=$( xq -x "//generic:ownsTrackAsset[@xsi:type = 'sig:Signal']/sig:refersToRsmSignal/@ref"  /config/Interlocking.exml)
+refs=$( xq -x "//generic:ownsTrackAsset[@xsi:type = 'syslab:RastaSignal']/sig:refersToRsmSignal/@ref"  /config/Interlocking.exml)
 # Find all types
 types=$( xq -x "//sig:hasProperty/db:isOfSignalTypeType" /config/Interlocking.exml )
 
