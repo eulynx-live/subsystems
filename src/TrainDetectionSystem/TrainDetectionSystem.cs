@@ -23,7 +23,6 @@ namespace EulynxLive.TrainDetectionSystem
         private readonly ILogger<TrainDetectionSystem> _logger;
         private readonly IConfiguration _configuration;
         private readonly List<WebSocket> _webSockets;
-        private string _localIdTvps;
         private string _localIdTps;
         private string[] _localIdTvpses;
         private string _localRastaId;
@@ -43,11 +42,11 @@ namespace EulynxLive.TrainDetectionSystem
             _trackSectionStatuses = null;
 
             // Command line argument parsing.
-            _localIdTvps = _configuration["local-id-tvps"];
-            if (_localIdTvps == null) {
+            var localIdTvps = _configuration["local-id-tvps"];
+            if (localIdTvps == null) {
                 throw new Exception("Missing --local-id-tvps command line parameter.");
             }
-            _localIdTvpses = _localIdTvps.Split(",");
+            _localIdTvpses = localIdTvps.Split(",");
 
             _localIdTps = _configuration["local-id-tps"];
             if (_localIdTps == null) {
