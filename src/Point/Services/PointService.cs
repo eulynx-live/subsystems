@@ -3,6 +3,7 @@ using Grpc.Core;
 using EulynxLive.Messages.Baseline4R1;
 using static EulynxLive.Point.Proto.Point;
 using EulynxLive.Point.Proto;
+using Point.Services.Extensions;
 
 namespace EulynxLive.Point.Services
 {
@@ -23,24 +24,39 @@ namespace EulynxLive.Point.Services
 
         public override Task<Proto.PointPositionMessage> GetPointPosition(Nothing request, ServerCallContext context)
         {
-            var response = new Proto.PointPositionMessage();
-            switch (_point.PointMachine.state.position)
+            var response = new Proto.PointPositionMessage()
             {
-                case PointPointPositionMessageReportedPointPosition.PointIsInARightHandPositionDefinedEndPosition:
-                    response.Position = PointPosition.Right;
-                    break;
-                case PointPointPositionMessageReportedPointPosition.PointIsInALeftHandPositionDefinedEndPosition:
-                    response.Position = PointPosition.Left;
-                    break;
-                case PointPointPositionMessageReportedPointPosition.PointIsInNoEndPosition:
-                    response.Position = PointPosition.NoEndPosition;
-                    break;
-                case PointPointPositionMessageReportedPointPosition.PointIsTrailed:
-                    response.Position = PointPosition.Trailed;
-                    break;
-            }
+                Position = _point.PointMachine.state.PointPosition.ConvertToProtoMessage()
+            };
 
             return Task.FromResult(response);
+        }
+
+        public override Task<SetPointMachineStateResponse> SetPointMachineState(PointMachineStateMessage request, ServerCallContext context)
+        {
+            _point.PointMachine.state.AbilityToMove = request.AbilityToMove;
+            _point.PointMachine.state.Crucial = request.Crucial;
+            _point.PointMachine.state.LastPointPosition = request.LastPointPosition;
+            _point.PointMachine.state.PointPosition = request.PointPosition.ConvertToReportedPointPosition();
+            _point.PointMachine.state.Target = request.Target;
+
+            return Task.FromResult(new SetPointMachineStateResponse()
+            {
+                NewState = request,
+                Success = true,
+            });
+        }
+
+        public override Task<PointMachineStateMessage> GetPointMachineState(Nothing request, ServerCallContext context)
+        {
+            return Task.FromResult(new PointMachineStateMessage()
+            {
+                AbilityToMove = _point.PointMachine.state.AbilityToMove,
+                Crucial = _point.PointMachine.state.Crucial,
+                LastPointPosition = _point.PointMachine.state.LastPointPosition,
+                PointPosition = _point.PointMachine.state.PointPosition.ConvertToProtoMessage(),
+                Target = _point.PointMachine.state.Target,
+            });
         }
     }
 }

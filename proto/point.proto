@@ -11,13 +11,50 @@ enum PointPosition {
     Trailed = 3;
 }
 
+
 service Point {
     rpc SimulateTrailed (Nothing) returns (Nothing) {}
     rpc GetPointPosition (Nothing) returns (PointPositionMessage) {}
+    rpc SetPointMachineState (PointMachineStateMessage) returns (SetPointMachineStateResponse) {}
+    rpc GetPointMachineState (Nothing) returns (PointMachineStateMessage) {}
+
 }
 
 message PointPositionMessage {
     PointPosition position = 1;
+}
+
+message PointMachineStateMessage {
+    enum Target {
+        Target_Left = 0;
+        Target_Right = 1;
+        Target_None = 2;
+    }
+    
+    enum AbilityToMove {
+        AbilityToMove_Able = 0;
+        AbilityToMove_Unable = 1;
+    }
+    
+    enum LastPointPosition {
+        LastPointPosition_None = 0;
+    }
+    
+    enum Crucial {
+        Crucial_Crucial = 0;
+        Crucial_NonCrucial = 1;
+    }
+
+    PointPosition pointPosition = 1;
+    Target target = 2;
+    AbilityToMove abilityToMove = 3;
+    LastPointPosition lastPointPosition = 4;
+    Crucial crucial = 5;
+}
+
+message SetPointMachineStateResponse {
+    PointMachineStateMessage newState = 1;
+    bool success = 2;
 }
 
 message Nothing {

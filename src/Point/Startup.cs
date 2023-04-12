@@ -32,7 +32,7 @@ namespace EulynxLive.Point
             });
             services.AddSingleton<Point>();
             services.AddSingleton<PointMachine>();
-            services.AddScoped<PointMachine>();
+            services.AddSingleton<PointMachineState>();
             services.AddHostedService<Point>(provider => provider.GetService<Point>());
         }
 

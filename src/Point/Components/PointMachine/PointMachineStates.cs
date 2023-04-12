@@ -1,35 +1,14 @@
 using ReportedPointPosition = EulynxLive.Messages.Baseline4R1.PointPointPositionMessageReportedPointPosition;
+using PointMachineStateMessage = EulynxLive.Point.Proto.PointMachineStateMessage.Types;
 
 namespace EulynxLive.Point.Components
 {
     public class PointMachineState
     {
-        public ReportedPointPosition position { get; set; }
-        public Target target { get; set; }
-        public AbilityToMove abilityToMove { get; set; }
-        public LastPointPosition lastPointPosition { get; set; }
-    }
-
-    public enum Target
-    {
-        Left,
-        Right
-    }
-
-    public enum AbilityToMove
-    {
-        Able,
-        Unable
-    }
-
-    public enum LastPointPosition
-    {
-        None
-    }
-
-    public enum Crucial
-    {
-        Crucial = 1,
-        NonCrucial = 0
+        public ReportedPointPosition PointPosition { get; set; }
+        public PointMachineStateMessage.Target Target { get; set; }
+        public PointMachineStateMessage.AbilityToMove AbilityToMove { get; set; }
+        public PointMachineStateMessage.LastPointPosition LastPointPosition { get; set; }
+        public PointMachineStateMessage.Crucial Crucial { get; set; }
     }
 }
