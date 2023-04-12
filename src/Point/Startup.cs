@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using EulynxLive.Point.Services;
+using EulynxLive.Point.Components;
 
 namespace EulynxLive.Point
 {
@@ -30,6 +31,8 @@ namespace EulynxLive.Point
                 configuration.RootPath = "rasta-point-web/build";
             });
             services.AddSingleton<Point>();
+            services.AddSingleton<PointMachine>();
+            services.AddScoped<PointMachine>();
             services.AddHostedService<Point>(provider => provider.GetService<Point>());
         }
 
