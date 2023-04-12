@@ -1,4 +1,4 @@
-using EulynxLive.Messages;
+using ReportedPointPosition = EulynxLive.Messages.Baseline4R1.PointPointPositionMessageReportedPointPosition;
 
 namespace EulynxLive.Point.Components
 {

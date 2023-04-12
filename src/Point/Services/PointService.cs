@@ -24,7 +24,7 @@ namespace EulynxLive.Point.Services
         public override Task<Proto.PointPositionMessage> GetPointPosition(Nothing request, ServerCallContext context)
         {
             var response = new Proto.PointPositionMessage();
-            switch (_point.Position)
+            switch (_point.PointMachine.state.position)
             {
                 case PointPointPositionMessageReportedPointPosition.PointIsInARightHandPositionDefinedEndPosition:
                     response.Position = PointPosition.Right;
