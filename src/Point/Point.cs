@@ -47,6 +47,7 @@ namespace EulynxLive.Point
             _random = new Random();
 
             _pointState = pointState;
+            _pointState.PointPosition = ReportedPointPosition.PointIsInARightHandPositionDefinedEndPosition;
         }
 
         public async Task HandleWebSocket(WebSocket webSocket)
