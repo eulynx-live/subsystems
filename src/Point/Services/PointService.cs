@@ -26,7 +26,7 @@ namespace EulynxLive.Point.Services
         {
             var response = new Proto.PointPositionMessage()
             {
-                Position = _point.PointMachine.state.PointPosition.ConvertToProtoMessage()
+                Position = _point.PointState.PointPosition.ConvertToProtoMessage()
             };
 
             return Task.FromResult(response);
@@ -34,11 +34,11 @@ namespace EulynxLive.Point.Services
 
         public override Task<SetPointMachineStateResponse> SetPointMachineState(PointMachineStateMessage request, ServerCallContext context)
         {
-            _point.PointMachine.state.AbilityToMove = request.AbilityToMove;
-            _point.PointMachine.state.Crucial = request.Crucial;
-            _point.PointMachine.state.LastPointPosition = request.LastPointPosition;
-            _point.PointMachine.state.PointPosition = request.PointPosition.ConvertToReportedPointPosition();
-            _point.PointMachine.state.Target = request.Target;
+            _point.PointState.AbilityToMove = request.AbilityToMove;
+            _point.PointState.Crucial = request.Crucial;
+            _point.PointState.LastPointPosition = request.LastPointPosition;
+            _point.PointState.PointPosition = request.PointPosition.ConvertToReportedPointPosition();
+            _point.PointState.Target = request.Target;
 
             return Task.FromResult(new SetPointMachineStateResponse()
             {
@@ -51,11 +51,11 @@ namespace EulynxLive.Point.Services
         {
             return Task.FromResult(new PointMachineStateMessage()
             {
-                AbilityToMove = _point.PointMachine.state.AbilityToMove,
-                Crucial = _point.PointMachine.state.Crucial,
-                LastPointPosition = _point.PointMachine.state.LastPointPosition,
-                PointPosition = _point.PointMachine.state.PointPosition.ConvertToProtoMessage(),
-                Target = _point.PointMachine.state.Target,
+                AbilityToMove = _point.PointState.AbilityToMove,
+                Crucial = _point.PointState.Crucial,
+                LastPointPosition = _point.PointState.LastPointPosition,
+                PointPosition = _point.PointState.PointPosition.ConvertToProtoMessage(),
+                Target = _point.PointState.Target,
             });
         }
     }

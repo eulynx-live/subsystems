@@ -31,7 +31,6 @@ namespace EulynxLive.Point
                 configuration.RootPath = "rasta-point-web/build";
             });
             services.AddSingleton<Point>();
-            services.AddSingleton<PointMachine>();
             services.AddSingleton<PointMachineState>();
             services.AddHostedService<Point>(provider => provider.GetService<Point>());
         }
