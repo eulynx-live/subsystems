@@ -26,6 +26,7 @@ You have 2 ways of consuming gRPC interfaces from this repo in order to use them
 ```
     dotnet add package Google.Protobuf
     dotnet add package Grpc.Tools
+    dotnet add package Grpc.Net.Client
 ```
 
 3. Add this property to the project reference of EulynxLive.ProtobufInterfaces:
@@ -40,7 +41,7 @@ Meaning that your reference to our package should look something like:
 4. Add a reference to the proto files on your ProtobufInterface package:
 ```
     <ItemGroup>
-        <Protobuf Include="$(PkgMy_Server_Proto)/proto/**/*.proto" ProtoRoot="$(Pkg_EulynxLive_ProtobufInterfaces)" GrpcServices="Client" />
+        <Protobuf Include="$(PkgEulynxLive_ProtobufInterfaces)/proto/**/*.proto" ProtoRoot="$(Pkg_EulynxLive_ProtobufInterfaces)" GrpcServices="Client" />
     </ItemGroup>
 ```
 
