@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using Grpc.Core;
-using EulynxLive.Messages.Baseline4R1;
 using static EulynxLive.Point.Proto.Point;
 using EulynxLive.Point.Proto;
 using Point.Services.Extensions;
