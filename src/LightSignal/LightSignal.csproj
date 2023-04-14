@@ -24,12 +24,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="..\..\proto\rasta.proto" />
-    <Protobuf Include="..\..\proto\light_signal.proto" />
+    <Protobuf Include="..\**\proto\rasta.proto" />
+    <Protobuf Include="..\**\proto\light_signal.proto" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Messages\Messages.csproj" />
+    <ProjectReference Include="..\ProtobufInterfaces\ProtobufInterfaces.csproj" />
   </ItemGroup>
 
   <ItemGroup>
