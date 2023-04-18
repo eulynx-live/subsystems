@@ -41,7 +41,7 @@ Meaning that your reference to our package should look something like:
 4. Add a reference to the proto files on your ProtobufInterface package:
 ```
     <ItemGroup>
-        <Protobuf Include="$(PkgEulynxLive_ProtobufInterfaces)/proto/**/*.proto" ProtoRoot="$(Pkg_EulynxLive_ProtobufInterfaces)" GrpcServices="Client" />
+        <Protobuf Include="$(PkgEulynxLive_ProtobufInterfaces)/content/proto/**/*.proto" ProtoRoot="$(Pkg_EulynxLive_ProtobufInterfaces)/content" GrpcServices="Client" />
     </ItemGroup>
 ```
 
