@@ -41,9 +41,14 @@ Meaning that your reference to our package should look something like:
 4. Add a reference to the proto files on your ProtobufInterface package:
 ```
     <ItemGroup>
-        <Protobuf Include="$(PkgEulynxLive_ProtobufInterfaces)/proto/**/*.proto" ProtoRoot="$(Pkg_EulynxLive_ProtobufInterfaces)" GrpcServices="Client" />
+        <Protobuf Include="$(PkgEulynxLive_ProtobufInterfacesTest)/content/proto/**/point.proto" ProtoRoot="$(Pkg_EulynxLive_ProtobufInterfacesTest)" GrpcServices="Client" />
+        <Protobuf Include="$(PkgEulynxLive_ProtobufInterfacesTest)/content/proto/**/level_crossing.proto" ProtoRoot="$(Pkg_EulynxLive_ProtobufInterfacesTest)" GrpcServices="Client" />
+
     </ItemGroup>
 ```
+
+Known issues:
+It you have proto files on our project with the same names as proto files from this package you might run into problems, that why on step 4 we create one <Protobuf> line for each proto file from this package that you want to include into your project.
 
 
 ## Final notes:
