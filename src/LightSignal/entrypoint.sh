@@ -4,7 +4,7 @@
 if [[ -z "${LOCAL_IDS}" ]]; then
   echo "LOCAL_IDS was not set. All light signals found in Interlocking.exml will be simulated!"
 else
-   LOCAL_IDS=",$LOCAL_IDS"
+   IFS=',' read -r -a LOCAL_IDS <<< "$LOCAL_IDS"
 fi
 
 if [[ -z "${REMOTE_ID}" ]]; then
@@ -35,7 +35,7 @@ do
    read -r f1 <&3 || break
    read -r f2 <&4 || break
    name=$( xq -x "//generic:ownsSignal/rsmCommon:id[.=\"$f1\"]/following-sibling::rsmCommon:name" /config/Interlocking.exml )
-   if [[ " ${LOCAL_IDS[*]} " =~ ",$name" ||  -z "${LOCAL_IDS}" ]]
+   if (printf '%s\0' "${LOCAL_IDS[@]}" | grep -Fxzq -- "$name") || [[ -z "${LOCAL_IDS}" ]] ;
    then 
       echo -n "LightSignals__${COUNTER}__id=$name "
       echo -n "LightSignals__${COUNTER}__type=$f2 "
