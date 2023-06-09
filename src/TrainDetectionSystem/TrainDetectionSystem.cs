@@ -34,8 +34,7 @@ namespace EulynxLive.TrainDetectionSystem
         AsyncDuplexStreamingCall<SciPacket, SciPacket> _currentConnection;
         private Dictionary<string, TvpsOccupancyStatus> _trackSectionStatuses;
 
-        private TDSState _tdsState;
-        public TDSState TdsState { get { return _tdsState; } }
+        public TDSState TdsState { get; private set; }
 
         public TrainDetectionSystem(ILogger<TrainDetectionSystem> logger, IConfiguration configuration, TDSState tdsState)
         {
@@ -44,7 +43,7 @@ namespace EulynxLive.TrainDetectionSystem
             _webSockets = new List<WebSocket>();
             _currentConnection = null;
             _trackSectionStatuses = null;
-            _tdsState = tdsState;
+            TdsState = tdsState;
 
             // Command line argument parsing.
             var localIdTvps = _configuration["local-id-tvps"];
