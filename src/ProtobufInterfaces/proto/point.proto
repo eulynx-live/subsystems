@@ -26,23 +26,27 @@ message PointPositionMessage {
 
 message PointMachineStateMessage {
     enum Target {
-        Target_Left = 0;
-        Target_Right = 1;
-        Target_None = 2;
+        Target_UNDEFINED = 0;
+        Target_Left = 1;
+        Target_Right = 2;
+        Target_None = 3;
     }
     
     enum AbilityToMove {
-        AbilityToMove_Able = 0;
-        AbilityToMove_Unable = 1;
+        AbilityToMove_UNDEFINED = 0;
+        AbilityToMove_Able = 1;
+        AbilityToMove_Unable = 2;
     }
     
     enum LastPointPosition {
-        LastPointPosition_None = 0;
+        LastPointPosition_UNDEFINED = 0;
+        LastPointPosition_None = 1;
     }
     
     enum Crucial {
-        Crucial_Crucial = 0;
-        Crucial_NonCrucial = 1;
+        Crucial_UNDEFINED = 0;
+        Crucial_Crucial = 1;
+        Crucial_NonCrucial = 2;
     }
 
     PointPosition pointPosition = 1;

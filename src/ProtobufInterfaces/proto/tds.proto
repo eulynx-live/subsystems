@@ -8,10 +8,212 @@ package ixl;
 service TrainDetectionSystem {
     rpc IncreaseAxleCount (TpsCommand) returns (Nothing) {}
     rpc DecreaseAxleCount (TpsCommand) returns (Nothing) {}
+    rpc SetTDSState (TDSStateMessage) returns (SetTDSStateResponse) {}
+    rpc GetTDSState (Nothing) returns (TDSStateMessage) {}
+
 }
 
 message TpsCommand {
   string tps = 1;
+}
+
+message TDSStateMessage {
+  enum AbilityToBeForcedToClear {
+    AbilityToBeForcedToClear_UNDEFINED = 0;
+    AbilityToBeForcedToClear_Able = 1;
+    AbilityToBeForcedToClear_Unable = 2;
+  }
+
+  enum AbilityToBeForcedToClearBefore {
+    AbilityToBeForcedToClearBefore_UNDEFINED = 0;
+    AbilityToBeForcedToClearBefore_Able = 1;
+    AbilityToBeForcedToClearBefore_Unable = 2;
+  }
+
+  enum Circuit {
+    Circuit_UNDEFINED = 0;
+    Circuit_True = 1;
+    Circuit_False = 2;
+  }
+
+  enum ConDetectionOfPassing {
+    ConDetectionOfPassing_UNDEFINED = 0;
+    ConDetectionOfPassing_True = 1;
+    ConDetectionOfPassing_False = 2;
+  }
+
+  enum ConDrfc {
+    ConDrfc_UNDEFINED = 0;
+    ConDrfc_True = 1;
+  }
+
+  enum ConMsgAdditionalInformation {
+    ConMsgAdditionalInformation_UNDEFINED = 0;
+    ConMsgAdditionalInformation_True = 1;
+    ConMsgAdditionalInformation_False = 2;
+  }
+
+  enum ConUfl {
+    ConUfl_UNDEFINED = 0;
+    ConUfl_True = 1;
+    ConUfl_False = 2;
+  }
+
+  enum ConUseFcC {
+    ConUseFcC_UNDEFINED = 0;
+    ConUseFcC_True = 1;
+    ConUseFcC_False = 2;
+  }
+
+  enum ConUseFcP {
+    ConUseFcP_UNDEFINED = 0;
+    ConUseFcP_True = 1;
+    ConUseFcP_False = 2;
+  }
+  
+  enum ConUseFcPA {
+    ConUseFcPA_UNDEFINED = 0;
+    ConUseFcPA_True = 1;
+    ConUseFcPA_False = 2;
+  }
+
+  enum ConUseFcU {
+    ConUseFcU_UNDEFINED = 0;
+    ConUseFcU_True = 1;
+    ConUseFcU_False = 2;
+  }
+
+  enum ConVariant {
+    ConVariant_UNDEFINED = 0;
+    ConVariant_NotAvailable = 1;
+    ConVariant_VariantB = 2;
+    ConVariant_VariantA = 3;
+  }
+
+  enum DelayOfNotificationOfAvailabilityTimer {
+    DelayOfNotificationOfAvailabilityTimer_UNDEFINED = 0;
+    DelayOfNotificationOfAvailabilityTimer_NotAvailable = 1;
+    DelayOfNotificationOfAvailabilityTimer_NotRunning = 2;
+    DelayOfNotificationOfAvailabilityTimer_Running = 3;
+  }
+
+  enum DifferenceBetweenIncomingOutgoingWheels {
+    DifferenceBetweenIncomingOutgoingWheels_UNDEFINED = 0;
+    DifferenceBetweenIncomingOutgoingWheels_BiggerThenOne = 1;
+  }
+
+  enum DirectionOfPassing {
+    DirectionOfPassing_UNDEFINED = 0;
+    DirectionOfPassing_WithoutIndicatedDirection = 1;
+  }
+
+  enum InhibitionTimer {
+    InhibitionTimer_UNDEFINED = 0;
+    InhibitionTimer_Running = 1;
+    InhibitionTimer_NotAvailable = 2;
+    InhibitionTimer_NotRunning = 3;
+  }
+
+  enum MsgAdditionalInformation {
+    MsgAdditionalInformation_UNDEFINED = 0;
+    MsgAdditionalInformation_True = 1;
+    MsgAdditionalInformation_False = 2;
+  }
+
+  enum PomStatus {
+    PomStatus_UNDEFINED = 0;
+    PomStatus_Nok = 1;
+    PomStatus_Ok = 2;
+  }
+
+  enum PowerSupply {
+    PowerSupply_UNDEFINED = 0;
+    PowerSupply_Ok = 1;
+    PowerSupply_Nok = 2;
+  }
+
+  enum State {
+    State_UNDEFINED = 0;
+    State_Booting = 1;
+    State_Operational = 2;
+    State_Initialising = 3;
+    State_FallbackMode = 4;
+  }
+
+  enum StateOfPassing {
+    StateOfPassing_UNDEFINED = 0;
+    StateOfPassing_NotPassed = 1;
+    StateOfPassing_Disturbed = 2;
+  }
+
+  enum TvpsOccupancyStatus {
+    TvpsOccupancyStatus_UNDEFINED = 0;
+    TvpsOccupancyStatus_WaitingForAnAcknowledgmentAfterFCPACommand = 1;
+    TvpsOccupancyStatus_SweepingTrainDetected = 2;
+    TvpsOccupancyStatus_Disturbed = 3;
+    TvpsOccupancyStatus_Occupied = 4;
+    TvpsOccupancyStatus_WaitingForASweepingTrainAfterFCPAOrFCPCommand = 5;
+    TvpsOccupancyStatus_Vacant = 6;
+  }
+
+  enum TvpsOccupancyStatusBefore {
+    TvpsOccupancyStatusBefore_UNDEFINED = 0;
+    TvpsOccupancyStatusBefore_Occupied = 1;
+    TvpsOccupancyStatusBefore_Disturbed = 2;
+  }
+
+  enum TvpsOccupiedByAtLeastOneWheel {
+    TvpsOccupiedByAtLeastOneWheel_UNDEFINED = 0;
+    TvpsOccupiedByAtLeastOneWheel_False = 1;
+    TvpsOccupiedByAtLeastOneWheel_True = 2;
+  }
+
+  enum TvpsReasonForDisturbance {
+    TvpsReasonForDisturbance_UNDEFINED = 0;
+    TvpsReasonForDisturbance_None = 1;
+    TvpsReasonForDisturbance_Technical = 2;
+    TvpsReasonForDisturbance_Operational = 3;
+  }
+
+  enum PdiConnection {
+    PdiConnection_UNDEFINED = 0;
+    PdiConnection_Terminated = 1;
+    PdiConnection_ReEstablishment = 2;
+    PdiConnection_EstablishmentDuringInitialisation = 3;
+    PdiConnection_NotAvailable = 4;
+  }
+
+  AbilityToBeForcedToClear abilityToBeForcedToClear = 1;
+  AbilityToBeForcedToClearBefore abilityToBeForcedToClearBefore = 2;
+  Circuit circuit = 3;
+  ConDetectionOfPassing conDetectionOfPassing = 4;
+  ConDrfc conDrfc = 5;
+  ConMsgAdditionalInformation conMsgAdditionalInformation = 6;
+  ConUfl conUfl = 7;
+  ConUseFcC conUseFcC = 8;
+  ConUseFcP conUseFcP = 9;
+  ConUseFcPA conUseFcPA = 10;
+  ConUseFcU conUseFcU = 11;
+  ConVariant conVariant = 12;
+  DelayOfNotificationOfAvailabilityTimer delayOfNotificationOfAvailabilityTimer = 13;
+  DifferenceBetweenIncomingOutgoingWheels differenceBetweenIncomingOutgoingWheels = 14;
+  DirectionOfPassing directionOfPassing = 15;
+  InhibitionTimer inhibitionTimer = 16;
+  MsgAdditionalInformation msgAdditionalInformation = 17;
+  PomStatus pomStatus = 18;
+  PowerSupply powerSupply = 19;
+  State state = 20;
+  StateOfPassing stateOfPassing = 21;
+  TvpsOccupancyStatus tvpsOccupancyStatus = 22;
+  TvpsOccupancyStatusBefore tvpsOccupancyStatusBefore = 23;
+  TvpsOccupiedByAtLeastOneWheel tvpsOccupiedByAtLeastOneWheel = 24;
+  TvpsReasonForDisturbance tvpsReasonForDisturbance = 25;
+  PdiConnection pdiConnection = 26;
+}
+
+message SetTDSStateResponse {
+  TDSStateMessage newState = 1;
+  bool success = 2;
 }
 
 message Nothing {
