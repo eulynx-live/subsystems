@@ -34,6 +34,6 @@ namespace TrainDetectionSystem.Components.TDS
         public TDSStateMessage.TvpsOccupancyStatusBefore TvpsOccupancyStatusBefore { get; set; }
         public TDSStateMessage.TvpsOccupiedByAtLeastOneWheel TvpsOccupiedByAtLeastOneWheel { get; set; }
         public TDSStateMessage.TvpsReasonForDisturbance TvpsReasonForDisturbance { get; set; }
-        public TDSStateMessage.PdiConection PdiConection { get; set; }
+        public TDSStateMessage.PdiConnection PdiConnection { get; set; }
     }
 }

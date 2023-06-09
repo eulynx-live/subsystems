@@ -175,12 +175,12 @@ message TDSStateMessage {
     TvpsReasonForDisturbance_Operational = 3;
   }
 
-  enum PdiConection {
-    PdiConection_UNDEFINED = 0;
-    PdiConection_Terminated = 1;
-    PdiConection_ReEstablishment = 2;
-    PdiConection_EstablishmentDuringInitialisation = 3;
-    PdiConection_NotAvailable = 4;
+  enum PdiConnection {
+    PdiConnection_UNDEFINED = 0;
+    PdiConnection_Terminated = 1;
+    PdiConnection_ReEstablishment = 2;
+    PdiConnection_EstablishmentDuringInitialisation = 3;
+    PdiConnection_NotAvailable = 4;
   }
 
   AbilityToBeForcedToClear abilityToBeForcedToClear = 1;
@@ -208,7 +208,7 @@ message TDSStateMessage {
   TvpsOccupancyStatusBefore tvpsOccupancyStatusBefore = 23;
   TvpsOccupiedByAtLeastOneWheel tvpsOccupiedByAtLeastOneWheel = 24;
   TvpsReasonForDisturbance tvpsReasonForDisturbance = 25;
-  PdiConection pdiConection = 26;
+  PdiConnection pdiConnection = 26;
 }
 
 message SetTDSStateResponse {
