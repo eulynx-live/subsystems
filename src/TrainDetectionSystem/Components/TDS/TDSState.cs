@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using TDSStateMessage = EulynxLive.Point.Proto.TDSStateMessage.Types;
+using TDSStateMessage = EulynxLive.TrainDetectionSystem.Proto.TDSStateMessage.Types;
 
 
 namespace TrainDetectionSystem.Components.TDS

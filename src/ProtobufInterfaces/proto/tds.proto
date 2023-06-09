@@ -8,7 +8,7 @@ package ixl;
 service TrainDetectionSystem {
     rpc IncreaseAxleCount (TpsCommand) returns (Nothing) {}
     rpc DecreaseAxleCount (TpsCommand) returns (Nothing) {}
-    rpc SetTDSState (TDSStateMessage) returns (SetPointMachineStateResponse) {}
+    rpc SetTDSState (TDSStateMessage) returns (SetTDSStateResponse) {}
     rpc GetTDSState (Nothing) returns (TDSStateMessage) {}
 
 }

@@ -5,6 +5,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using EulynxLive.TrainDetectionSystem.Services;
+using TrainDetectionSystem.Components.TDS;
+using AutoMapper;
 
 namespace EulynxLive.TrainDetectionSystem
 {
@@ -29,7 +31,11 @@ namespace EulynxLive.TrainDetectionSystem
             {
                 configuration.RootPath = "rasta-tds-web/build";
             });
+
+            services.AddAutoMapper(typeof(Startup).Assembly);
+
             services.AddSingleton<TrainDetectionSystem>();
+            services.AddSingleton<TDSState>();
             services.AddHostedService<TrainDetectionSystem>(provider => provider.GetService<TrainDetectionSystem>());
         }
 
