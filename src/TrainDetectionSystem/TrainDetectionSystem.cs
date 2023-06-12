@@ -29,6 +29,7 @@ namespace EulynxLive.TrainDetectionSystem
         private string _localRastaId;
         private string _remoteId;
         private string _remoteEndpoint;
+        private string _pps;
 
         private bool _initialized;
         AsyncDuplexStreamingCall<SciPacket, SciPacket> _currentConnection;
@@ -75,6 +76,12 @@ namespace EulynxLive.TrainDetectionSystem
             if (_remoteEndpoint == null)
             {
                 throw new Exception("Missing --remote-endpoint command line parameter.");
+            }
+
+            _pps = _configuration["pps"];
+            if (_pps == null)
+            {
+                throw new Exception("Missing --pps command line parameter.");
             }
 
             _trackSectionStatuses = _localIdTvpses.Select(x => new { Key = x, Value = TvpsOccupancyStatus.Disturbed }).ToDictionary(x => x.Key, x => x.Value);
@@ -136,7 +143,20 @@ namespace EulynxLive.TrainDetectionSystem
                             break;
                         }
 
-                        var versionCheckResponse = new TrainDetectionSystemVersionCheckMessage(_localIdTps, _remoteId, PdiVersionCheckResult.Match, /* TODO */ 0, 0);
+                        var stringToByteArray = (string hex) =>
+                            Enumerable.Range(0, hex.Length)
+                                .Where(x => x % 2 == 0)
+                                .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
+                                .ToArray();
+
+                        var ppsBytes = stringToByteArray(_pps);
+                        var versionCheckResponse = new Messages.Baseline4R1.TrainDetectionSystemPdiVersionCheckMessage(
+                            _localIdTps, _remoteId,
+                            Messages.Baseline4R1.TrainDetectionSystemPdiVersionCheckMessageResultPdiVersionCheck.PDIVersionsFromReceiverAndSenderDoMatch,
+                            0x1,
+                            (byte)ppsBytes.Length,
+                            ppsBytes
+                        );
                         await _currentConnection.RequestStream.WriteAsync(new SciPacket() { Message = ByteString.CopyFrom(versionCheckResponse.ToByteArray()) });
 
                         if (!await _currentConnection.ResponseStream.MoveNext(cancellationTokenSource.Token))
