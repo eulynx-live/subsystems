@@ -33,6 +33,7 @@ public abstract record Message() {
                 0x0021 => TrainDetectionSystemInitialisationRequestCommand.FromBytes(message),
                 0x0027 => TrainDetectionSystemClosePdiCommand.FromBytes(message),
                 0x0028 => TrainDetectionSystemReleasePdiForMaintenanceCommand.FromBytes(message),
+                0x0007 => TrainDetectionSystemTvpsOccupancyStatusMessage.FromBytes(message),
                 0x0006 => TrainDetectionSystemCommandRejectedMessage.FromBytes(message),
                 0x0010 => TrainDetectionSystemTvpsFcPFailedMessage.FromBytes(message),
                 0x0011 => TrainDetectionSystemTvpsFcPAFailedMessage.FromBytes(message),

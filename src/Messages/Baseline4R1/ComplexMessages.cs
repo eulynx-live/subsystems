@@ -4,7 +4,8 @@ using System.Text;
 
 namespace EulynxLive.Messages.Baseline4R1;
 
-public record AdjacentInterlockingSystemPdiVersionCheckMessage (string SenderIdentifier, string ReceiverIdentifier, AdjacentInterlockingSystemPdiVersionCheckMessageResultPdiVersionCheck ResultPdiVersionCheck, byte SenderPdiVersion, byte ChecksumLength, byte[] Checksum) : Message {
+public record AdjacentInterlockingSystemPdiVersionCheckMessage(string SenderIdentifier, string ReceiverIdentifier, AdjacentInterlockingSystemPdiVersionCheckMessageResultPdiVersionCheck ResultPdiVersionCheck, byte SenderPdiVersion, byte ChecksumLength, byte[] Checksum) : Message
+{
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -13,7 +14,8 @@ public record AdjacentInterlockingSystemPdiVersionCheckMessage (string SenderIde
     private const int ChecksumLengthOffset = 45;
     private const int ChecksumOffset = 46;
 
-    public new static AdjacentInterlockingSystemPdiVersionCheckMessage FromBytes(byte[] message) {
+    public new static AdjacentInterlockingSystemPdiVersionCheckMessage FromBytes(byte[] message)
+    {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var ResultPdiVersionCheck = (AdjacentInterlockingSystemPdiVersionCheckMessageResultPdiVersionCheck)message[ResultPdiVersionCheckOffset];
@@ -23,10 +25,11 @@ public record AdjacentInterlockingSystemPdiVersionCheckMessage (string SenderIde
         return new AdjacentInterlockingSystemPdiVersionCheckMessage(SenderIdentifier, ReceiverIdentifier, ResultPdiVersionCheck, SenderPdiVersion, ChecksumLength, Checksum);
     }
 
-    public override byte[] ToByteArray() {
-        var result = new byte[46 + ChecksumLength];
+    public override byte[] ToByteArray()
+    {
+        var result = new byte[44 + ChecksumLength];
         result[0] = (byte)ProtocolType.AdjacentInterlockingSystem;
-        BitConverter.GetBytes(0x0025).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
+        BitConverter.GetBytes(0x0024).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
         Encoding.Latin1.GetBytes(SenderIdentifier.PadRight(20, '_')).CopyTo(result, SenderIdentifierOffset);
         Encoding.Latin1.GetBytes(ReceiverIdentifier.PadRight(20, '_')).CopyTo(result, ReceiverIdentifierOffset);
         result[ResultPdiVersionCheckOffset] = (byte)ResultPdiVersionCheck;
@@ -37,12 +40,14 @@ public record AdjacentInterlockingSystemPdiVersionCheckMessage (string SenderIde
     }
 }
 
-public enum AdjacentInterlockingSystemPdiVersionCheckMessageResultPdiVersionCheck : byte {
+public enum AdjacentInterlockingSystemPdiVersionCheckMessageResultPdiVersionCheck : byte
+{
     PDIVersionsFromReceiverAndSenderDoNotMatch = 0x01,
     PDIVersionsFromReceiverAndSenderDoMatch = 0x02,
 }
 
-public record TrainDetectionSystemPdiVersionCheckMessage (string SenderIdentifier, string ReceiverIdentifier, TrainDetectionSystemPdiVersionCheckMessageResultPdiVersionCheck ResultPdiVersionCheck, byte SenderPdiVersion, byte ChecksumLength, byte[] Checksum) : Message {
+public record TrainDetectionSystemPdiVersionCheckMessage(string SenderIdentifier, string ReceiverIdentifier, TrainDetectionSystemPdiVersionCheckMessageResultPdiVersionCheck ResultPdiVersionCheck, byte SenderPdiVersion, byte ChecksumLength, byte[] Checksum) : Message
+{
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -51,7 +56,8 @@ public record TrainDetectionSystemPdiVersionCheckMessage (string SenderIdentifie
     private const int ChecksumLengthOffset = 45;
     private const int ChecksumOffset = 46;
 
-    public new static TrainDetectionSystemPdiVersionCheckMessage FromBytes(byte[] message) {
+    public new static TrainDetectionSystemPdiVersionCheckMessage FromBytes(byte[] message)
+    {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var ResultPdiVersionCheck = (TrainDetectionSystemPdiVersionCheckMessageResultPdiVersionCheck)message[ResultPdiVersionCheckOffset];
@@ -61,10 +67,11 @@ public record TrainDetectionSystemPdiVersionCheckMessage (string SenderIdentifie
         return new TrainDetectionSystemPdiVersionCheckMessage(SenderIdentifier, ReceiverIdentifier, ResultPdiVersionCheck, SenderPdiVersion, ChecksumLength, Checksum);
     }
 
-    public override byte[] ToByteArray() {
-        var result = new byte[46 + ChecksumLength];
+    public override byte[] ToByteArray()
+    {
+        var result = new byte[44 + ChecksumLength];
         result[0] = (byte)ProtocolType.TrainDetectionSystem;
-        BitConverter.GetBytes(0x0025).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
+        BitConverter.GetBytes(0x0024).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
         Encoding.Latin1.GetBytes(SenderIdentifier.PadRight(20, '_')).CopyTo(result, SenderIdentifierOffset);
         Encoding.Latin1.GetBytes(ReceiverIdentifier.PadRight(20, '_')).CopyTo(result, ReceiverIdentifierOffset);
         result[ResultPdiVersionCheckOffset] = (byte)ResultPdiVersionCheck;
@@ -75,13 +82,15 @@ public record TrainDetectionSystemPdiVersionCheckMessage (string SenderIdentifie
     }
 }
 
-public enum TrainDetectionSystemPdiVersionCheckMessageResultPdiVersionCheck : byte {
+public enum TrainDetectionSystemPdiVersionCheckMessageResultPdiVersionCheck : byte
+{
     PDIVersionsFromReceiverAndSenderDoNotMatch = 0x01,
     PDIVersionsFromReceiverAndSenderDoMatch = 0x02,
 }
 
 
-public record LightSignalPdiVersionCheckMessage (string SenderIdentifier, string ReceiverIdentifier, LightSignalPdiVersionCheckMessageResultPdiVersionCheck ResultPdiVersionCheck, byte SenderPdiVersion, byte ChecksumLength, byte[] Checksum) : Message {
+public record LightSignalPdiVersionCheckMessage(string SenderIdentifier, string ReceiverIdentifier, LightSignalPdiVersionCheckMessageResultPdiVersionCheck ResultPdiVersionCheck, byte SenderPdiVersion, byte ChecksumLength, byte[] Checksum) : Message
+{
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -90,7 +99,8 @@ public record LightSignalPdiVersionCheckMessage (string SenderIdentifier, string
     private const int ChecksumLengthOffset = 45;
     private const int ChecksumOffset = 46;
 
-    public new static LightSignalPdiVersionCheckMessage FromBytes(byte[] message) {
+    public new static LightSignalPdiVersionCheckMessage FromBytes(byte[] message)
+    {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var ResultPdiVersionCheck = (LightSignalPdiVersionCheckMessageResultPdiVersionCheck)message[ResultPdiVersionCheckOffset];
@@ -100,10 +110,11 @@ public record LightSignalPdiVersionCheckMessage (string SenderIdentifier, string
         return new LightSignalPdiVersionCheckMessage(SenderIdentifier, ReceiverIdentifier, ResultPdiVersionCheck, SenderPdiVersion, ChecksumLength, Checksum);
     }
 
-    public override byte[] ToByteArray() {
-        var result = new byte[46 + ChecksumLength];
+    public override byte[] ToByteArray()
+    {
+        var result = new byte[44 + ChecksumLength];
         result[0] = (byte)ProtocolType.LightSignal;
-        BitConverter.GetBytes(0x0025).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
+        BitConverter.GetBytes(0x0024).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
         Encoding.Latin1.GetBytes(SenderIdentifier.PadRight(20, '_')).CopyTo(result, SenderIdentifierOffset);
         Encoding.Latin1.GetBytes(ReceiverIdentifier.PadRight(20, '_')).CopyTo(result, ReceiverIdentifierOffset);
         result[ResultPdiVersionCheckOffset] = (byte)ResultPdiVersionCheck;
@@ -114,12 +125,14 @@ public record LightSignalPdiVersionCheckMessage (string SenderIdentifier, string
     }
 }
 
-public enum LightSignalPdiVersionCheckMessageResultPdiVersionCheck : byte {
+public enum LightSignalPdiVersionCheckMessageResultPdiVersionCheck : byte
+{
     PDIVersionsFromReceiverAndSenderDoNotMatch = 0x01,
     PDIVersionsFromReceiverAndSenderDoMatch = 0x02,
 }
 
-public record PointPdiVersionCheckMessage (string SenderIdentifier, string ReceiverIdentifier, PointPdiVersionCheckMessageResultPdiVersionCheck ResultPdiVersionCheck, byte SenderPdiVersion, byte ChecksumLength, byte[] Checksum) : Message {
+public record PointPdiVersionCheckMessage(string SenderIdentifier, string ReceiverIdentifier, PointPdiVersionCheckMessageResultPdiVersionCheck ResultPdiVersionCheck, byte SenderPdiVersion, byte ChecksumLength, byte[] Checksum) : Message
+{
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -128,7 +141,8 @@ public record PointPdiVersionCheckMessage (string SenderIdentifier, string Recei
     private const int ChecksumLengthOffset = 45;
     private const int ChecksumOffset = 46;
 
-    public new static PointPdiVersionCheckMessage FromBytes(byte[] message) {
+    public new static PointPdiVersionCheckMessage FromBytes(byte[] message)
+    {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var ResultPdiVersionCheck = (PointPdiVersionCheckMessageResultPdiVersionCheck)message[ResultPdiVersionCheckOffset];
@@ -138,10 +152,11 @@ public record PointPdiVersionCheckMessage (string SenderIdentifier, string Recei
         return new PointPdiVersionCheckMessage(SenderIdentifier, ReceiverIdentifier, ResultPdiVersionCheck, SenderPdiVersion, ChecksumLength, Checksum);
     }
 
-    public override byte[] ToByteArray() {
-        var result = new byte[46 + ChecksumLength];
+    public override byte[] ToByteArray()
+    {
+        var result = new byte[44 + ChecksumLength];
         result[0] = (byte)ProtocolType.Point;
-        BitConverter.GetBytes(0x0025).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
+        BitConverter.GetBytes(0x0024).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
         Encoding.Latin1.GetBytes(SenderIdentifier.PadRight(20, '_')).CopyTo(result, SenderIdentifierOffset);
         Encoding.Latin1.GetBytes(ReceiverIdentifier.PadRight(20, '_')).CopyTo(result, ReceiverIdentifierOffset);
         result[ResultPdiVersionCheckOffset] = (byte)ResultPdiVersionCheck;
@@ -152,12 +167,14 @@ public record PointPdiVersionCheckMessage (string SenderIdentifier, string Recei
     }
 }
 
-public enum PointPdiVersionCheckMessageResultPdiVersionCheck : byte {
+public enum PointPdiVersionCheckMessageResultPdiVersionCheck : byte
+{
     PDIVersionsFromReceiverAndSenderDoNotMatch = 0x01,
     PDIVersionsFromReceiverAndSenderDoMatch = 0x02,
 }
 
-public record RadioBlockCenterPdiVersionCheckMessage (string SenderIdentifier, string ReceiverIdentifier, RadioBlockCenterPdiVersionCheckMessageResultPdiVersionCheck ResultPdiVersionCheck, byte SenderPdiVersion, byte ChecksumLength, byte[] Checksum) : Message {
+public record RadioBlockCenterPdiVersionCheckMessage(string SenderIdentifier, string ReceiverIdentifier, RadioBlockCenterPdiVersionCheckMessageResultPdiVersionCheck ResultPdiVersionCheck, byte SenderPdiVersion, byte ChecksumLength, byte[] Checksum) : Message
+{
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -166,7 +183,8 @@ public record RadioBlockCenterPdiVersionCheckMessage (string SenderIdentifier, s
     private const int ChecksumLengthOffset = 45;
     private const int ChecksumOffset = 46;
 
-    public new static RadioBlockCenterPdiVersionCheckMessage FromBytes(byte[] message) {
+    public new static RadioBlockCenterPdiVersionCheckMessage FromBytes(byte[] message)
+    {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var ResultPdiVersionCheck = (RadioBlockCenterPdiVersionCheckMessageResultPdiVersionCheck)message[ResultPdiVersionCheckOffset];
@@ -176,10 +194,11 @@ public record RadioBlockCenterPdiVersionCheckMessage (string SenderIdentifier, s
         return new RadioBlockCenterPdiVersionCheckMessage(SenderIdentifier, ReceiverIdentifier, ResultPdiVersionCheck, SenderPdiVersion, ChecksumLength, Checksum);
     }
 
-    public override byte[] ToByteArray() {
-        var result = new byte[46 + ChecksumLength];
+    public override byte[] ToByteArray()
+    {
+        var result = new byte[44 + ChecksumLength];
         result[0] = (byte)ProtocolType.RadioBlockCenter;
-        BitConverter.GetBytes(0x0025).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
+        BitConverter.GetBytes(0x0024).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
         Encoding.Latin1.GetBytes(SenderIdentifier.PadRight(20, '_')).CopyTo(result, SenderIdentifierOffset);
         Encoding.Latin1.GetBytes(ReceiverIdentifier.PadRight(20, '_')).CopyTo(result, ReceiverIdentifierOffset);
         result[ResultPdiVersionCheckOffset] = (byte)ResultPdiVersionCheck;
@@ -190,13 +209,15 @@ public record RadioBlockCenterPdiVersionCheckMessage (string SenderIdentifier, s
     }
 }
 
-public enum RadioBlockCenterPdiVersionCheckMessageResultPdiVersionCheck : byte {
+public enum RadioBlockCenterPdiVersionCheckMessageResultPdiVersionCheck : byte
+{
     PDIVersionsFromReceiverAndSenderDoNotMatch = 0x01,
     PDIVersionsFromReceiverAndSenderDoMatch = 0x02,
 }
 
 
-public record LevelCrossingPdiVersionCheckMessage (string SenderIdentifier, string ReceiverIdentifier, LevelCrossingPdiVersionCheckMessageResultPdiVersionCheck ResultPdiVersionCheck, byte SenderPdiVersion, byte ChecksumLength, byte[] Checksum) : Message {
+public record LevelCrossingPdiVersionCheckMessage(string SenderIdentifier, string ReceiverIdentifier, LevelCrossingPdiVersionCheckMessageResultPdiVersionCheck ResultPdiVersionCheck, byte SenderPdiVersion, byte ChecksumLength, byte[] Checksum) : Message
+{
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -205,7 +226,8 @@ public record LevelCrossingPdiVersionCheckMessage (string SenderIdentifier, stri
     private const int ChecksumLengthOffset = 45;
     private const int ChecksumOffset = 46;
 
-    public new static LevelCrossingPdiVersionCheckMessage FromBytes(byte[] message) {
+    public new static LevelCrossingPdiVersionCheckMessage FromBytes(byte[] message)
+    {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var ResultPdiVersionCheck = (LevelCrossingPdiVersionCheckMessageResultPdiVersionCheck)message[ResultPdiVersionCheckOffset];
@@ -215,10 +237,11 @@ public record LevelCrossingPdiVersionCheckMessage (string SenderIdentifier, stri
         return new LevelCrossingPdiVersionCheckMessage(SenderIdentifier, ReceiverIdentifier, ResultPdiVersionCheck, SenderPdiVersion, ChecksumLength, Checksum);
     }
 
-    public override byte[] ToByteArray() {
-        var result = new byte[46 + ChecksumLength];
+    public override byte[] ToByteArray()
+    {
+        var result = new byte[44 + ChecksumLength];
         result[0] = (byte)ProtocolType.LevelCrossing;
-        BitConverter.GetBytes(0x0025).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
+        BitConverter.GetBytes(0x0024).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
         Encoding.Latin1.GetBytes(SenderIdentifier.PadRight(20, '_')).CopyTo(result, SenderIdentifierOffset);
         Encoding.Latin1.GetBytes(ReceiverIdentifier.PadRight(20, '_')).CopyTo(result, ReceiverIdentifierOffset);
         result[ResultPdiVersionCheckOffset] = (byte)ResultPdiVersionCheck;
@@ -229,13 +252,15 @@ public record LevelCrossingPdiVersionCheckMessage (string SenderIdentifier, stri
     }
 }
 
-public enum LevelCrossingPdiVersionCheckMessageResultPdiVersionCheck : byte {
+public enum LevelCrossingPdiVersionCheckMessageResultPdiVersionCheck : byte
+{
     PDIVersionsFromReceiverAndSenderDoNotMatch = 0x01,
     PDIVersionsFromReceiverAndSenderDoMatch = 0x02,
 }
 
 
-public record CCPdiVersionCheckMessage (string SenderIdentifier, string ReceiverIdentifier, CCPdiVersionCheckMessageResultPdiVersionCheck ResultPdiVersionCheck, byte SenderPdiVersion, byte ChecksumLength, byte[] Checksum) : Message {
+public record CCPdiVersionCheckMessage(string SenderIdentifier, string ReceiverIdentifier, CCPdiVersionCheckMessageResultPdiVersionCheck ResultPdiVersionCheck, byte SenderPdiVersion, byte ChecksumLength, byte[] Checksum) : Message
+{
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -244,7 +269,8 @@ public record CCPdiVersionCheckMessage (string SenderIdentifier, string Receiver
     private const int ChecksumLengthOffset = 45;
     private const int ChecksumOffset = 46;
 
-    public new static CCPdiVersionCheckMessage FromBytes(byte[] message) {
+    public new static CCPdiVersionCheckMessage FromBytes(byte[] message)
+    {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var ResultPdiVersionCheck = (CCPdiVersionCheckMessageResultPdiVersionCheck)message[ResultPdiVersionCheckOffset];
@@ -254,10 +280,11 @@ public record CCPdiVersionCheckMessage (string SenderIdentifier, string Receiver
         return new CCPdiVersionCheckMessage(SenderIdentifier, ReceiverIdentifier, ResultPdiVersionCheck, SenderPdiVersion, ChecksumLength, Checksum);
     }
 
-    public override byte[] ToByteArray() {
-        var result = new byte[46 + ChecksumLength];
+    public override byte[] ToByteArray()
+    {
+        var result = new byte[44 + ChecksumLength];
         result[0] = (byte)ProtocolType.CC;
-        BitConverter.GetBytes(0x0025).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
+        BitConverter.GetBytes(0x0024).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
         Encoding.Latin1.GetBytes(SenderIdentifier.PadRight(20, '_')).CopyTo(result, SenderIdentifierOffset);
         Encoding.Latin1.GetBytes(ReceiverIdentifier.PadRight(20, '_')).CopyTo(result, ReceiverIdentifierOffset);
         result[ResultPdiVersionCheckOffset] = (byte)ResultPdiVersionCheck;
@@ -268,13 +295,15 @@ public record CCPdiVersionCheckMessage (string SenderIdentifier, string Receiver
     }
 }
 
-public enum CCPdiVersionCheckMessageResultPdiVersionCheck : byte {
+public enum CCPdiVersionCheckMessageResultPdiVersionCheck : byte
+{
     PDIVersionsFromReceiverAndSenderDoNotMatch = 0x01,
     PDIVersionsFromReceiverAndSenderDoMatch = 0x02,
 }
 
 
-public record GenericIOPdiVersionCheckMessage (string SenderIdentifier, string ReceiverIdentifier, GenericIOPdiVersionCheckMessageResultPdiVersionCheck ResultPdiVersionCheck, byte SenderPdiVersion, byte ChecksumLength, byte[] Checksum) : Message {
+public record GenericIOPdiVersionCheckMessage(string SenderIdentifier, string ReceiverIdentifier, GenericIOPdiVersionCheckMessageResultPdiVersionCheck ResultPdiVersionCheck, byte SenderPdiVersion, byte ChecksumLength, byte[] Checksum) : Message
+{
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -283,7 +312,8 @@ public record GenericIOPdiVersionCheckMessage (string SenderIdentifier, string R
     private const int ChecksumLengthOffset = 45;
     private const int ChecksumOffset = 46;
 
-    public new static GenericIOPdiVersionCheckMessage FromBytes(byte[] message) {
+    public new static GenericIOPdiVersionCheckMessage FromBytes(byte[] message)
+    {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var ResultPdiVersionCheck = (GenericIOPdiVersionCheckMessageResultPdiVersionCheck)message[ResultPdiVersionCheckOffset];
@@ -293,10 +323,11 @@ public record GenericIOPdiVersionCheckMessage (string SenderIdentifier, string R
         return new GenericIOPdiVersionCheckMessage(SenderIdentifier, ReceiverIdentifier, ResultPdiVersionCheck, SenderPdiVersion, ChecksumLength, Checksum);
     }
 
-    public override byte[] ToByteArray() {
-        var result = new byte[46 + ChecksumLength];
+    public override byte[] ToByteArray()
+    {
+        var result = new byte[44 + ChecksumLength];
         result[0] = (byte)ProtocolType.GenericIO;
-        BitConverter.GetBytes(0x0025).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
+        BitConverter.GetBytes(0x0024).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
         Encoding.Latin1.GetBytes(SenderIdentifier.PadRight(20, '_')).CopyTo(result, SenderIdentifierOffset);
         Encoding.Latin1.GetBytes(ReceiverIdentifier.PadRight(20, '_')).CopyTo(result, ReceiverIdentifierOffset);
         result[ResultPdiVersionCheckOffset] = (byte)ResultPdiVersionCheck;
@@ -307,13 +338,15 @@ public record GenericIOPdiVersionCheckMessage (string SenderIdentifier, string R
     }
 }
 
-public enum GenericIOPdiVersionCheckMessageResultPdiVersionCheck : byte {
+public enum GenericIOPdiVersionCheckMessageResultPdiVersionCheck : byte
+{
     PDIVersionsFromReceiverAndSenderDoNotMatch = 0x01,
     PDIVersionsFromReceiverAndSenderDoMatch = 0x02,
 }
 
 
-public record ExternalLevelCrossingSystemPdiVersionCheckMessage (string SenderIdentifier, string ReceiverIdentifier, ExternalLevelCrossingSystemPdiVersionCheckMessageResultPdiVersionCheck ResultPdiVersionCheck, byte SenderPdiVersion, byte ChecksumLength, byte[] Checksum) : Message {
+public record ExternalLevelCrossingSystemPdiVersionCheckMessage(string SenderIdentifier, string ReceiverIdentifier, ExternalLevelCrossingSystemPdiVersionCheckMessageResultPdiVersionCheck ResultPdiVersionCheck, byte SenderPdiVersion, byte ChecksumLength, byte[] Checksum) : Message
+{
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -322,7 +355,8 @@ public record ExternalLevelCrossingSystemPdiVersionCheckMessage (string SenderId
     private const int ChecksumLengthOffset = 45;
     private const int ChecksumOffset = 46;
 
-    public new static ExternalLevelCrossingSystemPdiVersionCheckMessage FromBytes(byte[] message) {
+    public new static ExternalLevelCrossingSystemPdiVersionCheckMessage FromBytes(byte[] message)
+    {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
         var ResultPdiVersionCheck = (ExternalLevelCrossingSystemPdiVersionCheckMessageResultPdiVersionCheck)message[ResultPdiVersionCheckOffset];
@@ -332,10 +366,11 @@ public record ExternalLevelCrossingSystemPdiVersionCheckMessage (string SenderId
         return new ExternalLevelCrossingSystemPdiVersionCheckMessage(SenderIdentifier, ReceiverIdentifier, ResultPdiVersionCheck, SenderPdiVersion, ChecksumLength, Checksum);
     }
 
-    public override byte[] ToByteArray() {
-        var result = new byte[46 + ChecksumLength];
+    public override byte[] ToByteArray()
+    {
+        var result = new byte[44 + ChecksumLength];
         result[0] = (byte)ProtocolType.ExternalLevelCrossingSystem;
-        BitConverter.GetBytes(0x0025).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
+        BitConverter.GetBytes(0x0024).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
         Encoding.Latin1.GetBytes(SenderIdentifier.PadRight(20, '_')).CopyTo(result, SenderIdentifierOffset);
         Encoding.Latin1.GetBytes(ReceiverIdentifier.PadRight(20, '_')).CopyTo(result, ReceiverIdentifierOffset);
         result[ResultPdiVersionCheckOffset] = (byte)ResultPdiVersionCheck;
@@ -346,7 +381,8 @@ public record ExternalLevelCrossingSystemPdiVersionCheckMessage (string SenderId
     }
 }
 
-public enum ExternalLevelCrossingSystemPdiVersionCheckMessageResultPdiVersionCheck : byte {
+public enum ExternalLevelCrossingSystemPdiVersionCheckMessageResultPdiVersionCheck : byte
+{
     PDIVersionsFromReceiverAndSenderDoNotMatch = 0x01,
     PDIVersionsFromReceiverAndSenderDoMatch = 0x02,
 }
