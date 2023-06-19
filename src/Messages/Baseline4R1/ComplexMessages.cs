@@ -29,7 +29,7 @@ public record AdjacentInterlockingSystemPdiVersionCheckMessage(string SenderIden
     {
         var result = new byte[44 + ChecksumLength];
         result[0] = (byte)ProtocolType.AdjacentInterlockingSystem;
-        BitConverter.GetBytes(0x0024).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
+        BitConverter.GetBytes(0x0025).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
         Encoding.Latin1.GetBytes(SenderIdentifier.PadRight(20, '_')).CopyTo(result, SenderIdentifierOffset);
         Encoding.Latin1.GetBytes(ReceiverIdentifier.PadRight(20, '_')).CopyTo(result, ReceiverIdentifierOffset);
         result[ResultPdiVersionCheckOffset] = (byte)ResultPdiVersionCheck;
