@@ -29,7 +29,7 @@ jobs:
         run: dotnet restore src/Messages
 
       - name: Build
-        run: dotnet pack -c Release --version-suffix "${{ github.ref_name }}" --no-restore src/Messages /p:Version=1.0.1-build.${{ github.run_number }}
+        run: dotnet pack -c Release --no-restore src/Messages /p:Version=1.0.1-build-${{ github.ref_name }}.${{ github.run_number }}
 
       - name: Build and push NuGet Package
-        run: dotnet nuget push "src/Messages/bin/Release/EulynxLive.Messages.*.nupkg" --api-key ${{ secrets.NUGET_REGISTRY }} --source https://api.nuget.org/v3/index.json
+        run: dotnet nuget push "src/Messages/bin/Release/EulynxLive.Messages.1.0.1.${{ github.ref_name }}-build-${{ github.ref_name }}.${{ github.run_number }}.nupkg" --api-key ${{ secrets.NUGET_REGISTRY }} --source https://api.nuget.org/v3/index.json
