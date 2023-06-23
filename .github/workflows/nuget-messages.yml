@@ -20,6 +20,14 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Set environment variable
+        run: |
+          TEMP_REF_NAME=$GITHUB_REPOSITORY
+          REF_NAME="${TEMP_REF_NAME//[^a-zA-Z0-9]//-}"
+
+      - name: TEST
+        run: echo $REF_NAME
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v2
         with:
