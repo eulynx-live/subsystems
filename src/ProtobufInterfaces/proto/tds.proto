@@ -148,11 +148,11 @@ message TDSStateMessage {
 
   enum TvpsOccupancyStatus {
     TvpsOccupancyStatus_UNDEFINED = 0;
-    TvpsOccupancyStatus_WaitingForAnAcknowledgmentAfterFCPACommand = 1;
+    TvpsOccupancyStatus_WaitingForAnAcknowledgmentAfterFcpaCommand = 1;
     TvpsOccupancyStatus_SweepingTrainDetected = 2;
     TvpsOccupancyStatus_Disturbed = 3;
     TvpsOccupancyStatus_Occupied = 4;
-    TvpsOccupancyStatus_WaitingForASweepingTrainAfterFCPAOrFCPCommand = 5;
+    TvpsOccupancyStatus_WaitingForASweepingTrainAfterFcpaOrFcpCommand = 5;
     TvpsOccupancyStatus_Vacant = 6;
   }
 
