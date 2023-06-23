@@ -23,7 +23,7 @@ jobs:
       - name: Set environment variable
         run: |
           TEMP_REF_NAME="${{ github.ref_name }}"
-          REF_NAME=$(echo $RTEMP_REF_NAME | sed 's/\//-/g')
+          REF_NAME=$(echo $TEMP_REF_NAME | sed 's/\//-/g')
           echo "REF_NAME=$REF_NAME" >> $GITHUB_ENV
 
       - name: Show environment variable
