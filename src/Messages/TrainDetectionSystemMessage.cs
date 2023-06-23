@@ -2,7 +2,8 @@ using System;
 
 namespace EulynxLive.Messages
 {
-    public enum TrainDetectionSystemMessageType: ushort {
+    public enum TrainDetectionSystemMessageType : ushort
+    {
         InitializationRequest = 0x0021,
         StartInitialization = 0x0022,
         InitializationCompleted = 0x0023,
@@ -26,10 +27,10 @@ namespace EulynxLive.Messages
     public abstract class TrainDetectionSystemMessage : EulynxMessage
     {
         public TrainDetectionSystemMessage(string senderId, string receiverId) : base(senderId, receiverId)
-        {}
+        { }
 
         public override ProtocolType ProtocolType => ProtocolType.TrainDetectionSystem;
-        public override ushort MessageTypeRaw => (ushort) MessageType;
+        public override ushort MessageTypeRaw => (ushort)MessageType;
         public abstract TrainDetectionSystemMessageType MessageType { get; }
     }
     public class TrainDetectionSystemVersionCheckCommand : TrainDetectionSystemMessage
@@ -75,8 +76,9 @@ namespace EulynxLive.Messages
 
         public override int Size => 46 + ChecksumLength;
 
-        internal static EulynxMessage Parse(string senderId, string receiverId, byte[] message) {
-            var resultPdiVersionCheck = (PdiVersionCheckResult) message[RESULT_PDI_VERSION_CHECK_OFFSET];
+        internal static EulynxMessage Parse(string senderId, string receiverId, byte[] message)
+        {
+            var resultPdiVersionCheck = (PdiVersionCheckResult)message[RESULT_PDI_VERSION_CHECK_OFFSET];
             var senderPdiVersion = message[SENDER_PDI_VERSION_OFFSET];
             var checksumLength = message[CHECKSUM_LENGTH_OFFSET];
             // var CHECKSUM_DATA_OFFSET = message[CHECKSUM_DATA_OFFSET];
@@ -188,7 +190,8 @@ namespace EulynxLive.Messages
         }
     }
 
-    public enum ForceClearMode : byte {
+    public enum ForceClearMode : byte
+    {
         ForceClearU = 0x01,
         ForceClearC = 0x02,
         ForceClearPA = 0x03,
@@ -211,7 +214,7 @@ namespace EulynxLive.Messages
 
         internal static EulynxMessage Parse(string senderId, string receiverId, byte[] message)
         {
-            var forceClearMode = (ForceClearMode) message[FORCE_CLEAR_MODE_OFFSET];
+            var forceClearMode = (ForceClearMode)message[FORCE_CLEAR_MODE_OFFSET];
             return new TrainDetectionSystemForceClearCommand(senderId, receiverId, forceClearMode);
         }
 
@@ -255,7 +258,8 @@ namespace EulynxLive.Messages
         }
     }
 
-    public enum DirectionOfPassing : byte {
+    public enum DirectionOfPassing : byte
+    {
         ReferenceDirection = 0x01,
         AgainstReferenceDirection = 0x02,
         WithoutIndicatedDirection = 0x03,
@@ -273,7 +277,7 @@ namespace EulynxLive.Messages
         DirectionOfPassing DirectionOfPassing { get; set; }
         internal static EulynxMessage Parse(string senderId, string receiverId, byte[] message)
         {
-            var directionOfPassing = (DirectionOfPassing) message[DIRECTION_OF_PASSING_OFFSET];
+            var directionOfPassing = (DirectionOfPassing)message[DIRECTION_OF_PASSING_OFFSET];
             return new TrainDetectionSystemTDPActivationCommand(senderId, receiverId, directionOfPassing);
         }
 
@@ -283,7 +287,8 @@ namespace EulynxLive.Messages
         }
     }
 
-    public enum TvpsOccupancyStatus : byte {
+    public enum TvpsOccupancyStatus : byte
+    {
         Vacant = 0x01,
         Occupied = 0x02,
         Disturbed = 0x03,
@@ -291,16 +296,40 @@ namespace EulynxLive.Messages
         WaitingForAcknowledgementAfterFcPA = 0x05,
     }
 
-    public enum TvpsAbilityToBeForcedToClear : byte {
+    public enum TvpsAbilityToBeForcedToClear : byte
+    {
         NotAbleToBeForcedToClear = 0x01,
         AbleToBeForcedToClear = 0x02,
     }
-    public enum TvpsPomStatus : byte {
+    public enum TvpsPomStatus : byte
+    {
         PowerSupplyOk = 0x01,
         PowerSupplyNok = 0x02,
         NotApplicable = 0xff,
     }
 
+
+    public enum TvpsDisturbanceStatus : byte
+    {
+        IsOperational = 0x01,
+        IsTechnical = 0x02,
+        StatusIsNotApplicable = 0xFF
+    }
+
+    public enum TvpsChangeTrigger : byte
+    {
+        PassingDetected = 0x01,
+        CommandFromEilAccepted = 0x02,
+        CommandFromMaintainerAccepted = 0x03,
+        TechnicalFailure = 0x04,
+        InitialSectionState = 0x05,
+        InternalTrigger = 0x06,
+        IsNotApplicable = 0xFF
+    }
+
+
+
+    // HERE!
     public class TrainDetectionSystemTvpsOccupancyStatusMessage : TrainDetectionSystemMessage
     {
         private const int OCCUPANCY_STATUS_OFFSET = 43;
@@ -308,29 +337,60 @@ namespace EulynxLive.Messages
         private const int FILLING_LEVEL_OFFSET = 45;
 
         private const int POM_STATUS_OFFSET = 47;
+        private const int DISTURBANCE_STATUS_OFFSET = 48;
+        private const int CHANGE_TRIGGER_OFFSET = 49;
+
+
         public override TrainDetectionSystemMessageType MessageType => TrainDetectionSystemMessageType.TvpsOccupancyStatusMessage;
-        public override int Size => 48;
-        public TrainDetectionSystemTvpsOccupancyStatusMessage(string senderId, string receiverId, TvpsOccupancyStatus occupancyStatus, TvpsAbilityToBeForcedToClear abilityToBeForcedToClear, ushort fillingLevel, TvpsPomStatus pomStatus) : base(senderId, receiverId)
+        public override int Size => 50;
+        public TrainDetectionSystemTvpsOccupancyStatusMessage(
+            string senderId,
+            string receiverId,
+            TvpsOccupancyStatus occupancyStatus,
+            TvpsAbilityToBeForcedToClear abilityToBeForcedToClear,
+            ushort fillingLevel,
+            TvpsPomStatus pomStatus,
+            TvpsDisturbanceStatus disturbanceStatus,
+            TvpsChangeTrigger changeTrigger
+        ) : base(senderId, receiverId)
         {
             OccupancyStatus = occupancyStatus;
             AbilityToBeForcedToClear = abilityToBeForcedToClear;
             FillingLevel = fillingLevel;
             PomStatus = pomStatus;
+            DisturbanceStatus = disturbanceStatus;
+            ChangeTrigger = changeTrigger;
         }
 
         public TvpsOccupancyStatus OccupancyStatus { get; set; }
         public TvpsAbilityToBeForcedToClear AbilityToBeForcedToClear { get; set; }
         public ushort FillingLevel { get; set; }
         public TvpsPomStatus PomStatus { get; set; }
+        public TvpsDisturbanceStatus DisturbanceStatus { get; set; }
+        public TvpsChangeTrigger ChangeTrigger { get; set; }
+
 
         internal static EulynxMessage Parse(string senderId, string receiverId, byte[] message)
         {
-            var occupancyStatus = (TvpsOccupancyStatus) message[OCCUPANCY_STATUS_OFFSET];
-            var abilityToBeForcedToClear = (TvpsAbilityToBeForcedToClear) message[ABILITY_TO_BE_FORCED_TO_CLEAR_OFFSET];
+            var occupancyStatus = (TvpsOccupancyStatus)message[OCCUPANCY_STATUS_OFFSET];
+            var abilityToBeForcedToClear = (TvpsAbilityToBeForcedToClear)message[ABILITY_TO_BE_FORCED_TO_CLEAR_OFFSET];
             var fillingLevel = BitConverter.ToUInt16(
                 new byte[2] { message[FILLING_LEVEL_OFFSET], message[FILLING_LEVEL_OFFSET + 1] });
-            var pomStatus = (TvpsPomStatus) message[POM_STATUS_OFFSET];
-            return new TrainDetectionSystemTvpsOccupancyStatusMessage(senderId, receiverId, occupancyStatus, abilityToBeForcedToClear, fillingLevel, pomStatus);
+            var pomStatus = (TvpsPomStatus)message[POM_STATUS_OFFSET];
+            var disturbanceStatus = (TvpsDisturbanceStatus)message[DISTURBANCE_STATUS_OFFSET];
+            var changeTrigger = (TvpsChangeTrigger)message[CHANGE_TRIGGER_OFFSET];
+
+
+            return new TrainDetectionSystemTvpsOccupancyStatusMessage(
+                senderId,
+                receiverId,
+                occupancyStatus,
+                abilityToBeForcedToClear,
+                fillingLevel,
+                pomStatus,
+                disturbanceStatus,
+                changeTrigger
+            );
         }
         protected override void WritePayloadToByteArray(byte[] bytes)
         {
@@ -339,6 +399,9 @@ namespace EulynxLive.Messages
             bytes[FILLING_LEVEL_OFFSET] = (byte)FillingLevel;
             bytes[FILLING_LEVEL_OFFSET + 1] = (byte)(FillingLevel >> 8);
             bytes[POM_STATUS_OFFSET] = (byte)PomStatus;
+            bytes[DISTURBANCE_STATUS_OFFSET] = (byte)DisturbanceStatus;
+            bytes[CHANGE_TRIGGER_OFFSET] = (byte)ChangeTrigger;
+
         }
     }
 
@@ -356,7 +419,7 @@ namespace EulynxLive.Messages
 
         internal static EulynxMessage Parse(string senderId, string receiverId, byte[] message)
         {
-            var occupancyStatus = (TvpsOccupancyStatus) message[OCCUPANCY_STATUS_OFFSET];
+            var occupancyStatus = (TvpsOccupancyStatus)message[OCCUPANCY_STATUS_OFFSET];
             return new TrainDetectionSystemTvpsOccupancyStatusMessageNeuPro(senderId, receiverId, occupancyStatus);
         }
         protected override void WritePayloadToByteArray(byte[] bytes)
@@ -379,7 +442,7 @@ namespace EulynxLive.Messages
 
         internal static EulynxMessage Parse(string senderId, string receiverId, byte[] message)
         {
-            var occupancyStatus = (TvpsOccupancyStatus) message[OCCUPANCY_STATUS_OFFSET];
+            var occupancyStatus = (TvpsOccupancyStatus)message[OCCUPANCY_STATUS_OFFSET];
             return new TrainDetectionSystemTvpsOccupancyStatusMessageNeuProThales(senderId, receiverId, occupancyStatus);
         }
         protected override void WritePayloadToByteArray(byte[] bytes)
