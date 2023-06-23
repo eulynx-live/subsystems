@@ -329,7 +329,6 @@ namespace EulynxLive.Messages
 
 
 
-    // HERE!
     public class TrainDetectionSystemTvpsOccupancyStatusMessage : TrainDetectionSystemMessage
     {
         private const int OCCUPANCY_STATUS_OFFSET = 43;

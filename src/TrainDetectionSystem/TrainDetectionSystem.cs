@@ -229,7 +229,7 @@ namespace EulynxLive.TrainDetectionSystem
                 }
                 catch (Exception ex)
                 {
-                    // _logger.LogWarning(ex, "Exception during simulation. Resetting.");
+                    _logger.LogWarning(ex, "Exception during simulation. Resetting.");
                     await Reset();
                     await Task.Delay(1000);
                 }
