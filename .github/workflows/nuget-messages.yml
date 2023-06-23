@@ -27,7 +27,7 @@ jobs:
           echo "REF_NAME=$REF_NAME" >> $GITHUB_ENV
 
       - name: Show environment variable
-        run: "${{ env.REF_NAME }}"
+        run: echo "${{ env.REF_NAME }}"
 
       # - name: Set environment variable
       #   run: |
