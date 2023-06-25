@@ -41,4 +41,4 @@ jobs:
         run: dotnet pack -c Release --no-restore src/ProtobufInterfaces /p:Version=1.0.0-${{ env.REF_NAME }}.${{ github.run_number }}
 
       - name: Build and push NuGet Package
-        run: dotnet nuget push "src/ProtobufInterfaces/bin/Release/EulynxLive.ProtobufInterfaces.1.0.0-${{ github.ref_name }}.${{ github.run_number }}.nupkg" --api-key ${{ secrets.NUGET_REGISTRY }} --source https://api.nuget.org/v3/index.json
+        run: dotnet nuget push "src/ProtobufInterfaces/bin/Release/EulynxLive.ProtobufInterfaces.1.0.0-${{ env.REF_NAME }}.${{ github.run_number }}.nupkg" --api-key ${{ secrets.NUGET_REGISTRY }} --source https://api.nuget.org/v3/index.json
