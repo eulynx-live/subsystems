@@ -26,6 +26,9 @@ jobs:
           REF_NAME=$(echo $TEMP_REF_NAME | sed 's/\//-/g')
           echo "REF_NAME=$REF_NAME" >> $GITHUB_ENV
 
+      - name: Show environment variable
+        run: echo "${{ env.REF_NAME }}"
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v2
         with:
