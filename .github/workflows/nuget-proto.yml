@@ -2,7 +2,9 @@ name: NuGet Package CI - Protobuf
 
 on:
   push:
-    branches: ["main"]
+    branches:
+      - main
+      - release/**
 
 env:
   REGISTRY: ghcr.io
@@ -18,6 +20,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Set environment variable
+        run: |
+          TEMP_REF_NAME="${{ github.ref_name }}"
+          REF_NAME=$(echo $TEMP_REF_NAME | sed 's/\//-/g')
+          echo "REF_NAME=$REF_NAME" >> $GITHUB_ENV
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v2
         with:
@@ -27,7 +35,7 @@ jobs:
         run: dotnet restore src/ProtobufInterfaces
 
       - name: Build
-        run: dotnet pack -c Release --no-restore src/ProtobufInterfaces /p:Version=1.0.0-build.${{ github.run_number }}
+        run: dotnet pack -c Release --no-restore src/ProtobufInterfaces /p:Version=1.0.0-${{ env.REF_NAME }}.${{ github.run_number }}
 
       - name: Build and push NuGet Package
-        run: dotnet nuget push "src/ProtobufInterfaces/bin/Release/EulynxLive.ProtobufInterfaces.1.0.0-build-${{ github.ref_name }}.${{ github.run_number }}.nupkg" --api-key ${{ secrets.NUGET_REGISTRY }} --source https://api.nuget.org/v3/index.json
+        run: dotnet nuget push "src/ProtobufInterfaces/bin/Release/EulynxLive.ProtobufInterfaces.1.0.0-${{ env.REF_NAME }}-${{ github.ref_name }}.${{ github.run_number }}.nupkg" --api-key ${{ secrets.NUGET_REGISTRY }} --source https://api.nuget.org/v3/index.json
