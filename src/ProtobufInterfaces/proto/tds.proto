@@ -147,7 +147,6 @@ message TDSStateMessage {
   }
 
   enum TvpsOccupancyStatus {
-    option pbr.original_name = "TvpsOccupancyStatus_WaitingForASweepingTrainAfterFcpaOrFcpCommand";
     TvpsOccupancyStatus_UNDEFINED = 0;
     TvpsOccupancyStatus_WaitingForAnAcknowledgmentAfterFcpaCommand = 1;
     TvpsOccupancyStatus_SweepingTrainDetected = 2;
