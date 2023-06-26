@@ -29,7 +29,7 @@ namespace EulynxLive.TrainDetectionSystem
         private string _localRastaId;
         private string _remoteId;
         private string _remoteEndpoint;
-        private string _pps;
+        private byte[] _pps;
 
         private bool _initialized;
         AsyncDuplexStreamingCall<SciPacket, SciPacket> _currentConnection;
@@ -78,13 +78,23 @@ namespace EulynxLive.TrainDetectionSystem
                 throw new Exception("Missing --remote-endpoint command line parameter.");
             }
 
-            _pps = _configuration["pps"];
-            if (_pps == null)
+            var pps = _configuration["pps"];
+            if (pps == null)
             {
                 throw new Exception("Missing --pps command line parameter.");
             }
 
-            _trackSectionStatuses = _localIdTvpses.Select(x => new { Key = x, Value = TvpsOccupancyStatus.Disturbed }).ToDictionary(x => x.Key, x => x.Value);
+            _pps = StringToByteArray(pps);
+            Array.Reverse(_pps);
+
+            _trackSectionStatuses = _localIdTvpses.Select(x => new { Key = x, Value = TvpsOccupancyStatus.Vacant }).ToDictionary(x => x.Key, x => x.Value);
+        }
+
+        private byte[] StringToByteArray(string hex) {
+            return Enumerable.Range(0, hex.Length)
+                .Where(x => x % 2 == 0)
+                .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
+                .ToArray();
         }
 
         public async Task HandleWebSocket(WebSocket webSocket)
@@ -143,19 +153,12 @@ namespace EulynxLive.TrainDetectionSystem
                             break;
                         }
 
-                        var stringToByteArray = (string hex) =>
-                            Enumerable.Range(0, hex.Length)
-                                .Where(x => x % 2 == 0)
-                                .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
-                                .ToArray();
-
-                        var ppsBytes = stringToByteArray(_pps);
                         var versionCheckResponse = new Messages.Baseline4R1.TrainDetectionSystemPdiVersionCheckMessage(
                             _localIdTps, _remoteId,
                             Messages.Baseline4R1.TrainDetectionSystemPdiVersionCheckMessageResultPdiVersionCheck.PDIVersionsFromReceiverAndSenderDoMatch,
                             0x1,
-                            (byte)ppsBytes.Length,
-                            ppsBytes
+                            (byte)_pps.Length,
+                            _pps
                         );
                         await _currentConnection.RequestStream.WriteAsync(new SciPacket() { Message = ByteString.CopyFrom(versionCheckResponse.ToByteArray()) });
 
@@ -177,7 +180,7 @@ namespace EulynxLive.TrainDetectionSystem
                         foreach (var tps in _localIdTvpses)
                         {
                             var occupancyStatus = new TrainDetectionSystemTvpsOccupancyStatusMessage(tps, _remoteId, _trackSectionStatuses[tps],
-                                TvpsAbilityToBeForcedToClear.NotAbleToBeForcedToClear, (ushort)0xfffe, TvpsPomStatus.NotApplicable);
+                                TvpsAbilityToBeForcedToClear.NotAbleToBeForcedToClear, (ushort)0xffff);
                             await _currentConnection.RequestStream.WriteAsync(new SciPacket() { Message = ByteString.CopyFrom(occupancyStatus.ToByteArray()) });
                         }
 
@@ -202,7 +205,7 @@ namespace EulynxLive.TrainDetectionSystem
                                 {
                                     _trackSectionStatuses[tps] = TvpsOccupancyStatus.Vacant;
                                     var occupancyStatus = new TrainDetectionSystemTvpsOccupancyStatusMessage(tps, _remoteId, _trackSectionStatuses[tps],
-                                        TvpsAbilityToBeForcedToClear.NotAbleToBeForcedToClear, (ushort)0xfffe, TvpsPomStatus.NotApplicable);
+                                        TvpsAbilityToBeForcedToClear.NotAbleToBeForcedToClear, (ushort)0xffff);
                                     await _currentConnection.RequestStream.WriteAsync(new SciPacket() { Message = ByteString.CopyFrom(occupancyStatus.ToByteArray()) });
                                 }
                             }
@@ -242,7 +245,7 @@ namespace EulynxLive.TrainDetectionSystem
             if (_currentConnection != null)
             {
                 var occupancyStatus = new TrainDetectionSystemTvpsOccupancyStatusMessage(tps, _remoteId, _trackSectionStatuses[tps],
-                    TvpsAbilityToBeForcedToClear.NotAbleToBeForcedToClear, (ushort)0xfffe, TvpsPomStatus.NotApplicable);
+                    TvpsAbilityToBeForcedToClear.NotAbleToBeForcedToClear, (ushort)0xffff);
                 await _currentConnection.RequestStream.WriteAsync(new SciPacket() { Message = ByteString.CopyFrom(occupancyStatus.ToByteArray()) });
             }
 
@@ -271,7 +274,7 @@ namespace EulynxLive.TrainDetectionSystem
             if (_currentConnection != null)
             {
                 var occupancyStatus = new TrainDetectionSystemTvpsOccupancyStatusMessage(tps, _remoteId, _trackSectionStatuses[tps],
-                    TvpsAbilityToBeForcedToClear.NotAbleToBeForcedToClear, (ushort)0xfffe, TvpsPomStatus.NotApplicable);
+                    TvpsAbilityToBeForcedToClear.NotAbleToBeForcedToClear, (ushort)0xffff);
                 await _currentConnection.RequestStream.WriteAsync(new SciPacket() { Message = ByteString.CopyFrom(occupancyStatus.ToByteArray()) });
             }
 

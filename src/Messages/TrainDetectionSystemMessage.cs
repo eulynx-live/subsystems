@@ -292,8 +292,8 @@ namespace EulynxLive.Messages
     }
 
     public enum TvpsAbilityToBeForcedToClear : byte {
-        NotAbleToBeForcedToClear = 0x01,
-        AbleToBeForcedToClear = 0x02,
+        NotAbleToBeForcedToClear = 0x00,
+        AbleToBeForcedToClear = 0x01,
     }
     public enum TvpsPomStatus : byte {
         PowerSupplyOk = 0x01,
@@ -306,16 +306,13 @@ namespace EulynxLive.Messages
         private const int OCCUPANCY_STATUS_OFFSET = 43;
         private const int ABILITY_TO_BE_FORCED_TO_CLEAR_OFFSET = 44;
         private const int FILLING_LEVEL_OFFSET = 45;
-
-        private const int POM_STATUS_OFFSET = 47;
         public override TrainDetectionSystemMessageType MessageType => TrainDetectionSystemMessageType.TvpsOccupancyStatusMessage;
-        public override int Size => 48;
-        public TrainDetectionSystemTvpsOccupancyStatusMessage(string senderId, string receiverId, TvpsOccupancyStatus occupancyStatus, TvpsAbilityToBeForcedToClear abilityToBeForcedToClear, ushort fillingLevel, TvpsPomStatus pomStatus) : base(senderId, receiverId)
+        public override int Size => 47;
+        public TrainDetectionSystemTvpsOccupancyStatusMessage(string senderId, string receiverId, TvpsOccupancyStatus occupancyStatus, TvpsAbilityToBeForcedToClear abilityToBeForcedToClear, ushort fillingLevel) : base(senderId, receiverId)
         {
             OccupancyStatus = occupancyStatus;
             AbilityToBeForcedToClear = abilityToBeForcedToClear;
             FillingLevel = fillingLevel;
-            PomStatus = pomStatus;
         }
 
         public TvpsOccupancyStatus OccupancyStatus { get; set; }
@@ -329,8 +326,7 @@ namespace EulynxLive.Messages
             var abilityToBeForcedToClear = (TvpsAbilityToBeForcedToClear) message[ABILITY_TO_BE_FORCED_TO_CLEAR_OFFSET];
             var fillingLevel = BitConverter.ToUInt16(
                 new byte[2] { message[FILLING_LEVEL_OFFSET], message[FILLING_LEVEL_OFFSET + 1] });
-            var pomStatus = (TvpsPomStatus) message[POM_STATUS_OFFSET];
-            return new TrainDetectionSystemTvpsOccupancyStatusMessage(senderId, receiverId, occupancyStatus, abilityToBeForcedToClear, fillingLevel, pomStatus);
+            return new TrainDetectionSystemTvpsOccupancyStatusMessage(senderId, receiverId, occupancyStatus, abilityToBeForcedToClear, fillingLevel);
         }
         protected override void WritePayloadToByteArray(byte[] bytes)
         {
@@ -338,7 +334,6 @@ namespace EulynxLive.Messages
             bytes[ABILITY_TO_BE_FORCED_TO_CLEAR_OFFSET] = (byte)AbilityToBeForcedToClear;
             bytes[FILLING_LEVEL_OFFSET] = (byte)FillingLevel;
             bytes[FILLING_LEVEL_OFFSET + 1] = (byte)(FillingLevel >> 8);
-            bytes[POM_STATUS_OFFSET] = (byte)PomStatus;
         }
     }
 
