@@ -82,24 +82,26 @@ class TrainDetectionSystem extends Component<{}, TrainDetectionSystemState> {
                 <h2>Connection to Interlocking</h2>
                 <p>{this.state.connected ? 'connected' : 'disconnected'}</p>
                 <h2>Track Section States</h2>
-                {Object.entries(this.state.states).map(([id, state]) =>
-                    <div key={id}>
-                        <h3>{id}</h3>
-                        <p>{state}</p>
-                        <button onClick={async () => {
-                            var request = new TpsCommand();
-                            request.setTps(id);
+                <div className="tdsStates">
+                    {Object.entries(this.state.states).map(([id, state]) =>
+                        <div key={id}>
+                            <h3>{id}</h3>
+                            <p>{state}</p>
+                            <button onClick={async () => {
+                                var request = new TpsCommand();
+                                request.setTps(id);
 
-                            await client.increaseAxleCount(request, null);
-                        }}>Set occupied</button>
-                        <button onClick={async () => {
-                            var request = new TpsCommand();
-                            request.setTps(id);
+                                await client.increaseAxleCount(request, null);
+                            }}>Set occupied</button>
+                            <button onClick={async () => {
+                                var request = new TpsCommand();
+                                request.setTps(id);
 
-                            await client.decreaseAxleCount(request, null);
-                        }}>Set vacant</button>
+                                await client.decreaseAxleCount(request, null);
+                            }}>Set vacant</button>
+                        </div>
+                    )}
                     </div>
-                )}
             </div>
         );
     }

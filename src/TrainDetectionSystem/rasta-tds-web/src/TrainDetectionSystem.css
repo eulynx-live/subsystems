@@ -1,2 +1,12 @@
 .tds {
 }
+
+.tdsStates {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.tdsStates > div {
+    padding: 20px
+}
