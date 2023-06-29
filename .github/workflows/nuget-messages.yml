@@ -23,22 +23,22 @@ jobs:
       - name: Set environment variable
         run: |
           TEMP_REF_NAME="${{ github.ref_name }}"
-          REF_NAME=$(echo $TEMP_REF_NAME | sed 's/\//-/g')
+          REF_NAME=$(echo $TEMP_REF_NAME | sed 's/.*\///' | sed 's/\//-/g')
           echo "REF_NAME=$REF_NAME" >> $GITHUB_ENV
 
       - name: Show environment variable
         run: echo "${{ env.REF_NAME }}"
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v2
-        with:
-          dotnet-version: 6.0.x
+      # - name: Setup .NET
+      #   uses: actions/setup-dotnet@v2
+      #   with:
+      #     dotnet-version: 6.0.x
 
-      - name: Restore dependencies
-        run: dotnet restore src/Messages
+      # - name: Restore dependencies
+      #   run: dotnet restore src/Messages
 
-      - name: Build
-        run: dotnet pack -c Release --no-restore src/Messages /p:Version=1.0.1-${{ env.REF_NAME }}.${{ github.run_number }}
+      # - name: Build
+      #   run: dotnet pack -c Release --no-restore src/Messages /p:Version=1.0.1-${{ env.REF_NAME }}.${{ github.run_number }}
 
-      - name: Build and push NuGet Package
-        run: dotnet nuget push "src/Messages/bin/Release/EulynxLive.Messages.1.0.1-${{ env.REF_NAME }}.${{ github.run_number }}.nupkg" --api-key ${{ secrets.NUGET_REGISTRY }} --source https://api.nuget.org/v3/index.json
+      # - name: Build and push NuGet Package
+      #   run: dotnet nuget push "src/Messages/bin/Release/EulynxLive.Messages.1.0.1-${{ env.REF_NAME }}.${{ github.run_number }}.nupkg" --api-key ${{ secrets.NUGET_REGISTRY }} --source https://api.nuget.org/v3/index.json
