@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace EulynxLive.Messages.Baseline4R1;
 
-public record AdjacentInterlockingSystemAccessRestrictionRequestCommand (string SenderIdentifier, string ReceiverIdentifier, byte BoundaryId, AdjacentInterlockingSystemAccessRestrictionRequestCommandAccessRestrictionType AccessRestrictionType) : Message {
+public record AdjacentInterlockingSystemAccessRestrictionRequestCommand (string SenderIdentifier, string ReceiverIdentifier, string BoundaryId, AdjacentInterlockingSystemAccessRestrictionRequestCommandAccessRestrictionType AccessRestrictionType) : Message {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -14,7 +14,7 @@ public record AdjacentInterlockingSystemAccessRestrictionRequestCommand (string 
     public new static AdjacentInterlockingSystemAccessRestrictionRequestCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
-        var BoundaryId = (byte)message[BoundaryIdOffset];
+        var BoundaryId = Encoding.Latin1.GetString(message, BoundaryIdOffset, 20);
         var AccessRestrictionType = (AdjacentInterlockingSystemAccessRestrictionRequestCommandAccessRestrictionType)message[AccessRestrictionTypeOffset];
         return new AdjacentInterlockingSystemAccessRestrictionRequestCommand(SenderIdentifier, ReceiverIdentifier, BoundaryId, AccessRestrictionType);
     }
@@ -25,7 +25,7 @@ public record AdjacentInterlockingSystemAccessRestrictionRequestCommand (string 
         BitConverter.GetBytes(0x0003).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
         Encoding.Latin1.GetBytes(SenderIdentifier.PadRight(20, '_')).CopyTo(result, SenderIdentifierOffset);
         Encoding.Latin1.GetBytes(ReceiverIdentifier.PadRight(20, '_')).CopyTo(result, ReceiverIdentifierOffset);
-        result[BoundaryIdOffset] = (byte)BoundaryId;
+        Encoding.Latin1.GetBytes(BoundaryId.PadRight(20, '_')).CopyTo(result, BoundaryIdOffset);
         result[AccessRestrictionTypeOffset] = (byte)AccessRestrictionType;
         return result;
     }
@@ -49,7 +49,7 @@ public enum AdjacentInterlockingSystemAccessRestrictionRequestCommandAccessRestr
 }
 
 
-public record AdjacentInterlockingSystemFlankProtectionRequestCommand (string SenderIdentifier, string ReceiverIdentifier, byte BoundaryId, AdjacentInterlockingSystemFlankProtectionRequestCommandFlankProtectionRequestType FlankProtectionRequestType) : Message {
+public record AdjacentInterlockingSystemFlankProtectionRequestCommand (string SenderIdentifier, string ReceiverIdentifier, string BoundaryId, AdjacentInterlockingSystemFlankProtectionRequestCommandFlankProtectionRequestType FlankProtectionRequestType) : Message {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -59,7 +59,7 @@ public record AdjacentInterlockingSystemFlankProtectionRequestCommand (string Se
     public new static AdjacentInterlockingSystemFlankProtectionRequestCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
-        var BoundaryId = (byte)message[BoundaryIdOffset];
+        var BoundaryId = Encoding.Latin1.GetString(message, BoundaryIdOffset, 20);
         var FlankProtectionRequestType = (AdjacentInterlockingSystemFlankProtectionRequestCommandFlankProtectionRequestType)message[FlankProtectionRequestTypeOffset];
         return new AdjacentInterlockingSystemFlankProtectionRequestCommand(SenderIdentifier, ReceiverIdentifier, BoundaryId, FlankProtectionRequestType);
     }
@@ -70,7 +70,7 @@ public record AdjacentInterlockingSystemFlankProtectionRequestCommand (string Se
         BitConverter.GetBytes(0x0005).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
         Encoding.Latin1.GetBytes(SenderIdentifier.PadRight(20, '_')).CopyTo(result, SenderIdentifierOffset);
         Encoding.Latin1.GetBytes(ReceiverIdentifier.PadRight(20, '_')).CopyTo(result, ReceiverIdentifierOffset);
-        result[BoundaryIdOffset] = (byte)BoundaryId;
+        Encoding.Latin1.GetBytes(BoundaryId.PadRight(20, '_')).CopyTo(result, BoundaryIdOffset);
         result[FlankProtectionRequestTypeOffset] = (byte)FlankProtectionRequestType;
         return result;
     }
@@ -82,7 +82,7 @@ public enum AdjacentInterlockingSystemFlankProtectionRequestCommandFlankProtecti
 }
 
 
-public record AdjacentInterlockingSystemRouteRequestCommand (string SenderIdentifier, string ReceiverIdentifier, byte BoundaryId, byte RouteId, AdjacentInterlockingSystemRouteRequestCommandRouteType RouteType) : Message {
+public record AdjacentInterlockingSystemRouteRequestCommand (string SenderIdentifier, string ReceiverIdentifier, string BoundaryId, string RouteId, AdjacentInterlockingSystemRouteRequestCommandRouteType RouteType) : Message {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -93,8 +93,8 @@ public record AdjacentInterlockingSystemRouteRequestCommand (string SenderIdenti
     public new static AdjacentInterlockingSystemRouteRequestCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
-        var BoundaryId = (byte)message[BoundaryIdOffset];
-        var RouteId = (byte)message[RouteIdOffset];
+        var BoundaryId = Encoding.Latin1.GetString(message, BoundaryIdOffset, 20);
+        var RouteId = Encoding.Latin1.GetString(message, RouteIdOffset, 20);
         var RouteType = (AdjacentInterlockingSystemRouteRequestCommandRouteType)message[RouteTypeOffset];
         return new AdjacentInterlockingSystemRouteRequestCommand(SenderIdentifier, ReceiverIdentifier, BoundaryId, RouteId, RouteType);
     }
@@ -105,8 +105,8 @@ public record AdjacentInterlockingSystemRouteRequestCommand (string SenderIdenti
         BitConverter.GetBytes(0x0007).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
         Encoding.Latin1.GetBytes(SenderIdentifier.PadRight(20, '_')).CopyTo(result, SenderIdentifierOffset);
         Encoding.Latin1.GetBytes(ReceiverIdentifier.PadRight(20, '_')).CopyTo(result, ReceiverIdentifierOffset);
-        result[BoundaryIdOffset] = (byte)BoundaryId;
-        result[RouteIdOffset] = (byte)RouteId;
+        Encoding.Latin1.GetBytes(BoundaryId.PadRight(20, '_')).CopyTo(result, BoundaryIdOffset);
+        Encoding.Latin1.GetBytes(RouteId.PadRight(20, '_')).CopyTo(result, RouteIdOffset);
         result[RouteTypeOffset] = (byte)RouteType;
         return result;
     }
@@ -122,7 +122,7 @@ public enum AdjacentInterlockingSystemRouteRequestCommandRouteType : byte {
 }
 
 
-public record AdjacentInterlockingSystemRouteCancellationRequestCommand (string SenderIdentifier, string ReceiverIdentifier, byte BoundaryId, byte RouteId) : Message {
+public record AdjacentInterlockingSystemRouteCancellationRequestCommand (string SenderIdentifier, string ReceiverIdentifier, string BoundaryId, string RouteId) : Message {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -132,8 +132,8 @@ public record AdjacentInterlockingSystemRouteCancellationRequestCommand (string 
     public new static AdjacentInterlockingSystemRouteCancellationRequestCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
-        var BoundaryId = (byte)message[BoundaryIdOffset];
-        var RouteId = (byte)message[RouteIdOffset];
+        var BoundaryId = Encoding.Latin1.GetString(message, BoundaryIdOffset, 20);
+        var RouteId = Encoding.Latin1.GetString(message, RouteIdOffset, 20);
         return new AdjacentInterlockingSystemRouteCancellationRequestCommand(SenderIdentifier, ReceiverIdentifier, BoundaryId, RouteId);
     }
 
@@ -143,8 +143,8 @@ public record AdjacentInterlockingSystemRouteCancellationRequestCommand (string 
         BitConverter.GetBytes(0x000A).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
         Encoding.Latin1.GetBytes(SenderIdentifier.PadRight(20, '_')).CopyTo(result, SenderIdentifierOffset);
         Encoding.Latin1.GetBytes(ReceiverIdentifier.PadRight(20, '_')).CopyTo(result, ReceiverIdentifierOffset);
-        result[BoundaryIdOffset] = (byte)BoundaryId;
-        result[RouteIdOffset] = (byte)RouteId;
+        Encoding.Latin1.GetBytes(BoundaryId.PadRight(20, '_')).CopyTo(result, BoundaryIdOffset);
+        Encoding.Latin1.GetBytes(RouteId.PadRight(20, '_')).CopyTo(result, RouteIdOffset);
         return result;
     }
 }
@@ -152,7 +152,7 @@ public record AdjacentInterlockingSystemRouteCancellationRequestCommand (string 
 
 
 
-public record AdjacentInterlockingSystemRoutePretestRequestCommand (string SenderIdentifier, string ReceiverIdentifier, byte BoundaryId, byte RouteId, AdjacentInterlockingSystemRoutePretestRequestCommandRouteType RouteType) : Message {
+public record AdjacentInterlockingSystemRoutePretestRequestCommand (string SenderIdentifier, string ReceiverIdentifier, string BoundaryId, string RouteId, AdjacentInterlockingSystemRoutePretestRequestCommandRouteType RouteType) : Message {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -163,8 +163,8 @@ public record AdjacentInterlockingSystemRoutePretestRequestCommand (string Sende
     public new static AdjacentInterlockingSystemRoutePretestRequestCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
-        var BoundaryId = (byte)message[BoundaryIdOffset];
-        var RouteId = (byte)message[RouteIdOffset];
+        var BoundaryId = Encoding.Latin1.GetString(message, BoundaryIdOffset, 20);
+        var RouteId = Encoding.Latin1.GetString(message, RouteIdOffset, 20);
         var RouteType = (AdjacentInterlockingSystemRoutePretestRequestCommandRouteType)message[RouteTypeOffset];
         return new AdjacentInterlockingSystemRoutePretestRequestCommand(SenderIdentifier, ReceiverIdentifier, BoundaryId, RouteId, RouteType);
     }
@@ -175,8 +175,8 @@ public record AdjacentInterlockingSystemRoutePretestRequestCommand (string Sende
         BitConverter.GetBytes(0x000F).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
         Encoding.Latin1.GetBytes(SenderIdentifier.PadRight(20, '_')).CopyTo(result, SenderIdentifierOffset);
         Encoding.Latin1.GetBytes(ReceiverIdentifier.PadRight(20, '_')).CopyTo(result, ReceiverIdentifierOffset);
-        result[BoundaryIdOffset] = (byte)BoundaryId;
-        result[RouteIdOffset] = (byte)RouteId;
+        Encoding.Latin1.GetBytes(BoundaryId.PadRight(20, '_')).CopyTo(result, BoundaryIdOffset);
+        Encoding.Latin1.GetBytes(RouteId.PadRight(20, '_')).CopyTo(result, RouteIdOffset);
         result[RouteTypeOffset] = (byte)RouteType;
         return result;
     }
@@ -192,7 +192,7 @@ public enum AdjacentInterlockingSystemRoutePretestRequestCommandRouteType : byte
 }
 
 
-public record AdjacentInterlockingSystemRouteReleaseInhibitionActivationRequestCommand (string SenderIdentifier, string ReceiverIdentifier, byte BoundaryId) : Message {
+public record AdjacentInterlockingSystemRouteReleaseInhibitionActivationRequestCommand (string SenderIdentifier, string ReceiverIdentifier, string BoundaryId) : Message {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -201,7 +201,7 @@ public record AdjacentInterlockingSystemRouteReleaseInhibitionActivationRequestC
     public new static AdjacentInterlockingSystemRouteReleaseInhibitionActivationRequestCommand FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
-        var BoundaryId = (byte)message[BoundaryIdOffset];
+        var BoundaryId = Encoding.Latin1.GetString(message, BoundaryIdOffset, 20);
         return new AdjacentInterlockingSystemRouteReleaseInhibitionActivationRequestCommand(SenderIdentifier, ReceiverIdentifier, BoundaryId);
     }
 
@@ -211,7 +211,7 @@ public record AdjacentInterlockingSystemRouteReleaseInhibitionActivationRequestC
         BitConverter.GetBytes(0x0011).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
         Encoding.Latin1.GetBytes(SenderIdentifier.PadRight(20, '_')).CopyTo(result, SenderIdentifierOffset);
         Encoding.Latin1.GetBytes(ReceiverIdentifier.PadRight(20, '_')).CopyTo(result, ReceiverIdentifierOffset);
-        result[BoundaryIdOffset] = (byte)BoundaryId;
+        Encoding.Latin1.GetBytes(BoundaryId.PadRight(20, '_')).CopyTo(result, BoundaryIdOffset);
         return result;
     }
 }
@@ -220,7 +220,7 @@ public record AdjacentInterlockingSystemRouteReleaseInhibitionActivationRequestC
 
 
 
-public record AdjacentInterlockingSystemActivationZoneStatusMessage (string SenderIdentifier, string ReceiverIdentifier, byte BoundaryId, byte ActivationZoneId, AdjacentInterlockingSystemActivationZoneStatusMessageActivationZoneStatus ActivationZoneStatus) : Message {
+public record AdjacentInterlockingSystemActivationZoneStatusMessage (string SenderIdentifier, string ReceiverIdentifier, string BoundaryId, string ActivationZoneId, AdjacentInterlockingSystemActivationZoneStatusMessageActivationZoneStatus ActivationZoneStatus) : Message {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -231,8 +231,8 @@ public record AdjacentInterlockingSystemActivationZoneStatusMessage (string Send
     public new static AdjacentInterlockingSystemActivationZoneStatusMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
-        var BoundaryId = (byte)message[BoundaryIdOffset];
-        var ActivationZoneId = (byte)message[ActivationZoneIdOffset];
+        var BoundaryId = Encoding.Latin1.GetString(message, BoundaryIdOffset, 20);
+        var ActivationZoneId = Encoding.Latin1.GetString(message, ActivationZoneIdOffset, 20);
         var ActivationZoneStatus = (AdjacentInterlockingSystemActivationZoneStatusMessageActivationZoneStatus)message[ActivationZoneStatusOffset];
         return new AdjacentInterlockingSystemActivationZoneStatusMessage(SenderIdentifier, ReceiverIdentifier, BoundaryId, ActivationZoneId, ActivationZoneStatus);
     }
@@ -243,8 +243,8 @@ public record AdjacentInterlockingSystemActivationZoneStatusMessage (string Send
         BitConverter.GetBytes(0x0001).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
         Encoding.Latin1.GetBytes(SenderIdentifier.PadRight(20, '_')).CopyTo(result, SenderIdentifierOffset);
         Encoding.Latin1.GetBytes(ReceiverIdentifier.PadRight(20, '_')).CopyTo(result, ReceiverIdentifierOffset);
-        result[BoundaryIdOffset] = (byte)BoundaryId;
-        result[ActivationZoneIdOffset] = (byte)ActivationZoneId;
+        Encoding.Latin1.GetBytes(BoundaryId.PadRight(20, '_')).CopyTo(result, BoundaryIdOffset);
+        Encoding.Latin1.GetBytes(ActivationZoneId.PadRight(20, '_')).CopyTo(result, ActivationZoneIdOffset);
         result[ActivationZoneStatusOffset] = (byte)ActivationZoneStatus;
         return result;
     }
@@ -256,7 +256,7 @@ public enum AdjacentInterlockingSystemActivationZoneStatusMessageActivationZoneS
 }
 
 
-public record AdjacentInterlockingSystemApproachZoneStatusMessage (string SenderIdentifier, string ReceiverIdentifier, byte BoundaryId, byte ApproachZoneId, AdjacentInterlockingSystemApproachZoneStatusMessageApproachZoneStatus ApproachZoneStatus) : Message {
+public record AdjacentInterlockingSystemApproachZoneStatusMessage (string SenderIdentifier, string ReceiverIdentifier, string BoundaryId, string ApproachZoneId, AdjacentInterlockingSystemApproachZoneStatusMessageApproachZoneStatus ApproachZoneStatus) : Message {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -267,8 +267,8 @@ public record AdjacentInterlockingSystemApproachZoneStatusMessage (string Sender
     public new static AdjacentInterlockingSystemApproachZoneStatusMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
-        var BoundaryId = (byte)message[BoundaryIdOffset];
-        var ApproachZoneId = (byte)message[ApproachZoneIdOffset];
+        var BoundaryId = Encoding.Latin1.GetString(message, BoundaryIdOffset, 20);
+        var ApproachZoneId = Encoding.Latin1.GetString(message, ApproachZoneIdOffset, 20);
         var ApproachZoneStatus = (AdjacentInterlockingSystemApproachZoneStatusMessageApproachZoneStatus)message[ApproachZoneStatusOffset];
         return new AdjacentInterlockingSystemApproachZoneStatusMessage(SenderIdentifier, ReceiverIdentifier, BoundaryId, ApproachZoneId, ApproachZoneStatus);
     }
@@ -279,8 +279,8 @@ public record AdjacentInterlockingSystemApproachZoneStatusMessage (string Sender
         BitConverter.GetBytes(0x0002).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
         Encoding.Latin1.GetBytes(SenderIdentifier.PadRight(20, '_')).CopyTo(result, SenderIdentifierOffset);
         Encoding.Latin1.GetBytes(ReceiverIdentifier.PadRight(20, '_')).CopyTo(result, ReceiverIdentifierOffset);
-        result[BoundaryIdOffset] = (byte)BoundaryId;
-        result[ApproachZoneIdOffset] = (byte)ApproachZoneId;
+        Encoding.Latin1.GetBytes(BoundaryId.PadRight(20, '_')).CopyTo(result, BoundaryIdOffset);
+        Encoding.Latin1.GetBytes(ApproachZoneId.PadRight(20, '_')).CopyTo(result, ApproachZoneIdOffset);
         result[ApproachZoneStatusOffset] = (byte)ApproachZoneStatus;
         return result;
     }
@@ -292,7 +292,7 @@ public enum AdjacentInterlockingSystemApproachZoneStatusMessageApproachZoneStatu
 }
 
 
-public record AdjacentInterlockingSystemAccessRestrictionStatusMessage (string SenderIdentifier, string ReceiverIdentifier, byte BoundaryId, AdjacentInterlockingSystemAccessRestrictionStatusMessageAccessRestrictionActivationStatus AccessRestrictionActivationStatus, AdjacentInterlockingSystemAccessRestrictionStatusMessageAccessRestrictionType AccessRestrictionType) : Message {
+public record AdjacentInterlockingSystemAccessRestrictionStatusMessage (string SenderIdentifier, string ReceiverIdentifier, string BoundaryId, AdjacentInterlockingSystemAccessRestrictionStatusMessageAccessRestrictionActivationStatus AccessRestrictionActivationStatus, AdjacentInterlockingSystemAccessRestrictionStatusMessageAccessRestrictionType AccessRestrictionType) : Message {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -303,7 +303,7 @@ public record AdjacentInterlockingSystemAccessRestrictionStatusMessage (string S
     public new static AdjacentInterlockingSystemAccessRestrictionStatusMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
-        var BoundaryId = (byte)message[BoundaryIdOffset];
+        var BoundaryId = Encoding.Latin1.GetString(message, BoundaryIdOffset, 20);
         var AccessRestrictionActivationStatus = (AdjacentInterlockingSystemAccessRestrictionStatusMessageAccessRestrictionActivationStatus)message[AccessRestrictionActivationStatusOffset];
         var AccessRestrictionType = (AdjacentInterlockingSystemAccessRestrictionStatusMessageAccessRestrictionType)message[AccessRestrictionTypeOffset];
         return new AdjacentInterlockingSystemAccessRestrictionStatusMessage(SenderIdentifier, ReceiverIdentifier, BoundaryId, AccessRestrictionActivationStatus, AccessRestrictionType);
@@ -315,7 +315,7 @@ public record AdjacentInterlockingSystemAccessRestrictionStatusMessage (string S
         BitConverter.GetBytes(0x0012).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
         Encoding.Latin1.GetBytes(SenderIdentifier.PadRight(20, '_')).CopyTo(result, SenderIdentifierOffset);
         Encoding.Latin1.GetBytes(ReceiverIdentifier.PadRight(20, '_')).CopyTo(result, ReceiverIdentifierOffset);
-        result[BoundaryIdOffset] = (byte)BoundaryId;
+        Encoding.Latin1.GetBytes(BoundaryId.PadRight(20, '_')).CopyTo(result, BoundaryIdOffset);
         result[AccessRestrictionActivationStatusOffset] = (byte)AccessRestrictionActivationStatus;
         result[AccessRestrictionTypeOffset] = (byte)AccessRestrictionType;
         return result;
@@ -350,7 +350,7 @@ public enum AdjacentInterlockingSystemAccessRestrictionStatusMessageAccessRestri
 }
 
 
-public record AdjacentInterlockingSystemLineStatusMessage (string SenderIdentifier, string ReceiverIdentifier, byte BoundaryId, AdjacentInterlockingSystemLineStatusMessageLineStatus LineStatus) : Message {
+public record AdjacentInterlockingSystemLineStatusMessage (string SenderIdentifier, string ReceiverIdentifier, string BoundaryId, AdjacentInterlockingSystemLineStatusMessageLineStatus LineStatus) : Message {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -360,7 +360,7 @@ public record AdjacentInterlockingSystemLineStatusMessage (string SenderIdentifi
     public new static AdjacentInterlockingSystemLineStatusMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
-        var BoundaryId = (byte)message[BoundaryIdOffset];
+        var BoundaryId = Encoding.Latin1.GetString(message, BoundaryIdOffset, 20);
         var LineStatus = (AdjacentInterlockingSystemLineStatusMessageLineStatus)message[LineStatusOffset];
         return new AdjacentInterlockingSystemLineStatusMessage(SenderIdentifier, ReceiverIdentifier, BoundaryId, LineStatus);
     }
@@ -371,7 +371,7 @@ public record AdjacentInterlockingSystemLineStatusMessage (string SenderIdentifi
         BitConverter.GetBytes(0x0004).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
         Encoding.Latin1.GetBytes(SenderIdentifier.PadRight(20, '_')).CopyTo(result, SenderIdentifierOffset);
         Encoding.Latin1.GetBytes(ReceiverIdentifier.PadRight(20, '_')).CopyTo(result, ReceiverIdentifierOffset);
-        result[BoundaryIdOffset] = (byte)BoundaryId;
+        Encoding.Latin1.GetBytes(BoundaryId.PadRight(20, '_')).CopyTo(result, BoundaryIdOffset);
         result[LineStatusOffset] = (byte)LineStatus;
         return result;
     }
@@ -384,7 +384,7 @@ public enum AdjacentInterlockingSystemLineStatusMessageLineStatus : byte {
 }
 
 
-public record AdjacentInterlockingSystemFlankProtectionStatusMessage (string SenderIdentifier, string ReceiverIdentifier, byte BoundaryId, AdjacentInterlockingSystemFlankProtectionStatusMessageFlankProtectionStatus FlankProtectionStatus) : Message {
+public record AdjacentInterlockingSystemFlankProtectionStatusMessage (string SenderIdentifier, string ReceiverIdentifier, string BoundaryId, AdjacentInterlockingSystemFlankProtectionStatusMessageFlankProtectionStatus FlankProtectionStatus) : Message {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -394,7 +394,7 @@ public record AdjacentInterlockingSystemFlankProtectionStatusMessage (string Sen
     public new static AdjacentInterlockingSystemFlankProtectionStatusMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
-        var BoundaryId = (byte)message[BoundaryIdOffset];
+        var BoundaryId = Encoding.Latin1.GetString(message, BoundaryIdOffset, 20);
         var FlankProtectionStatus = (AdjacentInterlockingSystemFlankProtectionStatusMessageFlankProtectionStatus)message[FlankProtectionStatusOffset];
         return new AdjacentInterlockingSystemFlankProtectionStatusMessage(SenderIdentifier, ReceiverIdentifier, BoundaryId, FlankProtectionStatus);
     }
@@ -405,7 +405,7 @@ public record AdjacentInterlockingSystemFlankProtectionStatusMessage (string Sen
         BitConverter.GetBytes(0x0013).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
         Encoding.Latin1.GetBytes(SenderIdentifier.PadRight(20, '_')).CopyTo(result, SenderIdentifierOffset);
         Encoding.Latin1.GetBytes(ReceiverIdentifier.PadRight(20, '_')).CopyTo(result, ReceiverIdentifierOffset);
-        result[BoundaryIdOffset] = (byte)BoundaryId;
+        Encoding.Latin1.GetBytes(BoundaryId.PadRight(20, '_')).CopyTo(result, BoundaryIdOffset);
         result[FlankProtectionStatusOffset] = (byte)FlankProtectionStatus;
         return result;
     }
@@ -417,7 +417,7 @@ public enum AdjacentInterlockingSystemFlankProtectionStatusMessageFlankProtectio
 }
 
 
-public record AdjacentInterlockingSystemLineDirectionControlMessage (string SenderIdentifier, string ReceiverIdentifier, byte BoundaryId, AdjacentInterlockingSystemLineDirectionControlMessageLineDirectionControlInformation LineDirectionControlInformation, AdjacentInterlockingSystemLineDirectionControlMessageLineDirectionStatus LineDirectionStatus) : Message {
+public record AdjacentInterlockingSystemLineDirectionControlMessage (string SenderIdentifier, string ReceiverIdentifier, string BoundaryId, AdjacentInterlockingSystemLineDirectionControlMessageLineDirectionControlInformation LineDirectionControlInformation, AdjacentInterlockingSystemLineDirectionControlMessageLineDirectionStatus LineDirectionStatus) : Message {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -428,7 +428,7 @@ public record AdjacentInterlockingSystemLineDirectionControlMessage (string Send
     public new static AdjacentInterlockingSystemLineDirectionControlMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
-        var BoundaryId = (byte)message[BoundaryIdOffset];
+        var BoundaryId = Encoding.Latin1.GetString(message, BoundaryIdOffset, 20);
         var LineDirectionControlInformation = (AdjacentInterlockingSystemLineDirectionControlMessageLineDirectionControlInformation)message[LineDirectionControlInformationOffset];
         var LineDirectionStatus = (AdjacentInterlockingSystemLineDirectionControlMessageLineDirectionStatus)message[LineDirectionStatusOffset];
         return new AdjacentInterlockingSystemLineDirectionControlMessage(SenderIdentifier, ReceiverIdentifier, BoundaryId, LineDirectionControlInformation, LineDirectionStatus);
@@ -440,7 +440,7 @@ public record AdjacentInterlockingSystemLineDirectionControlMessage (string Send
         BitConverter.GetBytes(0x0006).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
         Encoding.Latin1.GetBytes(SenderIdentifier.PadRight(20, '_')).CopyTo(result, SenderIdentifierOffset);
         Encoding.Latin1.GetBytes(ReceiverIdentifier.PadRight(20, '_')).CopyTo(result, ReceiverIdentifierOffset);
-        result[BoundaryIdOffset] = (byte)BoundaryId;
+        Encoding.Latin1.GetBytes(BoundaryId.PadRight(20, '_')).CopyTo(result, BoundaryIdOffset);
         result[LineDirectionControlInformationOffset] = (byte)LineDirectionControlInformation;
         result[LineDirectionStatusOffset] = (byte)LineDirectionStatus;
         return result;
@@ -466,7 +466,7 @@ public enum AdjacentInterlockingSystemLineDirectionControlMessageLineDirectionSt
 }
 
 
-public record AdjacentInterlockingSystemRouteStatusMessage (string SenderIdentifier, string ReceiverIdentifier, byte BoundaryId, byte RouteId, AdjacentInterlockingSystemRouteStatusMessageRouteType RouteType, AdjacentInterlockingSystemRouteStatusMessageRouteStatus RouteStatus) : Message {
+public record AdjacentInterlockingSystemRouteStatusMessage (string SenderIdentifier, string ReceiverIdentifier, string BoundaryId, string RouteId, AdjacentInterlockingSystemRouteStatusMessageRouteType RouteType, AdjacentInterlockingSystemRouteStatusMessageRouteStatus RouteStatus) : Message {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -478,8 +478,8 @@ public record AdjacentInterlockingSystemRouteStatusMessage (string SenderIdentif
     public new static AdjacentInterlockingSystemRouteStatusMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
-        var BoundaryId = (byte)message[BoundaryIdOffset];
-        var RouteId = (byte)message[RouteIdOffset];
+        var BoundaryId = Encoding.Latin1.GetString(message, BoundaryIdOffset, 20);
+        var RouteId = Encoding.Latin1.GetString(message, RouteIdOffset, 20);
         var RouteType = (AdjacentInterlockingSystemRouteStatusMessageRouteType)message[RouteTypeOffset];
         var RouteStatus = (AdjacentInterlockingSystemRouteStatusMessageRouteStatus)message[RouteStatusOffset];
         return new AdjacentInterlockingSystemRouteStatusMessage(SenderIdentifier, ReceiverIdentifier, BoundaryId, RouteId, RouteType, RouteStatus);
@@ -491,8 +491,8 @@ public record AdjacentInterlockingSystemRouteStatusMessage (string SenderIdentif
         BitConverter.GetBytes(0x0008).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
         Encoding.Latin1.GetBytes(SenderIdentifier.PadRight(20, '_')).CopyTo(result, SenderIdentifierOffset);
         Encoding.Latin1.GetBytes(ReceiverIdentifier.PadRight(20, '_')).CopyTo(result, ReceiverIdentifierOffset);
-        result[BoundaryIdOffset] = (byte)BoundaryId;
-        result[RouteIdOffset] = (byte)RouteId;
+        Encoding.Latin1.GetBytes(BoundaryId.PadRight(20, '_')).CopyTo(result, BoundaryIdOffset);
+        Encoding.Latin1.GetBytes(RouteId.PadRight(20, '_')).CopyTo(result, RouteIdOffset);
         result[RouteTypeOffset] = (byte)RouteType;
         result[RouteStatusOffset] = (byte)RouteStatus;
         return result;
@@ -515,7 +515,7 @@ public enum AdjacentInterlockingSystemRouteStatusMessageRouteStatus : byte {
 }
 
 
-public record AdjacentInterlockingSystemRouteMonitoringStatusMessage (string SenderIdentifier, string ReceiverIdentifier, byte BoundaryId, byte RouteId, AdjacentInterlockingSystemRouteMonitoringStatusMessageRouteType RouteType, byte OverlapId, AdjacentInterlockingSystemRouteMonitoringStatusMessageRouteMonitoring RouteMonitoring, AdjacentInterlockingSystemRouteMonitoringStatusMessageOccupancyMonitoring OccupancyMonitoring, AdjacentInterlockingSystemRouteMonitoringStatusMessageLevelCrossingMonitoring LevelCrossingMonitoring, byte EntranceSpeed, byte TargetSpeed, AdjacentInterlockingSystemRouteMonitoringStatusMessageDynamicOrStaticTargetSpeed DynamicOrStaticTargetSpeed) : Message {
+public record AdjacentInterlockingSystemRouteMonitoringStatusMessage (string SenderIdentifier, string ReceiverIdentifier, string BoundaryId, string RouteId, AdjacentInterlockingSystemRouteMonitoringStatusMessageRouteType RouteType, string OverlapId, AdjacentInterlockingSystemRouteMonitoringStatusMessageRouteMonitoring RouteMonitoring, AdjacentInterlockingSystemRouteMonitoringStatusMessageOccupancyMonitoring OccupancyMonitoring, AdjacentInterlockingSystemRouteMonitoringStatusMessageLevelCrossingMonitoring LevelCrossingMonitoring, byte EntranceSpeed, byte TargetSpeed, AdjacentInterlockingSystemRouteMonitoringStatusMessageDynamicOrStaticTargetSpeed DynamicOrStaticTargetSpeed) : Message {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -533,10 +533,10 @@ public record AdjacentInterlockingSystemRouteMonitoringStatusMessage (string Sen
     public new static AdjacentInterlockingSystemRouteMonitoringStatusMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
-        var BoundaryId = (byte)message[BoundaryIdOffset];
-        var RouteId = (byte)message[RouteIdOffset];
+        var BoundaryId = Encoding.Latin1.GetString(message, BoundaryIdOffset, 20);
+        var RouteId = Encoding.Latin1.GetString(message, RouteIdOffset, 20);
         var RouteType = (AdjacentInterlockingSystemRouteMonitoringStatusMessageRouteType)message[RouteTypeOffset];
-        var OverlapId = (byte)message[OverlapIdOffset];
+        var OverlapId = Encoding.Latin1.GetString(message, OverlapIdOffset, 20);
         var RouteMonitoring = (AdjacentInterlockingSystemRouteMonitoringStatusMessageRouteMonitoring)message[RouteMonitoringOffset];
         var OccupancyMonitoring = (AdjacentInterlockingSystemRouteMonitoringStatusMessageOccupancyMonitoring)message[OccupancyMonitoringOffset];
         var LevelCrossingMonitoring = (AdjacentInterlockingSystemRouteMonitoringStatusMessageLevelCrossingMonitoring)message[LevelCrossingMonitoringOffset];
@@ -552,10 +552,10 @@ public record AdjacentInterlockingSystemRouteMonitoringStatusMessage (string Sen
         BitConverter.GetBytes(0x0009).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
         Encoding.Latin1.GetBytes(SenderIdentifier.PadRight(20, '_')).CopyTo(result, SenderIdentifierOffset);
         Encoding.Latin1.GetBytes(ReceiverIdentifier.PadRight(20, '_')).CopyTo(result, ReceiverIdentifierOffset);
-        result[BoundaryIdOffset] = (byte)BoundaryId;
-        result[RouteIdOffset] = (byte)RouteId;
+        Encoding.Latin1.GetBytes(BoundaryId.PadRight(20, '_')).CopyTo(result, BoundaryIdOffset);
+        Encoding.Latin1.GetBytes(RouteId.PadRight(20, '_')).CopyTo(result, RouteIdOffset);
         result[RouteTypeOffset] = (byte)RouteType;
-        result[OverlapIdOffset] = (byte)OverlapId;
+        Encoding.Latin1.GetBytes(OverlapId.PadRight(20, '_')).CopyTo(result, OverlapIdOffset);
         result[RouteMonitoringOffset] = (byte)RouteMonitoring;
         result[OccupancyMonitoringOffset] = (byte)OccupancyMonitoring;
         result[LevelCrossingMonitoringOffset] = (byte)LevelCrossingMonitoring;
@@ -602,7 +602,7 @@ public enum AdjacentInterlockingSystemRouteMonitoringStatusMessageDynamicOrStati
 }
 
 
-public record AdjacentInterlockingSystemTrainOperatedRouteReleaseStatusMessage (string SenderIdentifier, string ReceiverIdentifier, byte BoundaryId, AdjacentInterlockingSystemTrainOperatedRouteReleaseStatusMessageTrainOperatedRouteReleaseStatus TrainOperatedRouteReleaseStatus) : Message {
+public record AdjacentInterlockingSystemTrainOperatedRouteReleaseStatusMessage (string SenderIdentifier, string ReceiverIdentifier, string BoundaryId, AdjacentInterlockingSystemTrainOperatedRouteReleaseStatusMessageTrainOperatedRouteReleaseStatus TrainOperatedRouteReleaseStatus) : Message {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -612,7 +612,7 @@ public record AdjacentInterlockingSystemTrainOperatedRouteReleaseStatusMessage (
     public new static AdjacentInterlockingSystemTrainOperatedRouteReleaseStatusMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
-        var BoundaryId = (byte)message[BoundaryIdOffset];
+        var BoundaryId = Encoding.Latin1.GetString(message, BoundaryIdOffset, 20);
         var TrainOperatedRouteReleaseStatus = (AdjacentInterlockingSystemTrainOperatedRouteReleaseStatusMessageTrainOperatedRouteReleaseStatus)message[TrainOperatedRouteReleaseStatusOffset];
         return new AdjacentInterlockingSystemTrainOperatedRouteReleaseStatusMessage(SenderIdentifier, ReceiverIdentifier, BoundaryId, TrainOperatedRouteReleaseStatus);
     }
@@ -623,7 +623,7 @@ public record AdjacentInterlockingSystemTrainOperatedRouteReleaseStatusMessage (
         BitConverter.GetBytes(0x000B).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
         Encoding.Latin1.GetBytes(SenderIdentifier.PadRight(20, '_')).CopyTo(result, SenderIdentifierOffset);
         Encoding.Latin1.GetBytes(ReceiverIdentifier.PadRight(20, '_')).CopyTo(result, ReceiverIdentifierOffset);
-        result[BoundaryIdOffset] = (byte)BoundaryId;
+        Encoding.Latin1.GetBytes(BoundaryId.PadRight(20, '_')).CopyTo(result, BoundaryIdOffset);
         result[TrainOperatedRouteReleaseStatusOffset] = (byte)TrainOperatedRouteReleaseStatus;
         return result;
     }
@@ -636,7 +636,7 @@ public enum AdjacentInterlockingSystemTrainOperatedRouteReleaseStatusMessageTrai
 }
 
 
-public record AdjacentInterlockingSystemSignalStatusMessage (string SenderIdentifier, string ReceiverIdentifier, byte BoundaryId, byte AspectLampCombinations, byte AspectExtensionLampCombinations, byte SpeedIndicator, byte SpeedIndicatorAnnouncement, byte DirectionIndicator, byte DirectionIndicatorAnnouncement, AdjacentInterlockingSystemSignalStatusMessageIntentionallyDark IntentionallyDark) : Message {
+public record AdjacentInterlockingSystemSignalStatusMessage (string SenderIdentifier, string ReceiverIdentifier, string BoundaryId, byte AspectLampCombinations, byte AspectExtensionLampCombinations, byte SpeedIndicator, byte SpeedIndicatorAnnouncement, byte DirectionIndicator, byte DirectionIndicatorAnnouncement, AdjacentInterlockingSystemSignalStatusMessageIntentionallyDark IntentionallyDark) : Message {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -652,7 +652,7 @@ public record AdjacentInterlockingSystemSignalStatusMessage (string SenderIdenti
     public new static AdjacentInterlockingSystemSignalStatusMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
-        var BoundaryId = (byte)message[BoundaryIdOffset];
+        var BoundaryId = Encoding.Latin1.GetString(message, BoundaryIdOffset, 20);
         var AspectLampCombinations = (byte)message[AspectLampCombinationsOffset];
         var AspectExtensionLampCombinations = (byte)message[AspectExtensionLampCombinationsOffset];
         var SpeedIndicator = (byte)message[SpeedIndicatorOffset];
@@ -669,7 +669,7 @@ public record AdjacentInterlockingSystemSignalStatusMessage (string SenderIdenti
         BitConverter.GetBytes(0x000C).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
         Encoding.Latin1.GetBytes(SenderIdentifier.PadRight(20, '_')).CopyTo(result, SenderIdentifierOffset);
         Encoding.Latin1.GetBytes(ReceiverIdentifier.PadRight(20, '_')).CopyTo(result, ReceiverIdentifierOffset);
-        result[BoundaryIdOffset] = (byte)BoundaryId;
+        Encoding.Latin1.GetBytes(BoundaryId.PadRight(20, '_')).CopyTo(result, BoundaryIdOffset);
         result[AspectLampCombinationsOffset] = (byte)AspectLampCombinations;
         result[AspectExtensionLampCombinationsOffset] = (byte)AspectExtensionLampCombinations;
         result[SpeedIndicatorOffset] = (byte)SpeedIndicator;
@@ -688,7 +688,7 @@ public enum AdjacentInterlockingSystemSignalStatusMessageIntentionallyDark : byt
 }
 
 
-public record AdjacentInterlockingSystemTvpsStatusMessage (string SenderIdentifier, string ReceiverIdentifier, byte BoundaryId, AdjacentInterlockingSystemTvpsStatusMessageOccupancyStatus OccupancyStatus, AdjacentInterlockingSystemTvpsStatusMessageFoulingStatus FoulingStatus) : Message {
+public record AdjacentInterlockingSystemTvpsStatusMessage (string SenderIdentifier, string ReceiverIdentifier, string BoundaryId, AdjacentInterlockingSystemTvpsStatusMessageOccupancyStatus OccupancyStatus, AdjacentInterlockingSystemTvpsStatusMessageFoulingStatus FoulingStatus) : Message {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -699,7 +699,7 @@ public record AdjacentInterlockingSystemTvpsStatusMessage (string SenderIdentifi
     public new static AdjacentInterlockingSystemTvpsStatusMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
-        var BoundaryId = (byte)message[BoundaryIdOffset];
+        var BoundaryId = Encoding.Latin1.GetString(message, BoundaryIdOffset, 20);
         var OccupancyStatus = (AdjacentInterlockingSystemTvpsStatusMessageOccupancyStatus)message[OccupancyStatusOffset];
         var FoulingStatus = (AdjacentInterlockingSystemTvpsStatusMessageFoulingStatus)message[FoulingStatusOffset];
         return new AdjacentInterlockingSystemTvpsStatusMessage(SenderIdentifier, ReceiverIdentifier, BoundaryId, OccupancyStatus, FoulingStatus);
@@ -711,7 +711,7 @@ public record AdjacentInterlockingSystemTvpsStatusMessage (string SenderIdentifi
         BitConverter.GetBytes(0x000D).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
         Encoding.Latin1.GetBytes(SenderIdentifier.PadRight(20, '_')).CopyTo(result, SenderIdentifierOffset);
         Encoding.Latin1.GetBytes(ReceiverIdentifier.PadRight(20, '_')).CopyTo(result, ReceiverIdentifierOffset);
-        result[BoundaryIdOffset] = (byte)BoundaryId;
+        Encoding.Latin1.GetBytes(BoundaryId.PadRight(20, '_')).CopyTo(result, BoundaryIdOffset);
         result[OccupancyStatusOffset] = (byte)OccupancyStatus;
         result[FoulingStatusOffset] = (byte)FoulingStatus;
         return result;
@@ -731,7 +731,7 @@ public enum AdjacentInterlockingSystemTvpsStatusMessageFoulingStatus : byte {
 }
 
 
-public record AdjacentInterlockingSystemOppositeMainSignalStatusMessage (string SenderIdentifier, string ReceiverIdentifier, byte BoundaryId) : Message {
+public record AdjacentInterlockingSystemOppositeMainSignalStatusMessage (string SenderIdentifier, string ReceiverIdentifier, string BoundaryId) : Message {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -740,7 +740,7 @@ public record AdjacentInterlockingSystemOppositeMainSignalStatusMessage (string 
     public new static AdjacentInterlockingSystemOppositeMainSignalStatusMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
-        var BoundaryId = (byte)message[BoundaryIdOffset];
+        var BoundaryId = Encoding.Latin1.GetString(message, BoundaryIdOffset, 20);
         return new AdjacentInterlockingSystemOppositeMainSignalStatusMessage(SenderIdentifier, ReceiverIdentifier, BoundaryId);
     }
 
@@ -750,7 +750,7 @@ public record AdjacentInterlockingSystemOppositeMainSignalStatusMessage (string 
         BitConverter.GetBytes(0x000E).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
         Encoding.Latin1.GetBytes(SenderIdentifier.PadRight(20, '_')).CopyTo(result, SenderIdentifierOffset);
         Encoding.Latin1.GetBytes(ReceiverIdentifier.PadRight(20, '_')).CopyTo(result, ReceiverIdentifierOffset);
-        result[BoundaryIdOffset] = (byte)BoundaryId;
+        Encoding.Latin1.GetBytes(BoundaryId.PadRight(20, '_')).CopyTo(result, BoundaryIdOffset);
         return result;
     }
 }
@@ -758,7 +758,7 @@ public record AdjacentInterlockingSystemOppositeMainSignalStatusMessage (string 
 
 
 
-public record AdjacentInterlockingSystemRoutePretestStatusMessage (string SenderIdentifier, string ReceiverIdentifier, byte BoundaryId, byte RouteId, AdjacentInterlockingSystemRoutePretestStatusMessageRouteType RouteType, AdjacentInterlockingSystemRoutePretestStatusMessageRouteStatus RouteStatus, AdjacentInterlockingSystemRoutePretestStatusMessagePretestResponse PretestResponse) : Message {
+public record AdjacentInterlockingSystemRoutePretestStatusMessage (string SenderIdentifier, string ReceiverIdentifier, string BoundaryId, string RouteId, AdjacentInterlockingSystemRoutePretestStatusMessageRouteType RouteType, AdjacentInterlockingSystemRoutePretestStatusMessageRouteStatus RouteStatus, AdjacentInterlockingSystemRoutePretestStatusMessagePretestResponse PretestResponse) : Message {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -771,8 +771,8 @@ public record AdjacentInterlockingSystemRoutePretestStatusMessage (string Sender
     public new static AdjacentInterlockingSystemRoutePretestStatusMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
-        var BoundaryId = (byte)message[BoundaryIdOffset];
-        var RouteId = (byte)message[RouteIdOffset];
+        var BoundaryId = Encoding.Latin1.GetString(message, BoundaryIdOffset, 20);
+        var RouteId = Encoding.Latin1.GetString(message, RouteIdOffset, 20);
         var RouteType = (AdjacentInterlockingSystemRoutePretestStatusMessageRouteType)message[RouteTypeOffset];
         var RouteStatus = (AdjacentInterlockingSystemRoutePretestStatusMessageRouteStatus)message[RouteStatusOffset];
         var PretestResponse = (AdjacentInterlockingSystemRoutePretestStatusMessagePretestResponse)message[PretestResponseOffset];
@@ -785,8 +785,8 @@ public record AdjacentInterlockingSystemRoutePretestStatusMessage (string Sender
         BitConverter.GetBytes(0x0010).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
         Encoding.Latin1.GetBytes(SenderIdentifier.PadRight(20, '_')).CopyTo(result, SenderIdentifierOffset);
         Encoding.Latin1.GetBytes(ReceiverIdentifier.PadRight(20, '_')).CopyTo(result, ReceiverIdentifierOffset);
-        result[BoundaryIdOffset] = (byte)BoundaryId;
-        result[RouteIdOffset] = (byte)RouteId;
+        Encoding.Latin1.GetBytes(BoundaryId.PadRight(20, '_')).CopyTo(result, BoundaryIdOffset);
+        Encoding.Latin1.GetBytes(RouteId.PadRight(20, '_')).CopyTo(result, RouteIdOffset);
         result[RouteTypeOffset] = (byte)RouteType;
         result[RouteStatusOffset] = (byte)RouteStatus;
         result[PretestResponseOffset] = (byte)PretestResponse;
@@ -817,7 +817,7 @@ public enum AdjacentInterlockingSystemRoutePretestStatusMessagePretestResponse :
 }
 
 
-public record AdjacentInterlockingSystemRouteReleaseInhibitionStatusMessage (string SenderIdentifier, string ReceiverIdentifier, byte BoundaryId, AdjacentInterlockingSystemRouteReleaseInhibitionStatusMessageRouteReleaseInhibitionStatus RouteReleaseInhibitionStatus) : Message {
+public record AdjacentInterlockingSystemRouteReleaseInhibitionStatusMessage (string SenderIdentifier, string ReceiverIdentifier, string BoundaryId, AdjacentInterlockingSystemRouteReleaseInhibitionStatusMessageRouteReleaseInhibitionStatus RouteReleaseInhibitionStatus) : Message {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -827,7 +827,7 @@ public record AdjacentInterlockingSystemRouteReleaseInhibitionStatusMessage (str
     public new static AdjacentInterlockingSystemRouteReleaseInhibitionStatusMessage FromBytes(byte[] message) {
         var SenderIdentifier = Encoding.Latin1.GetString(message, SenderIdentifierOffset, 20);
         var ReceiverIdentifier = Encoding.Latin1.GetString(message, ReceiverIdentifierOffset, 20);
-        var BoundaryId = (byte)message[BoundaryIdOffset];
+        var BoundaryId = Encoding.Latin1.GetString(message, BoundaryIdOffset, 20);
         var RouteReleaseInhibitionStatus = (AdjacentInterlockingSystemRouteReleaseInhibitionStatusMessageRouteReleaseInhibitionStatus)message[RouteReleaseInhibitionStatusOffset];
         return new AdjacentInterlockingSystemRouteReleaseInhibitionStatusMessage(SenderIdentifier, ReceiverIdentifier, BoundaryId, RouteReleaseInhibitionStatus);
     }
@@ -838,7 +838,7 @@ public record AdjacentInterlockingSystemRouteReleaseInhibitionStatusMessage (str
         BitConverter.GetBytes(0x0014).Take(2).ToArray().CopyTo(result, MessageTypeOffset);
         Encoding.Latin1.GetBytes(SenderIdentifier.PadRight(20, '_')).CopyTo(result, SenderIdentifierOffset);
         Encoding.Latin1.GetBytes(ReceiverIdentifier.PadRight(20, '_')).CopyTo(result, ReceiverIdentifierOffset);
-        result[BoundaryIdOffset] = (byte)BoundaryId;
+        Encoding.Latin1.GetBytes(BoundaryId.PadRight(20, '_')).CopyTo(result, BoundaryIdOffset);
         result[RouteReleaseInhibitionStatusOffset] = (byte)RouteReleaseInhibitionStatus;
         return result;
     }
