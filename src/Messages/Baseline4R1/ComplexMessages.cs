@@ -4,7 +4,7 @@ using System.Text;
 
 namespace EulynxLive.Messages.Baseline4R1;
 
-public record AdjacentInterlockingSystemPdiVersionCheckMessage (string SenderIdentifier, string ReceiverIdentifier, AdjacentInterlockingSystemPdiVersionCheckMessageResultPdiVersionCheck ResultPdiVersionCheck, byte SenderPdiVersion, byte ChecksumLength, byte[] Checksum) : Message {
+public record AdjacentInterlockingSystemPdiVersionCheckMessage (string SenderIdentifier, string ReceiverIdentifier, AdjacentInterlockingSystemPdiVersionCheckMessageResultPdiVersionCheck ResultPdiVersionCheck, byte SenderPdiVersion, byte ChecksumLength, byte[] Checksum) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -42,7 +42,7 @@ public enum AdjacentInterlockingSystemPdiVersionCheckMessageResultPdiVersionChec
     PDIVersionsFromReceiverAndSenderDoMatch = 0x02,
 }
 
-public record TrainDetectionSystemPdiVersionCheckMessage (string SenderIdentifier, string ReceiverIdentifier, TrainDetectionSystemPdiVersionCheckMessageResultPdiVersionCheck ResultPdiVersionCheck, byte SenderPdiVersion, byte ChecksumLength, byte[] Checksum) : Message {
+public record TrainDetectionSystemPdiVersionCheckMessage (string SenderIdentifier, string ReceiverIdentifier, TrainDetectionSystemPdiVersionCheckMessageResultPdiVersionCheck ResultPdiVersionCheck, byte SenderPdiVersion, byte ChecksumLength, byte[] Checksum) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -81,7 +81,7 @@ public enum TrainDetectionSystemPdiVersionCheckMessageResultPdiVersionCheck : by
 }
 
 
-public record LightSignalPdiVersionCheckMessage (string SenderIdentifier, string ReceiverIdentifier, LightSignalPdiVersionCheckMessageResultPdiVersionCheck ResultPdiVersionCheck, byte SenderPdiVersion, byte ChecksumLength, byte[] Checksum) : Message {
+public record LightSignalPdiVersionCheckMessage (string SenderIdentifier, string ReceiverIdentifier, LightSignalPdiVersionCheckMessageResultPdiVersionCheck ResultPdiVersionCheck, byte SenderPdiVersion, byte ChecksumLength, byte[] Checksum) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -119,7 +119,7 @@ public enum LightSignalPdiVersionCheckMessageResultPdiVersionCheck : byte {
     PDIVersionsFromReceiverAndSenderDoMatch = 0x02,
 }
 
-public record PointPdiVersionCheckMessage (string SenderIdentifier, string ReceiverIdentifier, PointPdiVersionCheckMessageResultPdiVersionCheck ResultPdiVersionCheck, byte SenderPdiVersion, byte ChecksumLength, byte[] Checksum) : Message {
+public record PointPdiVersionCheckMessage (string SenderIdentifier, string ReceiverIdentifier, PointPdiVersionCheckMessageResultPdiVersionCheck ResultPdiVersionCheck, byte SenderPdiVersion, byte ChecksumLength, byte[] Checksum) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -157,7 +157,7 @@ public enum PointPdiVersionCheckMessageResultPdiVersionCheck : byte {
     PDIVersionsFromReceiverAndSenderDoMatch = 0x02,
 }
 
-public record RadioBlockCenterPdiVersionCheckMessage (string SenderIdentifier, string ReceiverIdentifier, RadioBlockCenterPdiVersionCheckMessageResultPdiVersionCheck ResultPdiVersionCheck, byte SenderPdiVersion, byte ChecksumLength, byte[] Checksum) : Message {
+public record RadioBlockCenterPdiVersionCheckMessage (string SenderIdentifier, string ReceiverIdentifier, RadioBlockCenterPdiVersionCheckMessageResultPdiVersionCheck ResultPdiVersionCheck, byte SenderPdiVersion, byte ChecksumLength, byte[] Checksum) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -196,7 +196,7 @@ public enum RadioBlockCenterPdiVersionCheckMessageResultPdiVersionCheck : byte {
 }
 
 
-public record LevelCrossingPdiVersionCheckMessage (string SenderIdentifier, string ReceiverIdentifier, LevelCrossingPdiVersionCheckMessageResultPdiVersionCheck ResultPdiVersionCheck, byte SenderPdiVersion, byte ChecksumLength, byte[] Checksum) : Message {
+public record LevelCrossingPdiVersionCheckMessage (string SenderIdentifier, string ReceiverIdentifier, LevelCrossingPdiVersionCheckMessageResultPdiVersionCheck ResultPdiVersionCheck, byte SenderPdiVersion, byte ChecksumLength, byte[] Checksum) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -235,7 +235,7 @@ public enum LevelCrossingPdiVersionCheckMessageResultPdiVersionCheck : byte {
 }
 
 
-public record CCPdiVersionCheckMessage (string SenderIdentifier, string ReceiverIdentifier, CCPdiVersionCheckMessageResultPdiVersionCheck ResultPdiVersionCheck, byte SenderPdiVersion, byte ChecksumLength, byte[] Checksum) : Message {
+public record CCPdiVersionCheckMessage (string SenderIdentifier, string ReceiverIdentifier, CCPdiVersionCheckMessageResultPdiVersionCheck ResultPdiVersionCheck, byte SenderPdiVersion, byte ChecksumLength, byte[] Checksum) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -274,7 +274,7 @@ public enum CCPdiVersionCheckMessageResultPdiVersionCheck : byte {
 }
 
 
-public record GenericIOPdiVersionCheckMessage (string SenderIdentifier, string ReceiverIdentifier, GenericIOPdiVersionCheckMessageResultPdiVersionCheck ResultPdiVersionCheck, byte SenderPdiVersion, byte ChecksumLength, byte[] Checksum) : Message {
+public record GenericIOPdiVersionCheckMessage (string SenderIdentifier, string ReceiverIdentifier, GenericIOPdiVersionCheckMessageResultPdiVersionCheck ResultPdiVersionCheck, byte SenderPdiVersion, byte ChecksumLength, byte[] Checksum) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -313,7 +313,7 @@ public enum GenericIOPdiVersionCheckMessageResultPdiVersionCheck : byte {
 }
 
 
-public record ExternalLevelCrossingSystemPdiVersionCheckMessage (string SenderIdentifier, string ReceiverIdentifier, ExternalLevelCrossingSystemPdiVersionCheckMessageResultPdiVersionCheck ResultPdiVersionCheck, byte SenderPdiVersion, byte ChecksumLength, byte[] Checksum) : Message {
+public record ExternalLevelCrossingSystemPdiVersionCheckMessage (string SenderIdentifier, string ReceiverIdentifier, ExternalLevelCrossingSystemPdiVersionCheckMessageResultPdiVersionCheck ResultPdiVersionCheck, byte SenderPdiVersion, byte ChecksumLength, byte[] Checksum) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
