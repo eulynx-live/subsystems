@@ -5,6 +5,8 @@ This repository contains .NET executables that simulate the behavior of the foll
  - Light Signal (SCI-LS)
  - Point (SCI-P)
  - Train Detection System (SCI-TDS)
+ - Level Crossing (SCI-LC)
+ - (Adjacent) Interlocking System (SCI-ILS)
  
 When paired with a *RaSTA Bridge*, they can be used to communicate with a EULYNX Digital Interlocking.
 

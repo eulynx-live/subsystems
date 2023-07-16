@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+option csharp_namespace = "EulynxLive.InterlockingSystem.Proto";
+
+package interlocking_system;
+
+service InterlockingSystem {
+    rpc GetInterlockingSystemState (Nothing) returns (InterlockingSystemStateMessage) {}
+    rpc SetInterlockingSystemState (InterlockingSystemStateMessage) returns (SetInterlockingSystemStateResponse) {}
+    rpc SetBlock (InterlockingSystemCommand) returns (Nothing) {}
+    rpc UnsetBlock (InterlockingSystemCommand) returns (Nothing) {}
+    rpc InitiateDirectionHandover (InterlockingSystemCommand) returns (Nothing) {}
+ 
+}
+
+message InterlockingSystemCommand {
+  string interlockingSystem = 1;
+}
+
+message InterlockingSystemStateMessage {
+  enum LineStatus {
+    LineStatus_UNDEFINED = 0;
+    LineStatus_Vacant = 1;
+    LineStatus_Occupied = 2;
+    LineStatus_RequestForLineBlockReset = 3;
+  }
+  
+  enum LineDirectionInformation {
+    LineDirectionInformation_UNDEFINED = 0;
+    LineDirectionInformation_NoDirection = 1;
+    LineDirectionInformation_Entry = 2;
+    LineDirectionInformation_Exit = 3;
+    LineDirectionInformation_DirectionRequest = 4;
+    LineDirectionInformation_DirectionHandover = 5;
+    LineDirectionInformation_DirectionHandoverAborted = 6;
+    LineDirectionInformation_DisableLineBlockDirection = 7;
+    LineDirectionInformation_EnableLineBlockDirection = 8;
+  }  
+  
+  enum LineDirectionStatus {
+    LineDirectionStatus_UNDEFINED = 0;
+    LineDirectionStatus_Released = 1;
+    LineDirectionStatus_Locked = 2;
+    LineDirectionStatus_LineBlockDirectionDisabled = 3;
+  }
+  
+  LineStatus lineStatus = 1;
+  LineDirectionInformation lineDirectionInformation = 2;
+  LineDirectionStatus lineDirectionStatus = 3;
+}
+
+message SetInterlockingSystemStateResponse {
+    InterlockingSystemStateMessage newState = 1;
+    bool success = 2;
+}
+
+message Nothing {
+}
+
