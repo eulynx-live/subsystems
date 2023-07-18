@@ -2,7 +2,7 @@ using System;
 
 namespace EulynxLive.Messages.Baseline4R1;
 
-public abstract record Message(string ReceiverIdentifier, string SenderIdentifier) {
+public abstract record Message(string SenderIdentifier, string ReceiverIdentifier) {
 
     public abstract byte[] ToByteArray();
 
