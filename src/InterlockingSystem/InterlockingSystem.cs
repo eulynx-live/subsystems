@@ -107,7 +107,7 @@ namespace EulynxLive.InterlockingSystem
             }
             
             var boundaryId = _configuration["boundary-id"];
-            if (_remoteEndpoint == null)
+            if (boundaryId == null)
             {
                 throw new Exception("Missing --boundary-id command line parameter.");
             }
