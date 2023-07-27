@@ -10,7 +10,6 @@ namespace EulynxLive.TrainDetectionSystem.Services
 {
     public class TrainDetectionSystemService : TrainDetectionSystemBase
     {
-
         private readonly TrainDetectionSystem _tds;
         public readonly IMapper _mapper;
 
