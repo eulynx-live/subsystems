@@ -209,7 +209,7 @@ message TDSStateMessage {
   TvpsOccupiedByAtLeastOneWheel tvpsOccupiedByAtLeastOneWheel = 24;
   TvpsReasonForDisturbance tvpsReasonForDisturbance = 25;
   PdiConnection pdiConnection = 26;
-  map<int32, int32> axleCounting = 27;
+  map<int32, int32> axleCountingHeads = 27;
 }
 
 message SetTDSStateResponse {
