@@ -241,9 +241,14 @@ namespace EulynxLive.TrainDetectionSystem
 
             if (_currentConnection != null)
             {
-                var occupancyStatus = new TrainDetectionSystemTvpsOccupancyStatusMessage(tps, _remoteId, _trackSectionStatuses[tps],
-                    TvpsAbilityToBeForcedToClear.NotAbleToBeForcedToClear, (ushort)0xfffe, TvpsPomStatus.NotApplicable);
-                await _currentConnection.RequestStream.WriteAsync(new SciPacket() { Message = ByteString.CopyFrom(occupancyStatus.ToByteArray()) });
+                try {
+                    var occupancyStatus = new TrainDetectionSystemTvpsOccupancyStatusMessage(tps, _remoteId, _trackSectionStatuses[tps],
+                        TvpsAbilityToBeForcedToClear.NotAbleToBeForcedToClear, (ushort)0xfffe, TvpsPomStatus.NotApplicable);
+                    await _currentConnection.RequestStream.WriteAsync(new SciPacket() { Message = ByteString.CopyFrom(occupancyStatus.ToByteArray()) });
+                } catch (ObjectDisposedException)
+                {
+                    _logger.LogWarning("Occupancy state could not be sent to the interlocking");
+                }
             }
 
             await UpdateConnectedWebClients();
@@ -270,9 +275,14 @@ namespace EulynxLive.TrainDetectionSystem
 
             if (_currentConnection != null)
             {
-                var occupancyStatus = new TrainDetectionSystemTvpsOccupancyStatusMessage(tps, _remoteId, _trackSectionStatuses[tps],
-                    TvpsAbilityToBeForcedToClear.NotAbleToBeForcedToClear, (ushort)0xfffe, TvpsPomStatus.NotApplicable);
-                await _currentConnection.RequestStream.WriteAsync(new SciPacket() { Message = ByteString.CopyFrom(occupancyStatus.ToByteArray()) });
+                try {
+                    var occupancyStatus = new TrainDetectionSystemTvpsOccupancyStatusMessage(tps, _remoteId, _trackSectionStatuses[tps],
+                        TvpsAbilityToBeForcedToClear.NotAbleToBeForcedToClear, (ushort)0xfffe, TvpsPomStatus.NotApplicable);
+                    await _currentConnection.RequestStream.WriteAsync(new SciPacket() { Message = ByteString.CopyFrom(occupancyStatus.ToByteArray()) });
+                } catch (ObjectDisposedException)
+                {
+                    _logger.LogWarning("Occupancy state could not be sent to the interlocking");
+                }
             }
 
             await UpdateConnectedWebClients();
