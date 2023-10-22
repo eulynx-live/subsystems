@@ -187,7 +187,7 @@ namespace EulynxLive.Point
 
                                 // Simulate point movement
                                 var transitioningTime = _random.Next(1, 5);
-                                var transitioningTask = Task.Delay(transitioningTime);
+                                var transitioningTask = Task.Delay(transitioningTime * 1000);
                                 var timeout = 3;
 
                                 _logger.LogDebug("Moving to {}.", movePointCommand.CommandedPointPosition);
