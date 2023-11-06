@@ -29,4 +29,3 @@ public record ExternalLevelCrossingSystemCrossingClearCommand (string SenderIden
 }
 
 
-

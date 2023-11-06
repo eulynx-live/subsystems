@@ -29,4 +29,3 @@ public record LevelCrossingDeactivationCommand (string SenderIdentifier, string 
 }
 
 
-

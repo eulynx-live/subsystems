@@ -36,7 +36,6 @@ public enum PointMovePointCommandCommandedPointPosition : byte {
     SubsystemElectronicInterlockingRequestsALeftHandPointMoving = 0x02
 }
 
-
 public record PointPointPositionMessage (string SenderIdentifier, string ReceiverIdentifier, PointPointPositionMessageReportedPointPosition ReportedPointPosition, PointPointPositionMessageReportedDegradedPointPosition ReportedDegradedPointPosition) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -81,7 +80,6 @@ public enum PointPointPositionMessageReportedDegradedPointPosition : byte {
     DegradedPointPositionIsNotApplicable = 0xFF
 }
 
-
 public record PointTimeoutMessage (string SenderIdentifier, string ReceiverIdentifier) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -105,7 +103,6 @@ public record PointTimeoutMessage (string SenderIdentifier, string ReceiverIdent
         return result;
     }
 }
-
 
 
 
@@ -140,4 +137,3 @@ public enum PointAbilityToMovePointMessageReportedAbilityToMovePointStatus : byt
     PointIsAbleToMove = 0x01,
     PointIsUnableToMove = 0x02
 }
-

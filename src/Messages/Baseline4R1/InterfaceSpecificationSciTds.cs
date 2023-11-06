@@ -39,7 +39,6 @@ public enum TrainDetectionSystemFcCommandModeOfFc : byte {
     AcknowledgmentAfterFcPACommand = 0x05
 }
 
-
 public record TrainDetectionSystemUpdateFillingLevelCommand (string SenderIdentifier, string ReceiverIdentifier) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -63,7 +62,6 @@ public record TrainDetectionSystemUpdateFillingLevelCommand (string SenderIdenti
         return result;
     }
 }
-
 
 
 
@@ -93,7 +91,6 @@ public record TrainDetectionSystemCancelCommand (string SenderIdentifier, string
 
 
 
-
 public record TrainDetectionSystemDisableTheRestrictionToForceSectionStatusToClearCommand (string SenderIdentifier, string ReceiverIdentifier) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -117,7 +114,6 @@ public record TrainDetectionSystemDisableTheRestrictionToForceSectionStatusToCle
         return result;
     }
 }
-
 
 
 
@@ -203,7 +199,6 @@ public enum TrainDetectionSystemTvpsOccupancyStatusMessageChangeTrigger : byte {
     ChangeTriggerIsNotApplicable = 0xFF
 }
 
-
 public record TrainDetectionSystemCommandRejectedMessage (string SenderIdentifier, string ReceiverIdentifier, TrainDetectionSystemCommandRejectedMessageReasonForRejection ReasonForRejection) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -235,7 +230,6 @@ public enum TrainDetectionSystemCommandRejectedMessageReasonForRejection : byte 
     OperationalRejected = 0x01,
     TechnicalRejected = 0x02
 }
-
 
 public record TrainDetectionSystemTvpsFcPFailedMessage (string SenderIdentifier, string ReceiverIdentifier, TrainDetectionSystemTvpsFcPFailedMessageReasonForFailure ReasonForFailure) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
@@ -273,7 +267,6 @@ public enum TrainDetectionSystemTvpsFcPFailedMessageReasonForFailure : byte {
     ProcessCancelled = 0x06
 }
 
-
 public record TrainDetectionSystemTvpsFcPAFailedMessage (string SenderIdentifier, string ReceiverIdentifier, TrainDetectionSystemTvpsFcPAFailedMessageReasonForFailure ReasonForFailure) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -309,7 +302,6 @@ public enum TrainDetectionSystemTvpsFcPAFailedMessageReasonForFailure : byte {
     OutgoingAxleDetectedBeforeExpirationOfMinimumTimer = 0x05,
     ProcessCancelled = 0x06
 }
-
 
 public record TrainDetectionSystemAdditionalInformationMessage (string SenderIdentifier, string ReceiverIdentifier, ushort Speed, ushort WheelDiameter) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
@@ -348,7 +340,6 @@ public record TrainDetectionSystemAdditionalInformationMessage (string SenderIde
         return result;
     }
 }
-
 
 
 
@@ -393,4 +384,3 @@ public enum TrainDetectionSystemTdpStatusMessageDirectionOfPassing : byte {
     AgainstReferenceDirection = 0x02,
     WithoutIndicatedDirection = 0x03
 }
-

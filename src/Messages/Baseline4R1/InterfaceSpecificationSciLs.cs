@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace EulynxLive.Messages.Baseline4R1;
 
-public record LightSignalIndicateSignalAspectCommand (string SenderIdentifier, string ReceiverIdentifier, byte CodeForBasicAspectTypes, byte CodeForExtensionOfBasicAspectTypes, byte SpeedIndicators, byte SpeedIndicatorAnnouncements, byte DirectionIndicators, byte DirectionIndicatorAnnouncements, byte DowngradeInformation, LightSignalIndicateSignalAspectCommandRouteInformation RouteInformation, LightSignalIndicateSignalAspectCommandSignalAspectIntentionallyDark SignalAspectIntentionallyDark, byte[] SpecifiedByNationalRequirements) : Message(SenderIdentifier, ReceiverIdentifier) {
+public record LightSignalIndicateSignalAspectCommand (string SenderIdentifier, string ReceiverIdentifier, byte CodeForBasicAspectTypes, byte CodeForExtensionOfBasicAspectTypes, byte SpeedIndicators, byte SpeedIndicatorAnnouncements, byte DirectionIndicators, byte DirectionIndicatorAnnouncements, byte DowngradeInformation, LightSignalIndicateSignalAspectCommandRouteInformationUpper RouteInformationUpper, LightSignalIndicateSignalAspectCommandRouteInformationLower RouteInformationLower, LightSignalIndicateSignalAspectCommandSignalAspectIntentionallyDark SignalAspectIntentionallyDark, byte[] SpecifiedByNationalRequirements) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -30,11 +30,12 @@ public record LightSignalIndicateSignalAspectCommand (string SenderIdentifier, s
         var DirectionIndicators = (byte)message[DirectionIndicatorsOffset];
         var DirectionIndicatorAnnouncements = (byte)message[DirectionIndicatorAnnouncementsOffset];
         var DowngradeInformation = (byte)message[DowngradeInformationOffset];
-        var RouteInformation = (LightSignalIndicateSignalAspectCommandRouteInformation)message[RouteInformationOffset];
+        var RouteInformationUpper = (LightSignalIndicateSignalAspectCommandRouteInformationUpper)(message[RouteInformationOffset] >> 4);
+        var RouteInformationLower = (LightSignalIndicateSignalAspectCommandRouteInformationLower)message[RouteInformationOffset];
         var SignalAspectIntentionallyDark = (LightSignalIndicateSignalAspectCommandSignalAspectIntentionallyDark)message[SignalAspectIntentionallyDarkOffset];
         var SpecifiedByNationalRequirements = new byte[9];
         Buffer.BlockCopy(message, SpecifiedByNationalRequirementsOffset, SpecifiedByNationalRequirements, 0, 9);
-        return new LightSignalIndicateSignalAspectCommand(SenderIdentifier, ReceiverIdentifier, CodeForBasicAspectTypes, CodeForExtensionOfBasicAspectTypes, SpeedIndicators, SpeedIndicatorAnnouncements, DirectionIndicators, DirectionIndicatorAnnouncements, DowngradeInformation, RouteInformation, SignalAspectIntentionallyDark, SpecifiedByNationalRequirements);
+        return new LightSignalIndicateSignalAspectCommand(SenderIdentifier, ReceiverIdentifier, CodeForBasicAspectTypes, CodeForExtensionOfBasicAspectTypes, SpeedIndicators, SpeedIndicatorAnnouncements, DirectionIndicators, DirectionIndicatorAnnouncements, DowngradeInformation, RouteInformationUpper, RouteInformationLower, SignalAspectIntentionallyDark, SpecifiedByNationalRequirements);
     }
 
     public override byte[] ToByteArray() {
@@ -52,14 +53,24 @@ public record LightSignalIndicateSignalAspectCommand (string SenderIdentifier, s
         result[DirectionIndicatorsOffset] = (byte)DirectionIndicators;
         result[DirectionIndicatorAnnouncementsOffset] = (byte)DirectionIndicatorAnnouncements;
         result[DowngradeInformationOffset] = (byte)DowngradeInformation;
-        result[RouteInformationOffset] = (byte)RouteInformation;
+        result[RouteInformationOffset] = (byte)((int)RouteInformationUpper << 4);
+        result[RouteInformationOffset] |= (byte)RouteInformationLower;
         result[SignalAspectIntentionallyDarkOffset] = (byte)SignalAspectIntentionallyDark;
         SpecifiedByNationalRequirements.CopyTo(result, SpecifiedByNationalRequirementsOffset);
         return result;
     }
 }
 
-public enum LightSignalIndicateSignalAspectCommandRouteInformation : byte {
+public enum LightSignalIndicateSignalAspectCommandRouteInformationUpper : byte {
+    SignalInAdvanceOfRoute1InReferenceDirection = 0x1,
+    SignalInAdvanceOfRoute2InReferenceDirection = 0x2,
+    SignalInAdvanceOfRoute3InReferenceDirection = 0x3,
+    SignalInAdvanceOfRoute4InReferenceDirection = 0x4,
+    NoInformationSignalInAdvance = 0xE,
+    RouteInformationNotApplicable = 0xF
+}
+
+public enum LightSignalIndicateSignalAspectCommandRouteInformationLower : byte {
     SignalInRearOfRoute1InReferenceDirection = 0x1,
     SignalInRearOfRoute2InReferenceDirection = 0x2,
     SignalInRearOfRoute3InReferenceDirection = 0x3,
@@ -73,7 +84,6 @@ public enum LightSignalIndicateSignalAspectCommandSignalAspectIntentionallyDark 
     CommandedSignalAspectOrTheRelatedDowngradedAspectShallBeIndicatedDark = 0x0F,
     IntentionallyDarkNotApplicable = 0xFF
 }
-
 
 public record LightSignalSetLuminosityCommand (string SenderIdentifier, string ReceiverIdentifier, LightSignalSetLuminosityCommandLuminosity Luminosity) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
@@ -108,8 +118,7 @@ public enum LightSignalSetLuminosityCommandLuminosity : byte {
     IntentionallyDeleted = 0xFE
 }
 
-
-public record LightSignalIndicatedSignalAspectMessage (string SenderIdentifier, string ReceiverIdentifier, byte CodeForBasicAspectTypes, byte CodeForExtensionOfBasicAspectTypes, byte SpeedIndicators, byte SpeedIndicatorAnnouncements, byte DirectionIndicators, byte DirectionIndicatorAnnouncements, byte DowngradeInformation, LightSignalIndicatedSignalAspectMessageRouteInformation RouteInformation, LightSignalIndicatedSignalAspectMessageSignalAspectIntentionallyDark SignalAspectIntentionallyDark, byte[] SpecifiedByNationalRequirements) : Message(SenderIdentifier, ReceiverIdentifier) {
+public record LightSignalIndicatedSignalAspectMessage (string SenderIdentifier, string ReceiverIdentifier, byte CodeForBasicAspectTypes, byte CodeForExtensionOfBasicAspectTypes, byte SpeedIndicators, byte SpeedIndicatorAnnouncements, byte DirectionIndicators, byte DirectionIndicatorAnnouncements, byte DowngradeInformation, LightSignalIndicatedSignalAspectMessageRouteInformationUpper RouteInformationUpper, LightSignalIndicatedSignalAspectMessageRouteInformationLower RouteInformationLower, LightSignalIndicatedSignalAspectMessageSignalAspectIntentionallyDark SignalAspectIntentionallyDark, byte[] SpecifiedByNationalRequirements) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
     private const int ReceiverIdentifierOffset = 23;
@@ -135,11 +144,12 @@ public record LightSignalIndicatedSignalAspectMessage (string SenderIdentifier, 
         var DirectionIndicators = (byte)message[DirectionIndicatorsOffset];
         var DirectionIndicatorAnnouncements = (byte)message[DirectionIndicatorAnnouncementsOffset];
         var DowngradeInformation = (byte)message[DowngradeInformationOffset];
-        var RouteInformation = (LightSignalIndicatedSignalAspectMessageRouteInformation)message[RouteInformationOffset];
+        var RouteInformationUpper = (LightSignalIndicatedSignalAspectMessageRouteInformationUpper)(message[RouteInformationOffset] >> 4);
+        var RouteInformationLower = (LightSignalIndicatedSignalAspectMessageRouteInformationLower)message[RouteInformationOffset];
         var SignalAspectIntentionallyDark = (LightSignalIndicatedSignalAspectMessageSignalAspectIntentionallyDark)message[SignalAspectIntentionallyDarkOffset];
         var SpecifiedByNationalRequirements = new byte[9];
         Buffer.BlockCopy(message, SpecifiedByNationalRequirementsOffset, SpecifiedByNationalRequirements, 0, 9);
-        return new LightSignalIndicatedSignalAspectMessage(SenderIdentifier, ReceiverIdentifier, CodeForBasicAspectTypes, CodeForExtensionOfBasicAspectTypes, SpeedIndicators, SpeedIndicatorAnnouncements, DirectionIndicators, DirectionIndicatorAnnouncements, DowngradeInformation, RouteInformation, SignalAspectIntentionallyDark, SpecifiedByNationalRequirements);
+        return new LightSignalIndicatedSignalAspectMessage(SenderIdentifier, ReceiverIdentifier, CodeForBasicAspectTypes, CodeForExtensionOfBasicAspectTypes, SpeedIndicators, SpeedIndicatorAnnouncements, DirectionIndicators, DirectionIndicatorAnnouncements, DowngradeInformation, RouteInformationUpper, RouteInformationLower, SignalAspectIntentionallyDark, SpecifiedByNationalRequirements);
     }
 
     public override byte[] ToByteArray() {
@@ -157,14 +167,24 @@ public record LightSignalIndicatedSignalAspectMessage (string SenderIdentifier, 
         result[DirectionIndicatorsOffset] = (byte)DirectionIndicators;
         result[DirectionIndicatorAnnouncementsOffset] = (byte)DirectionIndicatorAnnouncements;
         result[DowngradeInformationOffset] = (byte)DowngradeInformation;
-        result[RouteInformationOffset] = (byte)RouteInformation;
+        result[RouteInformationOffset] = (byte)((int)RouteInformationUpper << 4);
+        result[RouteInformationOffset] |= (byte)RouteInformationLower;
         result[SignalAspectIntentionallyDarkOffset] = (byte)SignalAspectIntentionallyDark;
         SpecifiedByNationalRequirements.CopyTo(result, SpecifiedByNationalRequirementsOffset);
         return result;
     }
 }
 
-public enum LightSignalIndicatedSignalAspectMessageRouteInformation : byte {
+public enum LightSignalIndicatedSignalAspectMessageRouteInformationUpper : byte {
+    SignalInAdvanceOfRoute1InReferenceDirection = 0x1,
+    SignalInAdvanceOfRoute2InReferenceDirection = 0x2,
+    SignalInAdvanceOfRoute3InReferenceDirection = 0x3,
+    SignalInAdvanceOfRoute4InReferenceDirection = 0x4,
+    NoInformationSignalInAdvance = 0xE,
+    RouteInformationNotApplicable = 0xF
+}
+
+public enum LightSignalIndicatedSignalAspectMessageRouteInformationLower : byte {
     SignalInRearOfRoute1InReferenceDirection = 0x1,
     SignalInRearOfRoute2InReferenceDirection = 0x2,
     SignalInRearOfRoute3InReferenceDirection = 0x3,
@@ -178,7 +198,6 @@ public enum LightSignalIndicatedSignalAspectMessageSignalAspectIntentionallyDark
     CommandedSignalAspectOrTheRelatedDowngradedAspectIsIndicatedDark = 0x0F,
     IntentionallyDarkNotApplicable = 0xFF
 }
-
 
 public record LightSignalSetLuminosityMessage (string SenderIdentifier, string ReceiverIdentifier, LightSignalSetLuminosityMessageLuminosity Luminosity) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
@@ -212,4 +231,3 @@ public enum LightSignalSetLuminosityMessageLuminosity : byte {
     LuminosityForNight = 0x02,
     IntentionallyDeleted = 0xFE
 }
-

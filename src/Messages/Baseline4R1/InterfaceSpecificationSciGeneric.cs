@@ -33,7 +33,6 @@ public record AdjacentInterlockingSystemPdiVersionCheckCommand (string SenderIde
 
 
 
-
 public record TrainDetectionSystemPdiVersionCheckCommand (string SenderIdentifier, string ReceiverIdentifier, byte PdiVersionOfSender) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -60,7 +59,6 @@ public record TrainDetectionSystemPdiVersionCheckCommand (string SenderIdentifie
         return result;
     }
 }
-
 
 
 
@@ -93,7 +91,6 @@ public record LightSignalPdiVersionCheckCommand (string SenderIdentifier, string
 
 
 
-
 public record PointPdiVersionCheckCommand (string SenderIdentifier, string ReceiverIdentifier, byte PdiVersionOfSender) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -120,7 +117,6 @@ public record PointPdiVersionCheckCommand (string SenderIdentifier, string Recei
         return result;
     }
 }
-
 
 
 
@@ -153,7 +149,6 @@ public record RadioBlockCenterPdiVersionCheckCommand (string SenderIdentifier, s
 
 
 
-
 public record LevelCrossingPdiVersionCheckCommand (string SenderIdentifier, string ReceiverIdentifier, byte PdiVersionOfSender) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -180,7 +175,6 @@ public record LevelCrossingPdiVersionCheckCommand (string SenderIdentifier, stri
         return result;
     }
 }
-
 
 
 
@@ -213,7 +207,6 @@ public record CCPdiVersionCheckCommand (string SenderIdentifier, string Receiver
 
 
 
-
 public record GenericIOPdiVersionCheckCommand (string SenderIdentifier, string ReceiverIdentifier, byte PdiVersionOfSender) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -240,7 +233,6 @@ public record GenericIOPdiVersionCheckCommand (string SenderIdentifier, string R
         return result;
     }
 }
-
 
 
 
@@ -274,7 +266,6 @@ public record ExternalLevelCrossingSystemPdiVersionCheckCommand (string SenderId
 
 
 
-
 public record AdjacentInterlockingSystemInitialisationRequestCommand (string SenderIdentifier, string ReceiverIdentifier) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -298,7 +289,6 @@ public record AdjacentInterlockingSystemInitialisationRequestCommand (string Sen
         return result;
     }
 }
-
 
 
 
@@ -328,7 +318,6 @@ public record TrainDetectionSystemInitialisationRequestCommand (string SenderIde
 
 
 
-
 public record LightSignalInitialisationRequestCommand (string SenderIdentifier, string ReceiverIdentifier) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -352,7 +341,6 @@ public record LightSignalInitialisationRequestCommand (string SenderIdentifier, 
         return result;
     }
 }
-
 
 
 
@@ -382,7 +370,6 @@ public record PointInitialisationRequestCommand (string SenderIdentifier, string
 
 
 
-
 public record RadioBlockCenterInitialisationRequestCommand (string SenderIdentifier, string ReceiverIdentifier) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -406,7 +393,6 @@ public record RadioBlockCenterInitialisationRequestCommand (string SenderIdentif
         return result;
     }
 }
-
 
 
 
@@ -436,7 +422,6 @@ public record LevelCrossingInitialisationRequestCommand (string SenderIdentifier
 
 
 
-
 public record CCInitialisationRequestCommand (string SenderIdentifier, string ReceiverIdentifier) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -460,7 +445,6 @@ public record CCInitialisationRequestCommand (string SenderIdentifier, string Re
         return result;
     }
 }
-
 
 
 
@@ -490,7 +474,6 @@ public record GenericIOInitialisationRequestCommand (string SenderIdentifier, st
 
 
 
-
 public record ExternalLevelCrossingSystemInitialisationRequestCommand (string SenderIdentifier, string ReceiverIdentifier) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -514,7 +497,6 @@ public record ExternalLevelCrossingSystemInitialisationRequestCommand (string Se
         return result;
     }
 }
-
 
 
 
@@ -544,7 +526,6 @@ public record AdjacentInterlockingSystemStartInitialisationMessage (string Sende
 
 
 
-
 public record TrainDetectionSystemStartInitialisationMessage (string SenderIdentifier, string ReceiverIdentifier) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -568,7 +549,6 @@ public record TrainDetectionSystemStartInitialisationMessage (string SenderIdent
         return result;
     }
 }
-
 
 
 
@@ -598,7 +578,6 @@ public record LightSignalStartInitialisationMessage (string SenderIdentifier, st
 
 
 
-
 public record PointStartInitialisationMessage (string SenderIdentifier, string ReceiverIdentifier) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -622,7 +601,6 @@ public record PointStartInitialisationMessage (string SenderIdentifier, string R
         return result;
     }
 }
-
 
 
 
@@ -652,7 +630,6 @@ public record RadioBlockCenterStartInitialisationMessage (string SenderIdentifie
 
 
 
-
 public record LevelCrossingStartInitialisationMessage (string SenderIdentifier, string ReceiverIdentifier) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -676,7 +653,6 @@ public record LevelCrossingStartInitialisationMessage (string SenderIdentifier, 
         return result;
     }
 }
-
 
 
 
@@ -706,7 +682,6 @@ public record CCStartInitialisationMessage (string SenderIdentifier, string Rece
 
 
 
-
 public record GenericIOStartInitialisationMessage (string SenderIdentifier, string ReceiverIdentifier) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -730,7 +705,6 @@ public record GenericIOStartInitialisationMessage (string SenderIdentifier, stri
         return result;
     }
 }
-
 
 
 
@@ -760,7 +734,6 @@ public record ExternalLevelCrossingSystemStartInitialisationMessage (string Send
 
 
 
-
 public record AdjacentInterlockingSystemStatusReportCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -784,7 +757,6 @@ public record AdjacentInterlockingSystemStatusReportCompletedMessage (string Sen
         return result;
     }
 }
-
 
 
 
@@ -814,7 +786,6 @@ public record TrainDetectionSystemStatusReportCompletedMessage (string SenderIde
 
 
 
-
 public record LightSignalStatusReportCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -838,7 +809,6 @@ public record LightSignalStatusReportCompletedMessage (string SenderIdentifier, 
         return result;
     }
 }
-
 
 
 
@@ -868,7 +838,6 @@ public record PointStatusReportCompletedMessage (string SenderIdentifier, string
 
 
 
-
 public record RadioBlockCenterStatusReportCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -892,7 +861,6 @@ public record RadioBlockCenterStatusReportCompletedMessage (string SenderIdentif
         return result;
     }
 }
-
 
 
 
@@ -922,7 +890,6 @@ public record LevelCrossingStatusReportCompletedMessage (string SenderIdentifier
 
 
 
-
 public record CCStatusReportCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -946,7 +913,6 @@ public record CCStatusReportCompletedMessage (string SenderIdentifier, string Re
         return result;
     }
 }
-
 
 
 
@@ -976,7 +942,6 @@ public record GenericIOStatusReportCompletedMessage (string SenderIdentifier, st
 
 
 
-
 public record ExternalLevelCrossingSystemStatusReportCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -1000,7 +965,6 @@ public record ExternalLevelCrossingSystemStatusReportCompletedMessage (string Se
         return result;
     }
 }
-
 
 
 
@@ -1030,7 +994,6 @@ public record AdjacentInterlockingSystemInitialisationCompletedMessage (string S
 
 
 
-
 public record TrainDetectionSystemInitialisationCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -1054,7 +1017,6 @@ public record TrainDetectionSystemInitialisationCompletedMessage (string SenderI
         return result;
     }
 }
-
 
 
 
@@ -1084,7 +1046,6 @@ public record LightSignalInitialisationCompletedMessage (string SenderIdentifier
 
 
 
-
 public record PointInitialisationCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -1108,7 +1069,6 @@ public record PointInitialisationCompletedMessage (string SenderIdentifier, stri
         return result;
     }
 }
-
 
 
 
@@ -1138,7 +1098,6 @@ public record RadioBlockCenterInitialisationCompletedMessage (string SenderIdent
 
 
 
-
 public record LevelCrossingInitialisationCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -1162,7 +1121,6 @@ public record LevelCrossingInitialisationCompletedMessage (string SenderIdentifi
         return result;
     }
 }
-
 
 
 
@@ -1192,7 +1150,6 @@ public record CCInitialisationCompletedMessage (string SenderIdentifier, string 
 
 
 
-
 public record GenericIOInitialisationCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -1219,7 +1176,6 @@ public record GenericIOInitialisationCompletedMessage (string SenderIdentifier, 
 
 
 
-
 public record ExternalLevelCrossingSystemInitialisationCompletedMessage (string SenderIdentifier, string ReceiverIdentifier) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -1243,7 +1199,6 @@ public record ExternalLevelCrossingSystemInitialisationCompletedMessage (string 
         return result;
     }
 }
-
 
 
 
@@ -1284,7 +1239,6 @@ public enum AdjacentInterlockingSystemClosePdiCommandCloseReason : byte {
     ChecksumMismatch = 0x07
 }
 
-
 public record TrainDetectionSystemClosePdiCommand (string SenderIdentifier, string ReceiverIdentifier, TrainDetectionSystemClosePdiCommandCloseReason CloseReason) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -1321,7 +1275,6 @@ public enum TrainDetectionSystemClosePdiCommandCloseReason : byte {
     Timeout = 0x06,
     ChecksumMismatch = 0x07
 }
-
 
 public record LightSignalClosePdiCommand (string SenderIdentifier, string ReceiverIdentifier, LightSignalClosePdiCommandCloseReason CloseReason) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
@@ -1360,7 +1313,6 @@ public enum LightSignalClosePdiCommandCloseReason : byte {
     ChecksumMismatch = 0x07
 }
 
-
 public record PointClosePdiCommand (string SenderIdentifier, string ReceiverIdentifier, PointClosePdiCommandCloseReason CloseReason) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -1397,7 +1349,6 @@ public enum PointClosePdiCommandCloseReason : byte {
     Timeout = 0x06,
     ChecksumMismatch = 0x07
 }
-
 
 public record RadioBlockCenterClosePdiCommand (string SenderIdentifier, string ReceiverIdentifier, RadioBlockCenterClosePdiCommandCloseReason CloseReason) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
@@ -1436,7 +1387,6 @@ public enum RadioBlockCenterClosePdiCommandCloseReason : byte {
     ChecksumMismatch = 0x07
 }
 
-
 public record LevelCrossingClosePdiCommand (string SenderIdentifier, string ReceiverIdentifier, LevelCrossingClosePdiCommandCloseReason CloseReason) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -1473,7 +1423,6 @@ public enum LevelCrossingClosePdiCommandCloseReason : byte {
     Timeout = 0x06,
     ChecksumMismatch = 0x07
 }
-
 
 public record CCClosePdiCommand (string SenderIdentifier, string ReceiverIdentifier, CCClosePdiCommandCloseReason CloseReason) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
@@ -1512,7 +1461,6 @@ public enum CCClosePdiCommandCloseReason : byte {
     ChecksumMismatch = 0x07
 }
 
-
 public record GenericIOClosePdiCommand (string SenderIdentifier, string ReceiverIdentifier, GenericIOClosePdiCommandCloseReason CloseReason) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -1549,7 +1497,6 @@ public enum GenericIOClosePdiCommandCloseReason : byte {
     Timeout = 0x06,
     ChecksumMismatch = 0x07
 }
-
 
 public record ExternalLevelCrossingSystemClosePdiCommand (string SenderIdentifier, string ReceiverIdentifier, ExternalLevelCrossingSystemClosePdiCommandCloseReason CloseReason) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
@@ -1588,7 +1535,6 @@ public enum ExternalLevelCrossingSystemClosePdiCommandCloseReason : byte {
     ChecksumMismatch = 0x07
 }
 
-
 public record AdjacentInterlockingSystemReleasePdiForMaintenanceCommand (string SenderIdentifier, string ReceiverIdentifier) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -1612,7 +1558,6 @@ public record AdjacentInterlockingSystemReleasePdiForMaintenanceCommand (string 
         return result;
     }
 }
-
 
 
 
@@ -1642,7 +1587,6 @@ public record TrainDetectionSystemReleasePdiForMaintenanceCommand (string Sender
 
 
 
-
 public record LightSignalReleasePdiForMaintenanceCommand (string SenderIdentifier, string ReceiverIdentifier) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -1666,7 +1610,6 @@ public record LightSignalReleasePdiForMaintenanceCommand (string SenderIdentifie
         return result;
     }
 }
-
 
 
 
@@ -1696,7 +1639,6 @@ public record PointReleasePdiForMaintenanceCommand (string SenderIdentifier, str
 
 
 
-
 public record RadioBlockCenterReleasePdiForMaintenanceCommand (string SenderIdentifier, string ReceiverIdentifier) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -1720,7 +1662,6 @@ public record RadioBlockCenterReleasePdiForMaintenanceCommand (string SenderIden
         return result;
     }
 }
-
 
 
 
@@ -1750,7 +1691,6 @@ public record LevelCrossingReleasePdiForMaintenanceCommand (string SenderIdentif
 
 
 
-
 public record CCReleasePdiForMaintenanceCommand (string SenderIdentifier, string ReceiverIdentifier) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -1774,7 +1714,6 @@ public record CCReleasePdiForMaintenanceCommand (string SenderIdentifier, string
         return result;
     }
 }
-
 
 
 
@@ -1804,7 +1743,6 @@ public record GenericIOReleasePdiForMaintenanceCommand (string SenderIdentifier,
 
 
 
-
 public record ExternalLevelCrossingSystemReleasePdiForMaintenanceCommand (string SenderIdentifier, string ReceiverIdentifier) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -1828,7 +1766,6 @@ public record ExternalLevelCrossingSystemReleasePdiForMaintenanceCommand (string
         return result;
     }
 }
-
 
 
 
@@ -1858,7 +1795,6 @@ public record AdjacentInterlockingSystemPdiAvailableMessage (string SenderIdenti
 
 
 
-
 public record TrainDetectionSystemPdiAvailableMessage (string SenderIdentifier, string ReceiverIdentifier) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -1882,7 +1818,6 @@ public record TrainDetectionSystemPdiAvailableMessage (string SenderIdentifier, 
         return result;
     }
 }
-
 
 
 
@@ -1912,7 +1847,6 @@ public record LightSignalPdiAvailableMessage (string SenderIdentifier, string Re
 
 
 
-
 public record PointPdiAvailableMessage (string SenderIdentifier, string ReceiverIdentifier) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -1936,7 +1870,6 @@ public record PointPdiAvailableMessage (string SenderIdentifier, string Receiver
         return result;
     }
 }
-
 
 
 
@@ -1966,7 +1899,6 @@ public record RadioBlockCenterPdiAvailableMessage (string SenderIdentifier, stri
 
 
 
-
 public record LevelCrossingPdiAvailableMessage (string SenderIdentifier, string ReceiverIdentifier) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -1990,7 +1922,6 @@ public record LevelCrossingPdiAvailableMessage (string SenderIdentifier, string 
         return result;
     }
 }
-
 
 
 
@@ -2020,7 +1951,6 @@ public record CCPdiAvailableMessage (string SenderIdentifier, string ReceiverIde
 
 
 
-
 public record GenericIOPdiAvailableMessage (string SenderIdentifier, string ReceiverIdentifier) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -2044,7 +1974,6 @@ public record GenericIOPdiAvailableMessage (string SenderIdentifier, string Rece
         return result;
     }
 }
-
 
 
 
@@ -2074,7 +2003,6 @@ public record ExternalLevelCrossingSystemPdiAvailableMessage (string SenderIdent
 
 
 
-
 public record AdjacentInterlockingSystemPdiNotAvailableMessage (string SenderIdentifier, string ReceiverIdentifier) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -2098,7 +2026,6 @@ public record AdjacentInterlockingSystemPdiNotAvailableMessage (string SenderIde
         return result;
     }
 }
-
 
 
 
@@ -2128,7 +2055,6 @@ public record TrainDetectionSystemPdiNotAvailableMessage (string SenderIdentifie
 
 
 
-
 public record LightSignalPdiNotAvailableMessage (string SenderIdentifier, string ReceiverIdentifier) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -2152,7 +2078,6 @@ public record LightSignalPdiNotAvailableMessage (string SenderIdentifier, string
         return result;
     }
 }
-
 
 
 
@@ -2182,7 +2107,6 @@ public record PointPdiNotAvailableMessage (string SenderIdentifier, string Recei
 
 
 
-
 public record RadioBlockCenterPdiNotAvailableMessage (string SenderIdentifier, string ReceiverIdentifier) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -2206,7 +2130,6 @@ public record RadioBlockCenterPdiNotAvailableMessage (string SenderIdentifier, s
         return result;
     }
 }
-
 
 
 
@@ -2236,7 +2159,6 @@ public record LevelCrossingPdiNotAvailableMessage (string SenderIdentifier, stri
 
 
 
-
 public record CCPdiNotAvailableMessage (string SenderIdentifier, string ReceiverIdentifier) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -2260,7 +2182,6 @@ public record CCPdiNotAvailableMessage (string SenderIdentifier, string Receiver
         return result;
     }
 }
-
 
 
 
@@ -2290,7 +2211,6 @@ public record GenericIOPdiNotAvailableMessage (string SenderIdentifier, string R
 
 
 
-
 public record ExternalLevelCrossingSystemPdiNotAvailableMessage (string SenderIdentifier, string ReceiverIdentifier) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -2314,7 +2234,6 @@ public record ExternalLevelCrossingSystemPdiNotAvailableMessage (string SenderId
         return result;
     }
 }
-
 
 
 
@@ -2351,7 +2270,6 @@ public enum AdjacentInterlockingSystemResetPdiMessageResetReason : byte {
     ContentTelegramError = 0x03
 }
 
-
 public record TrainDetectionSystemResetPdiMessage (string SenderIdentifier, string ReceiverIdentifier, TrainDetectionSystemResetPdiMessageResetReason ResetReason) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -2384,7 +2302,6 @@ public enum TrainDetectionSystemResetPdiMessageResetReason : byte {
     FormalTelegramError = 0x02,
     ContentTelegramError = 0x03
 }
-
 
 public record LightSignalResetPdiMessage (string SenderIdentifier, string ReceiverIdentifier, LightSignalResetPdiMessageResetReason ResetReason) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
@@ -2419,7 +2336,6 @@ public enum LightSignalResetPdiMessageResetReason : byte {
     ContentTelegramError = 0x03
 }
 
-
 public record PointResetPdiMessage (string SenderIdentifier, string ReceiverIdentifier, PointResetPdiMessageResetReason ResetReason) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -2452,7 +2368,6 @@ public enum PointResetPdiMessageResetReason : byte {
     FormalTelegramError = 0x02,
     ContentTelegramError = 0x03
 }
-
 
 public record RadioBlockCenterResetPdiMessage (string SenderIdentifier, string ReceiverIdentifier, RadioBlockCenterResetPdiMessageResetReason ResetReason) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
@@ -2487,7 +2402,6 @@ public enum RadioBlockCenterResetPdiMessageResetReason : byte {
     ContentTelegramError = 0x03
 }
 
-
 public record LevelCrossingResetPdiMessage (string SenderIdentifier, string ReceiverIdentifier, LevelCrossingResetPdiMessageResetReason ResetReason) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -2520,7 +2434,6 @@ public enum LevelCrossingResetPdiMessageResetReason : byte {
     FormalTelegramError = 0x02,
     ContentTelegramError = 0x03
 }
-
 
 public record CCResetPdiMessage (string SenderIdentifier, string ReceiverIdentifier, CCResetPdiMessageResetReason ResetReason) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
@@ -2555,7 +2468,6 @@ public enum CCResetPdiMessageResetReason : byte {
     ContentTelegramError = 0x03
 }
 
-
 public record GenericIOResetPdiMessage (string SenderIdentifier, string ReceiverIdentifier, GenericIOResetPdiMessageResetReason ResetReason) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -2589,7 +2501,6 @@ public enum GenericIOResetPdiMessageResetReason : byte {
     ContentTelegramError = 0x03
 }
 
-
 public record ExternalLevelCrossingSystemResetPdiMessage (string SenderIdentifier, string ReceiverIdentifier, ExternalLevelCrossingSystemResetPdiMessageResetReason ResetReason) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -2622,4 +2533,3 @@ public enum ExternalLevelCrossingSystemResetPdiMessageResetReason : byte {
     FormalTelegramError = 0x02,
     ContentTelegramError = 0x03
 }
-

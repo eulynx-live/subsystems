@@ -42,7 +42,6 @@ public enum AdjacentInterlockingSystemActivationZoneStatusMessageActivationZoneS
     NotActive = 0x02
 }
 
-
 public record AdjacentInterlockingSystemApproachZoneStatusMessage (string SenderIdentifier, string ReceiverIdentifier, string BoundaryId, string ApproachZoneId, AdjacentInterlockingSystemApproachZoneStatusMessageApproachZoneStatus ApproachZoneStatus) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -80,7 +79,6 @@ public enum AdjacentInterlockingSystemApproachZoneStatusMessageApproachZoneStatu
     Active = 0x01,
     NotActive = 0x02
 }
-
 
 public record AdjacentInterlockingSystemAccessRestrictionRequestCommand (string SenderIdentifier, string ReceiverIdentifier, string BoundaryId, AdjacentInterlockingSystemAccessRestrictionRequestCommandAccessRestrictionType AccessRestrictionType) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
@@ -128,7 +126,6 @@ public enum AdjacentInterlockingSystemAccessRestrictionRequestCommandAccessRestr
     WrittenOrderRequired = 0x13,
     AccessRestrictionTypeNotApplicable = 0xFF
 }
-
 
 public record AdjacentInterlockingSystemAccessRestrictionStatusMessage (string SenderIdentifier, string ReceiverIdentifier, string BoundaryId, AdjacentInterlockingSystemAccessRestrictionStatusMessageAccessRestrictionActivationStatus AccessRestrictionActivationStatus, AdjacentInterlockingSystemAccessRestrictionStatusMessageAccessRestrictionType AccessRestrictionType) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
@@ -190,7 +187,6 @@ public enum AdjacentInterlockingSystemAccessRestrictionStatusMessageAccessRestri
     AccessRestrictionTypeNotApplicable = 0xFF
 }
 
-
 public record AdjacentInterlockingSystemLineStatusMessage (string SenderIdentifier, string ReceiverIdentifier, string BoundaryId, AdjacentInterlockingSystemLineStatusMessageLineStatus LineStatus) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -227,7 +223,6 @@ public enum AdjacentInterlockingSystemLineStatusMessageLineStatus : byte {
     RequestForLineBlockReset = 0x03
 }
 
-
 public record AdjacentInterlockingSystemFlankProtectionRequestCommand (string SenderIdentifier, string ReceiverIdentifier, string BoundaryId, AdjacentInterlockingSystemFlankProtectionRequestCommandFlankProtectionRequestType FlankProtectionRequestType) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -263,7 +258,6 @@ public enum AdjacentInterlockingSystemFlankProtectionRequestCommandFlankProtecti
     Cancellation = 0x02
 }
 
-
 public record AdjacentInterlockingSystemFlankProtectionStatusMessage (string SenderIdentifier, string ReceiverIdentifier, string BoundaryId, AdjacentInterlockingSystemFlankProtectionStatusMessageFlankProtectionStatus FlankProtectionStatus) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -298,7 +292,6 @@ public enum AdjacentInterlockingSystemFlankProtectionStatusMessageFlankProtectio
     Provided = 0x01,
     NotProvided = 0x02
 }
-
 
 public record AdjacentInterlockingSystemLineDirectionControlMessage (string SenderIdentifier, string ReceiverIdentifier, string BoundaryId, AdjacentInterlockingSystemLineDirectionControlMessageLineDirectionControlInformation LineDirectionControlInformation, AdjacentInterlockingSystemLineDirectionControlMessageLineDirectionStatus LineDirectionStatus) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
@@ -351,7 +344,6 @@ public enum AdjacentInterlockingSystemLineDirectionControlMessageLineDirectionSt
     LineDirectionStatusNotApplicable = 0xFF
 }
 
-
 public record AdjacentInterlockingSystemRouteRequestCommand (string SenderIdentifier, string ReceiverIdentifier, string BoundaryId, string RouteId, AdjacentInterlockingSystemRouteRequestCommandRouteType RouteType) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -393,7 +385,6 @@ public enum AdjacentInterlockingSystemRouteRequestCommandRouteType : byte {
     SpecialTrainRoute = 0x05,
     TemporaryShuntingArea = 0x06
 }
-
 
 public record AdjacentInterlockingSystemRouteStatusMessage (string SenderIdentifier, string ReceiverIdentifier, string BoundaryId, string RouteId, AdjacentInterlockingSystemRouteStatusMessageRouteType RouteType, AdjacentInterlockingSystemRouteStatusMessageRouteStatus RouteStatus) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
@@ -445,7 +436,6 @@ public enum AdjacentInterlockingSystemRouteStatusMessageRouteStatus : byte {
     Locked = 0x02,
     NoRoute = 0x03
 }
-
 
 public record AdjacentInterlockingSystemRouteMonitoringStatusMessage (string SenderIdentifier, string ReceiverIdentifier, string BoundaryId, string RouteId, AdjacentInterlockingSystemRouteMonitoringStatusMessageRouteType RouteType, string OverlapId, AdjacentInterlockingSystemRouteMonitoringStatusMessageRouteMonitoring RouteMonitoring, AdjacentInterlockingSystemRouteMonitoringStatusMessageOccupancyMonitoring OccupancyMonitoring, AdjacentInterlockingSystemRouteMonitoringStatusMessageLevelCrossingMonitoring LevelCrossingMonitoring, byte EntranceSpeed, byte TargetSpeed, AdjacentInterlockingSystemRouteMonitoringStatusMessageDynamicOrStaticTargetSpeed DynamicOrStaticTargetSpeed) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
@@ -536,7 +526,6 @@ public enum AdjacentInterlockingSystemRouteMonitoringStatusMessageDynamicOrStati
     DynamicOrStaticTargetSpeedNotApplicable = 0xFF
 }
 
-
 public record AdjacentInterlockingSystemRouteCancellationRequestCommand (string SenderIdentifier, string ReceiverIdentifier, string BoundaryId, string RouteId) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -566,7 +555,6 @@ public record AdjacentInterlockingSystemRouteCancellationRequestCommand (string 
         return result;
     }
 }
-
 
 
 
@@ -605,7 +593,6 @@ public enum AdjacentInterlockingSystemTrainOperatedRouteReleaseStatusMessageTrai
     TvpsAdjacentToTheBoundaryIsReleasedByTrain = 0x02,
     TvpsAdjacentToTheBoundaryIsNotInACorrectOccupancySequenceAndNotReleasedByTrain = 0x03
 }
-
 
 public record AdjacentInterlockingSystemSignalStatusMessage (string SenderIdentifier, string ReceiverIdentifier, string BoundaryId, byte AspectLampCombinations, byte AspectExtensionLampCombinations, byte SpeedIndicator, byte SpeedIndicatorAnnouncement, byte DirectionIndicator, byte DirectionIndicatorAnnouncement, AdjacentInterlockingSystemSignalStatusMessageIntentionallyDark IntentionallyDark) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
@@ -661,7 +648,6 @@ public enum AdjacentInterlockingSystemSignalStatusMessageIntentionallyDark : byt
     IntentionallyDarkNotApplicable = 0xFF
 }
 
-
 public record AdjacentInterlockingSystemTvpsStatusMessage (string SenderIdentifier, string ReceiverIdentifier, string BoundaryId, AdjacentInterlockingSystemTvpsStatusMessageOccupancyStatus OccupancyStatus, AdjacentInterlockingSystemTvpsStatusMessageFoulingStatus FoulingStatus) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -707,7 +693,6 @@ public enum AdjacentInterlockingSystemTvpsStatusMessageFoulingStatus : byte {
     FoulingStatusNotApplicable = 0xFF
 }
 
-
 public record AdjacentInterlockingSystemOppositeMainSignalStatusMessage (string SenderIdentifier, string ReceiverIdentifier, string BoundaryId) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -734,7 +719,6 @@ public record AdjacentInterlockingSystemOppositeMainSignalStatusMessage (string 
         return result;
     }
 }
-
 
 
 
@@ -779,7 +763,6 @@ public enum AdjacentInterlockingSystemRoutePretestRequestCommandRouteType : byte
     SpecialTrainRoute = 0x05,
     TemporaryShuntingArea = 0x06
 }
-
 
 public record AdjacentInterlockingSystemRoutePretestStatusMessage (string SenderIdentifier, string ReceiverIdentifier, string BoundaryId, string RouteId, AdjacentInterlockingSystemRoutePretestStatusMessageRouteType RouteType, AdjacentInterlockingSystemRoutePretestStatusMessageRouteStatus RouteStatus, AdjacentInterlockingSystemRoutePretestStatusMessagePretestResponse PretestResponse) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
@@ -842,7 +825,6 @@ public enum AdjacentInterlockingSystemRoutePretestStatusMessagePretestResponse :
     Rejected = 0x04
 }
 
-
 public record AdjacentInterlockingSystemRouteReleaseInhibitionActivationRequestCommand (string SenderIdentifier, string ReceiverIdentifier, string BoundaryId) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -869,7 +851,6 @@ public record AdjacentInterlockingSystemRouteReleaseInhibitionActivationRequestC
         return result;
     }
 }
-
 
 
 
@@ -907,4 +888,3 @@ public enum AdjacentInterlockingSystemRouteReleaseInhibitionStatusMessageRouteRe
     Activated = 0x01,
     Deactivated = 0x02
 }
-

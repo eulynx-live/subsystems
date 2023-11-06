@@ -56,7 +56,6 @@ public enum CCManageATrackSectionCommandInstruction : byte {
     BlockAgainstRouteSettingAllTrains = 0x02
 }
 
-
 public record CCSetPredefinedObstructionCommand (CCSetPredefinedObstructionCommandMessageType MessageType, string SenderIdentifier, string ReceiverIdentifier, ushort Tan, string ObstructionId, CCSetPredefinedObstructionCommandInstruction Instruction) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -110,7 +109,6 @@ public enum CCSetPredefinedObstructionCommandInstruction : byte {
     ObstructionSetNoMovementAuthorityAllowed = 0x03
 }
 
-
 public record CCPredefinedObstructionStatusMessage (string SenderIdentifier, string ReceiverIdentifier, string ObstructionId, CCPredefinedObstructionStatusMessageStatus Status) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -149,7 +147,6 @@ public enum CCPredefinedObstructionStatusMessageStatus : byte {
     ObstructionSetMovementAuthorityAssociatedWithDegradedClassRouteAllowed = 0x02,
     ObstructionSetNoMovementAuthorityAllowed = 0x03
 }
-
 
 public record CCReleaseMovementAuthorityCommand (CCReleaseMovementAuthorityCommandMessageType MessageType, string SenderIdentifier, string ReceiverIdentifier, ushort Tan, string OnboardId) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
@@ -195,7 +192,6 @@ public enum CCReleaseMovementAuthorityCommandMessageType : ushort {
     Confirmation = 0x0055
 }
 
-
 public record CCAbortCommandCommand (string SenderIdentifier, string ReceiverIdentifier, ushort ConfirmationTan) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -226,7 +222,6 @@ public record CCAbortCommandCommand (string SenderIdentifier, string ReceiverIde
         return result;
     }
 }
-
 
 
 
@@ -290,7 +285,6 @@ public enum CCConfirmationOfACommandWithSafetyCodesCommandConfirmationSafetyCode
     SafetyCodeNotApplicable = 0xFF
 }
 
-
 public record CCCommandAcceptedMessage (string SenderIdentifier, string ReceiverIdentifier, ushort ConfirmationTan) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;
     private const int SenderIdentifierOffset = 3;
@@ -321,7 +315,6 @@ public record CCCommandAcceptedMessage (string SenderIdentifier, string Receiver
         return result;
     }
 }
-
 
 
 
@@ -365,4 +358,3 @@ public enum CCReleaseForNormalOperationCommandMessageType : ushort {
     Regular = 0x0050,
     Confirmation = 0x0055
 }
-
