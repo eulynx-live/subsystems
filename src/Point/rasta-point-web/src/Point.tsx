@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import './Point.css';
 import { SimulatorState } from './SimulatorState';
+import { PointClient } from './proto/PointServiceClientPb';
+import { Nothing, PointDegradedMessage, PointPosition } from './proto/point_pb';
 
 interface PointState {
     webSocket: WebSocket | null,
@@ -71,6 +73,9 @@ class Point extends Component<{}, PointState> {
     }
 
     render() {
+        const url = window.location.protocol + '//' + window.location.host + (window.location.pathname.endsWith('/') ? window.location.pathname.slice(0, -1) : window.location.pathname);
+        const client = new PointClient(url);
+
         return (
             <div className="point">
                 <h1>EULYNX Point Simulator</h1>
@@ -78,6 +83,17 @@ class Point extends Component<{}, PointState> {
                 <p>{this.state.connected ? 'connected' : 'disconnected'}</p>
                 <h2>Position</h2>
                 <p>{this.state.position}</p>
+                <button onClick={async () => {
+                    let request = new PointDegradedMessage();
+                    request.setPosition(PointPosition.NOENDPOSITION);
+                    await client.setDegraded(request, null);
+                }}>Set degraded (no endposition)</button>
+                <p>{this.state.position}</p>
+                <button onClick={async () => {
+                    let request = new PointDegradedMessage();
+                    request.setPosition(PointPosition.TRAILED);
+                    await client.setDegraded(request, null);
+                }}>Set degraded (trailed)</button>
             </div>
         );
     }
