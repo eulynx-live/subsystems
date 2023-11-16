@@ -88,12 +88,16 @@ class Point extends Component<{}, PointState> {
                     request.setPosition(PointPosition.NOENDPOSITION);
                     await client.setDegraded(request, null);
                 }}>Set degraded (no endposition)</button>
-                <p>{this.state.position}</p>
+                <p></p>
                 <button onClick={async () => {
                     let request = new PointDegradedMessage();
                     request.setPosition(PointPosition.TRAILED);
                     await client.setDegraded(request, null);
                 }}>Set degraded (trailed)</button>
+                <p></p>
+                <button onClick={async () => {
+                    await client.finalizePosition(new Nothing(), null);
+                }}>Finalize position</button>
             </div>
         );
     }

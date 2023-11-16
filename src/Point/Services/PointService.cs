@@ -27,6 +27,12 @@ namespace EulynxLive.Point.Services
             return new Nothing();
         }
 
+        public override async Task<Nothing> FinalizePosition(Nothing request, ServerCallContext context)
+        {
+            await _point.FinalizePosition();
+            return new Nothing();
+        }
+
         public override Task<Proto.PointPositionMessage> GetPointPosition(Nothing request, ServerCallContext context)
         {
             var response = new Proto.PointPositionMessage()

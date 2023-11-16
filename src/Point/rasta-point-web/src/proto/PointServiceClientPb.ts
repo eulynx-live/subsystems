@@ -125,6 +125,49 @@ export class PointClient {
     this.methodDescriptorSetDegraded);
   }
 
+  methodDescriptorFinalizePosition = new grpcWeb.MethodDescriptor(
+    '/point.Point/FinalizePosition',
+    grpcWeb.MethodType.UNARY,
+    point_pb.Nothing,
+    point_pb.Nothing,
+    (request: point_pb.Nothing) => {
+      return request.serializeBinary();
+    },
+    point_pb.Nothing.deserializeBinary
+  );
+
+  finalizePosition(
+    request: point_pb.Nothing,
+    metadata: grpcWeb.Metadata | null): Promise<point_pb.Nothing>;
+
+  finalizePosition(
+    request: point_pb.Nothing,
+    metadata: grpcWeb.Metadata | null,
+    callback: (err: grpcWeb.RpcError,
+               response: point_pb.Nothing) => void): grpcWeb.ClientReadableStream<point_pb.Nothing>;
+
+  finalizePosition(
+    request: point_pb.Nothing,
+    metadata: grpcWeb.Metadata | null,
+    callback?: (err: grpcWeb.RpcError,
+               response: point_pb.Nothing) => void) {
+    if (callback !== undefined) {
+      return this.client_.rpcCall(
+        this.hostname_ +
+          '/point.Point/FinalizePosition',
+        request,
+        metadata || {},
+        this.methodDescriptorFinalizePosition,
+        callback);
+    }
+    return this.client_.unaryCall(
+    this.hostname_ +
+      '/point.Point/FinalizePosition',
+    request,
+    metadata || {},
+    this.methodDescriptorFinalizePosition);
+  }
+
   methodDescriptorGetPointPosition = new grpcWeb.MethodDescriptor(
     '/point.Point/GetPointPosition',
     grpcWeb.MethodType.UNARY,

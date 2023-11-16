@@ -15,6 +15,7 @@ enum PointPosition {
 service Point {
     rpc SimulateTrailed (Nothing) returns (Nothing) {}
     rpc SetDegraded (PointDegradedMessage) returns (Nothing) {}
+    rpc FinalizePosition (Nothing) returns (Nothing) {}
     rpc GetPointPosition (Nothing) returns (PointPositionMessage) {}
     rpc SetPointMachineState (PointMachineStateMessage) returns (SetPointMachineStateResponse) {}
     rpc GetPointMachineState (Nothing) returns (PointMachineStateMessage) {}
