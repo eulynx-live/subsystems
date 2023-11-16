@@ -187,6 +187,15 @@ namespace EulynxLive.Point
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             _hasNoNonCrucialPointMachines = _configuration.GetSection("PointSettings").Get<PointConfiguration>()?.hasNoNonCrucialPointMachines ?? false;
+            var tmp_hasNoNonCrucialPointMachines = _configuration["crucial-point-machines"];
+            if (tmp_hasNoNonCrucialPointMachines == null)
+            {
+                _logger.LogInformation($"Missing --crucial-point-machines command line parameter. Using value {_hasNoNonCrucialPointMachines}.");
+            } else
+            {
+                _hasNoNonCrucialPointMachines = bool.Parse(tmp_hasNoNonCrucialPointMachines);
+            }
+
             // Command line argument parsing.
             _localId = _configuration["local-id"];
             if (_localId == null)
