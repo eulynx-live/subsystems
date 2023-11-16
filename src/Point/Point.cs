@@ -32,14 +32,14 @@ namespace EulynxLive.Point
         private string _remoteId;
         private string _remoteEndpoint;
         private readonly Random _random;
-        private bool _hasNoNonCrucialPointMachines;
+        private bool allPointMachinesCrucial;
 
         private bool _initialized;
         AsyncDuplexStreamingCall<SciPacket, SciPacket> _currentConnection;
         private PointMachineState _pointState;
         public PointMachineState PointState { get { return _pointState; } }
 
-        public record PointConfiguration(bool hasNoNonCrucialPointMachines);
+        public record PointConfiguration(bool allPointMachinesCrucial);
 
 
         public Point(ILogger<Point> logger, IConfiguration configuration, PointMachineState pointState)
@@ -52,7 +52,7 @@ namespace EulynxLive.Point
 
             _pointState = pointState;
             _pointState.PointPosition = ReportedPointPosition.PointIsInARightHandPositionDefinedEndPosition;
-            _pointState.LatestFinalPointPosition = _pointState.PointPosition;
+            _pointState.DegradedPointPosition = allPointMachinesCrucial? ReportedDegradedPointPosition.DegradedPointPositionIsNotApplicable : ReportedDegradedPointPosition.PointIsNotInADegradedPosition;
         }
 
         public async Task HandleWebSocket(WebSocket webSocket)
@@ -113,22 +113,12 @@ namespace EulynxLive.Point
             _ => null,
         };
 
-        private void UpdatePointState(ReportedPointPosition reportedPointPosition, ReportedDegradedPointPosition reportedDegradedPointPosition) {
-            UpdatePointState(reportedPointPosition);
-            _pointState.DegradedPointPosition = reportedDegradedPointPosition;
+        private void UpdatePointState(ReportedPointPosition pointPosition, ReportedDegradedPointPosition degradedPointPosition) {
+            UpdatePointState(pointPosition);
+            _pointState.DegradedPointPosition = degradedPointPosition;
         }
-        private void UpdatePointState(ReportedPointPosition reportedPointPosition) {
-            _pointState.PointPosition = reportedPointPosition;
-            SetLatestFinalPointPosition(reportedPointPosition);
-        }
-
-        private void SetLatestFinalPointPosition(ReportedPointPosition reportedPointPosition) {
-            _pointState.LatestFinalPointPosition = reportedPointPosition switch
-            {
-                ReportedPointPosition.PointIsInARightHandPositionDefinedEndPosition => reportedPointPosition,
-                ReportedPointPosition.PointIsInALeftHandPositionDefinedEndPosition => reportedPointPosition,
-                _ => _pointState.LatestFinalPointPosition,
-            };
+        private void UpdatePointState(ReportedPointPosition pointPosition) {
+            _pointState.PointPosition = pointPosition;
         }
 
 
@@ -143,13 +133,13 @@ namespace EulynxLive.Point
 
             if (_currentConnection != null)
             {
-                ReportedDegradedPointPosition? reportedDegradedPointPosition = _hasNoNonCrucialPointMachines ?
+                ReportedDegradedPointPosition? reportedDegradedPointPosition = allPointMachinesCrucial ?
                     ReportedDegradedPointPosition.DegradedPointPositionIsNotApplicable :
-                    GetReportedDegradedPointPosition(_pointState.LatestFinalPointPosition);
+                    GetReportedDegradedPointPosition(_pointState.PointPosition);
 
                 if (reportedDegradedPointPosition != null)
                 {
-                    ReportedPointPosition? reportedPointPosition = GetReportedPointPositionDegraded(message.Position);
+                    var reportedPointPosition = GetReportedPointPositionDegraded(message.Position);
                     if (reportedPointPosition != null)
                     {
                         UpdatePointState((ReportedPointPosition)reportedPointPosition, (ReportedDegradedPointPosition)reportedDegradedPointPosition);
@@ -172,13 +162,23 @@ namespace EulynxLive.Point
             {
                 if (_pointState.PointPosition != ReportedPointPosition.PointIsInARightHandPositionDefinedEndPosition &&
                 _pointState.PointPosition != ReportedPointPosition.PointIsInALeftHandPositionDefinedEndPosition) {
-                    ReportedDegradedPointPosition reportedDegradedPointPosition = _hasNoNonCrucialPointMachines ?
+                    var reportedDegradedPointPosition = allPointMachinesCrucial ?
                             ReportedDegradedPointPosition.DegradedPointPositionIsNotApplicable : ReportedDegradedPointPosition.PointIsNotInADegradedPosition;
-                    
-                    UpdatePointState(_pointState.LatestFinalPointPosition, reportedDegradedPointPosition);
 
-                    var occupancyStatus = new PointPointPositionMessage(_localId, _remoteId, _pointState.PointPosition, _pointState.DegradedPointPosition);
-                    await _currentConnection.RequestStream.WriteAsync(new SciPacket() { Message = ByteString.CopyFrom(occupancyStatus.ToByteArray()) });
+                    ReportedPointPosition? finalPosition = _pointState.DegradedPointPosition switch
+                    {
+                        ReportedDegradedPointPosition.PointIsInADegradedRightHandPosition => ReportedPointPosition.PointIsInARightHandPositionDefinedEndPosition,
+                        ReportedDegradedPointPosition.PointIsInADegradedLeftHandPosition => ReportedPointPosition.PointIsInALeftHandPositionDefinedEndPosition,
+                        ReportedDegradedPointPosition.PointIsNotInADegradedPosition => null,
+                        ReportedDegradedPointPosition.DegradedPointPositionIsNotApplicable => null,
+                        _ => null,
+                    };
+                    if (finalPosition != null) 
+                    {
+                        UpdatePointState((ReportedPointPosition)finalPosition, reportedDegradedPointPosition);
+                        var positionMessage = new PointPointPositionMessage(_localId, _remoteId, _pointState.PointPosition, _pointState.DegradedPointPosition);
+                        await _currentConnection.RequestStream.WriteAsync(new SciPacket() { Message = ByteString.CopyFrom(positionMessage.ToByteArray()) });
+                    } 
                 }
             }
             await UpdateConnectedWebClients();
@@ -186,14 +186,14 @@ namespace EulynxLive.Point
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _hasNoNonCrucialPointMachines = _configuration.GetSection("PointSettings").Get<PointConfiguration>()?.hasNoNonCrucialPointMachines ?? false;
+            allPointMachinesCrucial = _configuration.GetSection("PointSettings").Get<PointConfiguration>()?.allPointMachinesCrucial ?? false;
             var tmp_hasNoNonCrucialPointMachines = _configuration["crucial-point-machines"];
             if (tmp_hasNoNonCrucialPointMachines == null)
             {
-                _logger.LogInformation($"Missing --crucial-point-machines command line parameter. Using value {_hasNoNonCrucialPointMachines}.");
+                _logger.LogInformation($"Missing --crucial-point-machines command line parameter. Using value {allPointMachinesCrucial}.");
             } else
             {
-                _hasNoNonCrucialPointMachines = bool.Parse(tmp_hasNoNonCrucialPointMachines);
+                allPointMachinesCrucial = bool.Parse(tmp_hasNoNonCrucialPointMachines);
             }
 
             // Command line argument parsing.
