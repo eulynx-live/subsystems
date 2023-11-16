@@ -6,6 +6,7 @@ namespace EulynxLive.Point.Components
 {
     public class PointMachineState
     {
+        public ReportedPointPosition LatestFinalPointPosition { get; set; }
         public ReportedPointPosition PointPosition { get; set; }
         public ReportedDegradedPointPosition DegradedPointPosition { get; set; }
         public PointMachineStateMessage.Target Target { get; set; }
