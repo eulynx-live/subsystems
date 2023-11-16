@@ -32,14 +32,22 @@ namespace EulynxLive.Point
         private string _remoteId;
         private string _remoteEndpoint;
         private readonly Random _random;
-        private bool allPointMachinesCrucial;
+        private bool _allPointMachinesCrucial;
+        private bool _simulateRandomTimeouts;
 
         private bool _initialized;
         AsyncDuplexStreamingCall<SciPacket, SciPacket> _currentConnection;
         private PointMachineState _pointState;
         public PointMachineState PointState { get { return _pointState; } }
 
-        public record PointConfiguration(bool allPointMachinesCrucial);
+        public record PointConfiguration(
+            string LocalId,
+            int LocalRastaId,
+            string RemoteId,
+            string RemoteEndpoint,
+            bool? allPointMachinesCrucial = null,
+            bool? SimulateRandomTimeouts = null
+        );
 
 
         public Point(ILogger<Point> logger, IConfiguration configuration, PointMachineState pointState)
@@ -52,7 +60,7 @@ namespace EulynxLive.Point
 
             _pointState = pointState;
             _pointState.PointPosition = ReportedPointPosition.PointIsInARightHandPositionDefinedEndPosition;
-            _pointState.DegradedPointPosition = allPointMachinesCrucial? ReportedDegradedPointPosition.DegradedPointPositionIsNotApplicable : ReportedDegradedPointPosition.PointIsNotInADegradedPosition;
+            _pointState.DegradedPointPosition = _allPointMachinesCrucial? ReportedDegradedPointPosition.DegradedPointPositionIsNotApplicable : ReportedDegradedPointPosition.PointIsNotInADegradedPosition;
         }
 
         public async Task HandleWebSocket(WebSocket webSocket)
@@ -133,7 +141,7 @@ namespace EulynxLive.Point
 
             if (_currentConnection != null)
             {
-                ReportedDegradedPointPosition? reportedDegradedPointPosition = allPointMachinesCrucial ?
+                ReportedDegradedPointPosition? reportedDegradedPointPosition = _allPointMachinesCrucial ?
                     ReportedDegradedPointPosition.DegradedPointPositionIsNotApplicable :
                     GetReportedDegradedPointPosition(_pointState.PointPosition);
 
@@ -162,7 +170,7 @@ namespace EulynxLive.Point
             {
                 if (_pointState.PointPosition != ReportedPointPosition.PointIsInARightHandPositionDefinedEndPosition &&
                 _pointState.PointPosition != ReportedPointPosition.PointIsInALeftHandPositionDefinedEndPosition) {
-                    var reportedDegradedPointPosition = allPointMachinesCrucial ?
+                    var reportedDegradedPointPosition = _allPointMachinesCrucial ?
                             ReportedDegradedPointPosition.DegradedPointPositionIsNotApplicable : ReportedDegradedPointPosition.PointIsNotInADegradedPosition;
 
                     ReportedPointPosition? finalPosition = _pointState.DegradedPointPosition switch
@@ -186,42 +194,28 @@ namespace EulynxLive.Point
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            allPointMachinesCrucial = _configuration.GetSection("PointSettings").Get<PointConfiguration>()?.allPointMachinesCrucial ?? false;
-            var tmp_hasNoNonCrucialPointMachines = _configuration["crucial-point-machines"];
-            if (tmp_hasNoNonCrucialPointMachines == null)
+            try
             {
-                _logger.LogInformation($"Missing --crucial-point-machines command line parameter. Using value {allPointMachinesCrucial}.");
-            } else
+                var config = _configuration.GetSection("PointSettings").Get<PointConfiguration>();
+                if (config.allPointMachinesCrucial == null)
+                {
+                    _logger.LogInformation("Assuming all point machines are critical");
+                }
+
+                _allPointMachinesCrucial = config.allPointMachinesCrucial ?? false;
+                _localId = config.LocalId;
+                _localRastaId = config.LocalRastaId.ToString();
+                _remoteId = config.RemoteId;
+                _remoteEndpoint = config.RemoteEndpoint;
+                _simulateRandomTimeouts = config.SimulateRandomTimeouts ?? false;
+            }
+            catch (Exception e)
             {
-                allPointMachinesCrucial = bool.Parse(tmp_hasNoNonCrucialPointMachines);
+                _logger.LogError($"Usage: --PointSettings:LocalId=<> --PointSettings:LocalRastaId=<> --PointSettings:RemoteId=<> --PointSettings:RemoteEndpoint=<>. \n {e.Message}");
+
+                throw;
             }
 
-            // Command line argument parsing.
-            _localId = _configuration["local-id"];
-            if (_localId == null)
-            {
-                throw new Exception("Missing --local-id command line parameter.");
-            }
-
-            _localRastaId = _configuration["local-rasta-id"];
-            if (_localRastaId == null)
-            {
-                throw new Exception("Missing --local-rasta-id command line parameter.");
-            }
-
-            _remoteId = _configuration["remote-id"];
-            if (_remoteId == null)
-            {
-                throw new Exception("Missing --remote-id command line parameter.");
-            }
-
-            _remoteEndpoint = _configuration["remote-endpoint"];
-            if (_remoteEndpoint == null)
-            {
-                throw new Exception("Missing --remote-endpoint command line parameter.");
-            }
-
-            var simulateRandomTimeouts = _configuration["simulate-timeouts"];
 
             // Main loop.
 
@@ -299,7 +293,7 @@ namespace EulynxLive.Point
 
                                 _logger.LogDebug("Moving to {}.", movePointCommand.CommandedPointPosition);
 
-                                if (simulateRandomTimeouts != null)
+                                if (_simulateRandomTimeouts != null)
                                 {
                                     if (await Task.WhenAny(transitioningTask, Task.Delay(timeout)) == transitioningTask)
                                     {
