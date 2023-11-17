@@ -2,24 +2,25 @@ syntax = "proto3";
 
 option csharp_namespace = "EulynxLive.Point.Proto";
 
+import "google/protobuf/empty.proto";
 package point;
 
 enum PointPosition {
     Right = 0;
     Left = 1;
     NoEndPosition = 2;
-    Trailed = 3;
+    UnintendedPosition = 3;
 }
 
 
 service Point {
-    rpc SimulateTrailed (Nothing) returns (Nothing) {}
-    rpc SetDegraded (PointDegradedMessage) returns (Nothing) {}
-    rpc FinalizePosition (Nothing) returns (Nothing) {}
-    rpc GetPointPosition (Nothing) returns (PointPositionMessage) {}
-    rpc SetPointMachineState (PointMachineStateMessage) returns (SetPointMachineStateResponse) {}
-    rpc GetPointMachineState (Nothing) returns (PointMachineStateMessage) {}
+    rpc SimulateUnintendedPosition (google.protobuf.Empty) returns (google.protobuf.Empty) {}
+    rpc SetToDegradedPosition (PointDegradedMessage) returns (google.protobuf.Empty) {}
+    rpc PutInEndPosition (google.protobuf.Empty) returns (google.protobuf.Empty) {}
+    rpc GetPointPosition (google.protobuf.Empty) returns (PointPositionMessage) {}
 
+    rpc EstablishPointMachineState (PointMachineStateMessage) returns (google.protobuf.Empty) {}
+    rpc GetPointMachineState (google.protobuf.Empty) returns (PointMachineStateMessage) {}
 }
 
 message PointDegradedMessage {
@@ -37,18 +38,18 @@ message PointMachineStateMessage {
         Target_Right = 2;
         Target_None = 3;
     }
-    
+
     enum AbilityToMove {
         AbilityToMove_UNDEFINED = 0;
         AbilityToMove_Able = 1;
         AbilityToMove_Unable = 2;
     }
-    
+
     enum LastPointPosition {
         LastPointPosition_UNDEFINED = 0;
         LastPointPosition_None = 1;
     }
-    
+
     enum Crucial {
         Crucial_UNDEFINED = 0;
         Crucial_Crucial = 1;
@@ -61,12 +62,3 @@ message PointMachineStateMessage {
     LastPointPosition lastPointPosition = 4;
     Crucial crucial = 5;
 }
-
-message SetPointMachineStateResponse {
-    PointMachineStateMessage newState = 1;
-    bool success = 2;
-}
-
-message Nothing {
-}
-

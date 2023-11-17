@@ -11,6 +11,5 @@ namespace EulynxLive.Point.Components
         public PointMachineStateMessage.Target Target { get; set; }
         public PointMachineStateMessage.AbilityToMove AbilityToMove { get; set; }
         public PointMachineStateMessage.LastPointPosition LastPointPosition { get; set; }
-        public PointMachineStateMessage.Crucial Crucial { get; set; }
     }
 }
