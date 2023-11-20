@@ -1,0 +1,19 @@
+name: dotnet test
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 7.0.x
+      - name: Restore dependencies
+        run: dotnet restore src/FieldElementSubsystems.Test
+      - name: Test
+        run: dotnet test --no-restore src/FieldElementSubsystems.Test
