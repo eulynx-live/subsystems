@@ -39,8 +39,7 @@ namespace EulynxLive.Point
                 Environment.Exit(1);
             }
 
-            services.AddSingleton<PointMachineState>();
-            _ = services.AddHostedService(provider => provider.GetService<Point>());
+            _ = services.AddHostedService(provider => provider.GetRequiredService<Point>());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

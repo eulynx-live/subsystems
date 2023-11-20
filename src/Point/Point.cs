@@ -1,14 +1,7 @@
-﻿using System.Linq;
-using System.Collections.Generic;
-using System.Net.WebSockets;
+﻿using System.Net.WebSockets;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 using Google.Protobuf;
 using Grpc.Core;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Sci;
 using EulynxLive.Messages.Baseline4R1;
 using PointPosition = EulynxLive.Messages.Baseline4R1.PointPointPositionMessageReportedPointPosition;
@@ -17,7 +10,6 @@ using static Sci.Rasta;
 using System.Text;
 using Grpc.Net.Client;
 using EulynxLive.Point.Components;
-using System;
 using EulynxLive.Point.Proto;
 
 namespace EulynxLive.Point
@@ -39,7 +31,7 @@ namespace EulynxLive.Point
         private readonly PointMachineState _pointState;
         public PointMachineState PointState { get { return _pointState; } }
 
-        public Point(ILogger<Point> logger, IConfiguration configuration, PointMachineState pointState)
+        public Point(ILogger<Point> logger, IConfiguration configuration)
         {
             _logger = logger;
             _webSockets = new List<WebSocket>();
@@ -59,7 +51,7 @@ namespace EulynxLive.Point
             _remoteEndpoint = config.RemoteEndpoint;
             _simulateRandomTimeouts = config.SimulateRandomTimeouts ?? false;
 
-            _pointState = pointState;
+            _pointState = new PointMachineState();
             _pointState.PointPosition = PointPosition.PointIsInARightHandPositionDefinedEndPosition;
             _pointState.DegradedPointPosition = AllPointMachinesCrucial ? DegradedPointPosition.DegradedPointPositionIsNotApplicable : DegradedPointPosition.PointIsNotInADegradedPosition;
         }
