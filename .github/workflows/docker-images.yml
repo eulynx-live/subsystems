@@ -38,9 +38,14 @@ jobs:
       with:
         dotnet-version: 6.0.x
     - name: Restore dependencies
-      run: dotnet restore src/${{ matrix.subsystem }}
+      run: |
+        dotnet restore src/${{ matrix.subsystem }}
+        dotnet restore FieldElementSubsystems.Test
     - name: Build
       run: dotnet publish -c Release --no-restore src/${{ matrix.subsystem }}
+
+    - name: Test
+      run: dotnet test --no-restore FieldElementSubsystems.Test
 
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v2
