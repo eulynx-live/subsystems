@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using EulynxLive.Point.Services;
 using EulynxLive.Point.Components;
+using System;
 
 namespace EulynxLive.Point
 {
@@ -30,9 +31,15 @@ namespace EulynxLive.Point
             {
                 configuration.RootPath = "rasta-point-web/build";
             });
-            services.AddSingleton<Point>();
-            services.AddSingleton<PointMachineState>();
-            services.AddHostedService<Point>(provider => provider.GetService<Point>());
+
+            try {
+                services.AddSingleton<Point>();
+            } catch (Exception e) {
+                Console.WriteLine($"Usage: --PointSettings:LocalId=<> --PointSettings:LocalRastaId=<> --PointSettings:RemoteId=<> --PointSettings:RemoteEndpoint=<>. {e.Message}");
+                Environment.Exit(1);
+            }
+
+            _ = services.AddHostedService(provider => provider.GetRequiredService<Point>());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

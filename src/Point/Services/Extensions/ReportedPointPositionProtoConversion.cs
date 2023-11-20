@@ -11,7 +11,7 @@ namespace Point.Services.Extensions
             ReportedPointPosition.PointIsInARightHandPositionDefinedEndPosition => PointPosition.Right,
             ReportedPointPosition.PointIsInALeftHandPositionDefinedEndPosition => PointPosition.Left,
             ReportedPointPosition.PointIsInNoEndPosition => PointPosition.NoEndPosition,
-            ReportedPointPosition.PointIsTrailed => PointPosition.Trailed,
+            ReportedPointPosition.PointIsTrailed => PointPosition.UnintendedPosition,
             _ => throw new InvalidCastException($"Unable to convert reported point position {reportedPointPosition} to proto enum")
         };
 
@@ -20,7 +20,7 @@ namespace Point.Services.Extensions
             PointPosition.Right => ReportedPointPosition.PointIsInARightHandPositionDefinedEndPosition,
             PointPosition.Left => ReportedPointPosition.PointIsInALeftHandPositionDefinedEndPosition,
             PointPosition.NoEndPosition => ReportedPointPosition.PointIsInNoEndPosition,
-            PointPosition.Trailed => ReportedPointPosition.PointIsTrailed,
+            PointPosition.UnintendedPosition => ReportedPointPosition.PointIsTrailed,
             _ => throw new InvalidCastException($"Unable to convert point position message {pointPositionMessage} to reported point position.")
         };
     }
