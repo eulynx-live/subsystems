@@ -3,8 +3,6 @@ using System.Threading.Tasks;
 public interface IPointToInterlockingConnection: System.IDisposable {
     Task SendPointPosition(PointState state);
     Task SendTimeoutMessage();
-    void Reset();
-    void Setup();
     void Connect();
     void InitializeConnection();
     public Task<PointPosition?> ReceivePointPosition();
