@@ -4,7 +4,7 @@ public interface IPointToInterlockingConnection: System.IDisposable {
     Task SendPointPosition(PointState state);
     Task SendTimeoutMessage();
     void Connect();
-    void InitializeConnection();
+    Task<bool> InitializeConnection(PointState state);
     public Task<PointPosition?> ReceivePointPosition();
 
     public record PointState

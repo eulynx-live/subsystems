@@ -51,14 +51,14 @@ public class PointToInterlockingConnectionB4R1Impl<T> : IPointToInterlockingConn
         _currentConnection = client.Stream(metadata, cancellationToken: _timeout.Token);
     }
 
-    public async Task<int> InitializeConnection(PointState state)
+    public async Task<bool> InitializeConnection(PointState state)
     {
         _logger.LogTrace("Connected. Waiting for request...");
         if (!await _currentConnection.ResponseStream.MoveNext(_timeout.Token)
             || Message.FromBytes(_currentConnection.ResponseStream.Current.Message.ToByteArray()) is not PointPdiVersionCheckCommand)
         {
             _logger.LogError("Unexpected message.");
-            return 1;
+            return false;
         }
 
         var versionCheckResponse = new PointPdiVersionCheckMessage(_localId, _remoteId, PointPdiVersionCheckMessageResultPdiVersionCheck.PDIVersionsFromReceiverAndSenderDoMatch, /* TODO */ 0, 0, new byte[] { });
@@ -68,7 +68,7 @@ public class PointToInterlockingConnectionB4R1Impl<T> : IPointToInterlockingConn
             || Message.FromBytes(_currentConnection.ResponseStream.Current.Message.ToByteArray()) is not PointInitialisationRequestCommand)
         {
             _logger.LogError("Unexpected message.");
-            return 1;
+            return false;
         }
 
         var startInitialization = new PointStartInitialisationMessage(_localId, _remoteId);
@@ -80,7 +80,7 @@ public class PointToInterlockingConnectionB4R1Impl<T> : IPointToInterlockingConn
 
         var completeInitialization = new PointInitialisationCompletedMessage(_localId, _remoteId);
         await _currentConnection.RequestStream.WriteAsync(new SciPacket() { Message = ByteString.CopyFrom(completeInitialization.ToByteArray()) });
-        return 0;
+        return true;
     }
 
     public async Task SendPointPosition(PointState state)
@@ -88,11 +88,6 @@ public class PointToInterlockingConnectionB4R1Impl<T> : IPointToInterlockingConn
         var pointState = new B4R1PointStateImpl(state);
         var response = new PointPointPositionMessage(_localId, _remoteId, pointState.PointPosition, pointState.DegradedPointPosition);
         await _currentConnection.RequestStream.WriteAsync(new SciPacket() { Message = ByteString.CopyFrom(response.ToByteArray()) });
-    }
-
-    void IPointToInterlockingConnection.InitializeConnection()
-    {
-        throw new NotImplementedException();
     }
 
     async public Task SendTimeoutMessage()

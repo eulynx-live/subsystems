@@ -22,7 +22,7 @@ namespace EulynxLive.Point
         private readonly ILogger<Point> _logger;
         private readonly IConfiguration _configuration;
         private readonly List<WebSocket> _webSockets;
-        private PointToInterlockingConnectionB4R1Impl<Point> _connection;
+        private IPointToInterlockingConnection _connection;
         private readonly Random _random;
         private readonly bool _simulateRandomTimeouts;
         private bool _initialized;
@@ -186,8 +186,8 @@ namespace EulynxLive.Point
                     await Reset();
                     try
                     {
-                        var result = await _connection.InitializeConnection(PointState);
-                        if (result != 0)
+                        var success = await _connection.InitializeConnection(PointState);
+                        if (!success)
                         {
                             continue;
                         }
