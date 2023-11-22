@@ -5,13 +5,14 @@ using Google.Protobuf;
 using Grpc.Core;
 using Grpc.Net.Client;
 using Sci;
-using static IPointToInterlockingConnection;
+using EulynxLive.Messages.IPointToInterlockingConnection;
+using static EulynxLive.Messages.IPointToInterlockingConnection.IPointToInterlockingConnection;
 using static Sci.Rasta;
 
-public class PointToInterlockingConnectionB4R1Impl<T> : IPointToInterlockingConnection
+public class PointToInterlockingConnectionB4R1Impl : IPointToInterlockingConnection
 {
     public bool AllPointMachinesCrucial { get; }
-    private readonly ILogger<T> _logger;
+    private readonly ILogger _logger;
     private readonly string _localId;
     private readonly string _localRastaId;
     private readonly string _remoteId;
@@ -20,7 +21,7 @@ public class PointToInterlockingConnectionB4R1Impl<T> : IPointToInterlockingConn
     private CancellationTokenSource _timeout;
 
     public PointToInterlockingConnectionB4R1Impl(
-        ILogger<T> logger,
+        ILogger<PointToInterlockingConnectionB4R1Impl> logger,
         IConfiguration configuration)
     {
         _logger = logger;

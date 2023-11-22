@@ -1,12 +1,6 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using EulynxLive.Point.Services;
-using EulynxLive.Point.Components;
-using System;
+using EulynxLive.Messages.IPointToInterlockingConnection;
 
 namespace EulynxLive.Point
 {
@@ -25,6 +19,8 @@ namespace EulynxLive.Point
             services.AddControllersWithViews();
             services.AddGrpc();
             services.AddGrpcReflection();
+
+            services.AddSingleton<IPointToInterlockingConnection, PointToInterlockingConnectionB4R1Impl>();
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>

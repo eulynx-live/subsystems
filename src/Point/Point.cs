@@ -3,10 +3,10 @@ using System.Text.Json;
 using Google.Protobuf;
 using Grpc.Core;
 using Sci;
-using EulynxLive.Messages.Baseline4R1;
-using PointPosition = IPointToInterlockingConnection.PointPosition;
-using DegradedPointPosition = IPointToInterlockingConnection.DegradedPointPosition;
-using PointState = IPointToInterlockingConnection.PointState;
+using EulynxLive.Messages.IPointToInterlockingConnection;
+using PointPosition = EulynxLive.Messages.IPointToInterlockingConnection.IPointToInterlockingConnection.PointPosition;
+using DegradedPointPosition = EulynxLive.Messages.IPointToInterlockingConnection.IPointToInterlockingConnection.DegradedPointPosition;
+using PointState = EulynxLive.Messages.IPointToInterlockingConnection.IPointToInterlockingConnection.PointState;
 using static Sci.Rasta;
 using System.Text;
 using Grpc.Net.Client;
@@ -30,7 +30,7 @@ namespace EulynxLive.Point
         private readonly PointState _pointState;
         public PointState PointState { get { return _pointState; } }
 
-        public Point(ILogger<Point> logger, IConfiguration configuration)
+        public Point(ILogger<Point> logger, IConfiguration configuration, IPointToInterlockingConnection connection)
         {
             _webSockets = new List<WebSocket>();
             _pointState = new PointState()
@@ -41,6 +41,7 @@ namespace EulynxLive.Point
             _random = new Random();
             _logger = logger;
             _configuration = configuration;
+            _connection = connection;
         }
 
         public async Task HandleWebSocket(WebSocket webSocket)
@@ -177,70 +178,50 @@ namespace EulynxLive.Point
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             // Main loop.
-
-            using (_connection = new PointToInterlockingConnectionB4R1Impl<Point>(_logger, _configuration))
+            while (true)
             {
-                while (true)
+                _connection.Connect();
+                await Reset();
+                try
                 {
-                    _connection.Connect();
-                    await Reset();
-                    try
+                    var success = await _connection.InitializeConnection(PointState);
+                    if (!success)
                     {
-                        var success = await _connection.InitializeConnection(PointState);
-                        if (!success)
+                        continue;
+                    }
+                    await UpdateConnectedWebClients();
+
+                    while (true)
+                    {
+                        var commandedPointPosition = await _connection.ReceivePointPosition();
+                        if (commandedPointPosition == null)
                         {
+                            break;
+                        }
+
+                        if ((commandedPointPosition == PointPosition.LEFT && _pointState.PointPosition == PointPosition.LEFT)
+                            || (commandedPointPosition == PointPosition.RIGHT && _pointState.PointPosition == PointPosition.RIGHT))
+                        {
+                            _connection.SendPointPosition(PointState);
                             continue;
                         }
+
+                        UpdatePointState(PointPosition.NO_ENDPOSITION, DegradedPointPosition.NOT_APPLICABLE);
+
                         await UpdateConnectedWebClients();
 
-                        while (true)
+                        // Simulate point movement
+                        var transitioningTime = _random.Next(1, 5);
+                        var transitioningTask = Task.Delay(transitioningTime * 1000);
+                        var pointMovementTimeout = 3 * 1000;
+
+                        _logger.LogDebug("Moving to {}.", commandedPointPosition);
+
+                        if (_simulateRandomTimeouts)
                         {
-                            var commandedPointPosition = await _connection.ReceivePointPosition();
-                            if (commandedPointPosition == null)
+                            if (await Task.WhenAny(transitioningTask, Task.Delay(pointMovementTimeout)) == transitioningTask)
                             {
-                                break;
-                            }
-
-                            if ((commandedPointPosition == PointPosition.LEFT && _pointState.PointPosition == PointPosition.LEFT)
-                                || (commandedPointPosition == PointPosition.RIGHT && _pointState.PointPosition == PointPosition.RIGHT))
-                            {
-                                _connection.SendPointPosition(PointState);
-                                continue;
-                            }
-
-                            UpdatePointState(PointPosition.NO_ENDPOSITION, DegradedPointPosition.NOT_APPLICABLE);
-
-                            await UpdateConnectedWebClients();
-
-                            // Simulate point movement
-                            var transitioningTime = _random.Next(1, 5);
-                            var transitioningTask = Task.Delay(transitioningTime * 1000);
-                            var pointMovementTimeout = 3 * 1000;
-
-                            _logger.LogDebug("Moving to {}.", commandedPointPosition);
-
-                            if (_simulateRandomTimeouts)
-                            {
-                                if (await Task.WhenAny(transitioningTask, Task.Delay(pointMovementTimeout)) == transitioningTask)
-                                {
-                                    // transition completed within timeout
-                                    UpdatePointState(commandedPointPosition.Value);
-
-                                    await UpdateConnectedWebClients();
-
-                                    _logger.LogInformation("End position reached.");
-                                    await _connection.SendPointPosition(_pointState);
-                                }
-                                else
-                                {
-                                    // timeout
-                                    _logger.LogInformation("Timeout");
-                                    await _connection.SendTimeoutMessage();
-                                }
-                            }
-                            else
-                            {
-                                await transitioningTask;
+                                // transition completed within timeout
                                 UpdatePointState(commandedPointPosition.Value);
 
                                 await UpdateConnectedWebClients();
@@ -248,21 +229,37 @@ namespace EulynxLive.Point
                                 _logger.LogInformation("End position reached.");
                                 await _connection.SendPointPosition(_pointState);
                             }
+                            else
+                            {
+                                // timeout
+                                _logger.LogInformation("Timeout");
+                                await _connection.SendTimeoutMessage();
+                            }
+                        }
+                        else
+                        {
+                            await transitioningTask;
+                            UpdatePointState(commandedPointPosition.Value);
+
+                            await UpdateConnectedWebClients();
+
+                            _logger.LogInformation("End position reached.");
+                            await _connection.SendPointPosition(_pointState);
                         }
                     }
-                    catch (RpcException ex)
-                    {
-                        _logger.LogWarning("Could not communicate with remote endpoint.");
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogWarning(ex, "Exception during simulation.");
-                    }
-                    finally
-                    {
-                        await Reset();
-                        await Task.Delay(1000, stoppingToken);
-                    }
+                }
+                catch (RpcException ex)
+                {
+                    _logger.LogWarning("Could not communicate with remote endpoint.");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Exception during simulation.");
+                }
+                finally
+                {
+                    await Reset();
+                    await Task.Delay(1000, stoppingToken);
                 }
             }
         }

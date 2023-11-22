@@ -1,5 +1,6 @@
 using Castle.Core.Logging;
 using EulynxLive.Messages.Baseline4R1;
+using EulynxLive.Messages.IPointToInterlockingConnection;
 using EulynxLive.Point;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -24,7 +25,7 @@ public class PointTest
             .AddInMemoryCollection(testSettings)
             .Build();
 
-        var point = new EulynxLive.Point.Point(Mock.Of<ILogger<EulynxLive.Point.Point>>(), configuration);
+        var point = new EulynxLive.Point.Point(Mock.Of<ILogger<EulynxLive.Point.Point>>(), configuration, Mock.Of<IPointToInterlockingConnection>());
 
         Assert.True(point.AllPointMachinesCrucial);
     }

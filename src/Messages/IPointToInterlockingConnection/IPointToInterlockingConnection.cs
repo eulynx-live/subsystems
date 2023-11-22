@@ -1,5 +1,7 @@
 using System.Threading.Tasks;
 
+namespace EulynxLive.Messages.IPointToInterlockingConnection;
+
 public interface IPointToInterlockingConnection: System.IDisposable {
     Task SendPointPosition(PointState state);
     Task SendTimeoutMessage();
