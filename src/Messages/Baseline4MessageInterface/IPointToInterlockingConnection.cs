@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 
-public interface IPointToInterlockingConnection {
-    void SendPointPosition(IPointState state);
+public interface IPointToInterlockingConnection: System.IDisposable {
+    void SendPointPosition(PointState state);
     void SendTimeoutMessage();
     void Reset();
     void Setup();
@@ -9,16 +9,10 @@ public interface IPointToInterlockingConnection {
     void InitializeConnection();
     public Task<PointPosition?> ReceivePointPosition();
 
-    public interface IMessage
+    public record PointState
     {
-        public IMessage FromBytes(byte[] message);
-        public abstract byte[] ToByteArray();
-    }
-
-    public interface IPointState
-    {
-        PointPosition PointPosition { get; set; }
-        DegradedPointPosition DegradedPointPosition { get; set; }
+        public PointPosition PointPosition { get; set; }
+        public DegradedPointPosition DegradedPointPosition { get; set; }
     }
 
     public enum PointPosition

@@ -1,6 +1,8 @@
 using System;
 using EulynxLive.Point.Proto;
-using ReportedPointPosition = EulynxLive.Messages.Baseline4R1.PointPointPositionMessageReportedPointPosition;
+
+using ReportedPointPosition = IPointToInterlockingConnection.PointPosition ;
+using DegradedPointPosition = IPointToInterlockingConnection.DegradedPointPosition;
 
 namespace Point.Services.Extensions
 {
@@ -8,19 +10,19 @@ namespace Point.Services.Extensions
     {
         public static PointPosition ConvertToProtoMessage(this ReportedPointPosition reportedPointPosition) => reportedPointPosition switch
         {
-            ReportedPointPosition.PointIsInARightHandPositionDefinedEndPosition => PointPosition.Right,
-            ReportedPointPosition.PointIsInALeftHandPositionDefinedEndPosition => PointPosition.Left,
-            ReportedPointPosition.PointIsInNoEndPosition => PointPosition.NoEndPosition,
-            ReportedPointPosition.PointIsTrailed => PointPosition.UnintendedPosition,
+            ReportedPointPosition.RIGHT => PointPosition.Right,
+            ReportedPointPosition.LEFT => PointPosition.Left,
+            ReportedPointPosition.NO_ENDPOSITION => PointPosition.NoEndPosition,
+            ReportedPointPosition.TRAILED => PointPosition.UnintendedPosition,
             _ => throw new InvalidCastException($"Unable to convert reported point position {reportedPointPosition} to proto enum")
         };
 
         public static ReportedPointPosition ConvertToReportedPointPosition(this PointPosition pointPositionMessage) => pointPositionMessage switch
         {
-            PointPosition.Right => ReportedPointPosition.PointIsInARightHandPositionDefinedEndPosition,
-            PointPosition.Left => ReportedPointPosition.PointIsInALeftHandPositionDefinedEndPosition,
-            PointPosition.NoEndPosition => ReportedPointPosition.PointIsInNoEndPosition,
-            PointPosition.UnintendedPosition => ReportedPointPosition.PointIsTrailed,
+            PointPosition.Right => ReportedPointPosition.RIGHT,
+            PointPosition.Left => ReportedPointPosition.LEFT,
+            PointPosition.NoEndPosition => ReportedPointPosition.NO_ENDPOSITION,
+            PointPosition.UnintendedPosition => ReportedPointPosition.TRAILED,
             _ => throw new InvalidCastException($"Unable to convert point position message {pointPositionMessage} to reported point position.")
         };
     }

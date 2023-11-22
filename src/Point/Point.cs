@@ -6,7 +6,7 @@ using Sci;
 using EulynxLive.Messages.Baseline4R1;
 using PointPosition = IPointToInterlockingConnection.PointPosition ;
 using DegradedPointPosition = IPointToInterlockingConnection.DegradedPointPosition;
-using IPointState = IPointToInterlockingConnection.IPointState;
+using PointState = IPointToInterlockingConnection.PointState;
 using static Sci.Rasta;
 using System.Text;
 using Grpc.Net.Client;
@@ -22,21 +22,24 @@ namespace EulynxLive.Point
         private readonly ILogger<Point> _logger;
         private readonly List<WebSocket> _webSockets;
         private readonly PointToInterlockingConnectionB4R1Impl<Point> _connection;
-        private readonly string _localId;
-        private readonly string _localRastaId;
-        private readonly string _remoteId;
-        private readonly string _remoteEndpoint;
         private readonly Random _random;
         private readonly bool _simulateRandomTimeouts;
         private bool _initialized;
         AsyncDuplexStreamingCall<SciPacket, SciPacket>? _currentConnection;
-        private readonly IPointState _pointState;
-        public IPointState PointState { get { return _pointState; } }
+        private readonly PointState _pointState;
+        public PointState PointState { get { return _pointState; } }
 
         public Point(ILogger<Point> logger, IConfiguration configuration)
         {
             _webSockets = new List<WebSocket>();
-            _connection = new PointToInterlockingConnectionB4R1Impl<Point>(logger, configuration);
+            using var connection = new PointToInterlockingConnectionB4R1Impl<Point>(logger, configuration);
+            _connection = connection;
+            _pointState = new PointState() {
+                PointPosition = PointPosition.NO_ENDPOSITION,
+                DegradedPointPosition = AllPointMachinesCrucial? DegradedPointPosition.NOT_APPLICABLE : DegradedPointPosition.NOT_DEGRADED
+            };
+            _random = new Random();
+            _logger = logger;
         }
 
         public async Task HandleWebSocket(WebSocket webSocket)
@@ -191,9 +194,9 @@ namespace EulynxLive.Point
                     while (true)
                     {
                         var commandedPointPosition = await _connection.ReceivePointPosition();
-                        if (commandedPointPosition != null)
+                        if (commandedPointPosition == null)
                         {
-                            break;
+                            continue;
                         }
 
                         if ((commandedPointPosition == PointPosition.LEFT && _pointState.PointPosition == PointPosition.LEFT)
@@ -245,7 +248,7 @@ namespace EulynxLive.Point
                         }
                     }
                 }
-                catch (RpcException)
+                catch (RpcException ex)
                 {
                     _logger.LogWarning("Could not communicate with remote endpoint.");
                 }
