@@ -17,9 +17,6 @@ public class PointToInterlockingConnectionB4R1Impl<T> : IPointToInterlockingConn
     private readonly string _remoteId;
     private readonly string _remoteEndpoint;
     AsyncDuplexStreamingCall<SciPacket, SciPacket>? _currentConnection;
-    private GrpcChannel _channel;
-    private RastaClient _client;
-    private Metadata _metadata;
     private CancellationTokenSource _timeout;
 
     public PointToInterlockingConnectionB4R1Impl(
@@ -40,16 +37,22 @@ public class PointToInterlockingConnectionB4R1Impl<T> : IPointToInterlockingConn
         _localRastaId = config.LocalRastaId.ToString();
         _remoteId = config.RemoteId;
         _remoteEndpoint = config.RemoteEndpoint;
+        _timeout = new CancellationTokenSource();
     }
 
     public void Connect()
     {
-
+        var channel = GrpcChannel.ForAddress(_remoteEndpoint);
+        var client = new RastaClient(channel);
+        _logger.LogTrace("Connecting...");
+        _timeout = new CancellationTokenSource();
+        _timeout.CancelAfter(10000);
+        var metadata = new Metadata { { "rasta-id", _localRastaId } };
+        _currentConnection = client.Stream(metadata, cancellationToken: _timeout.Token);
     }
 
     public async Task<int> InitializeConnection(PointState state)
     {
-        _currentConnection = _client.Stream(_metadata, cancellationToken: _timeout.Token);
         _logger.LogTrace("Connected. Waiting for request...");
         if (!await _currentConnection.ResponseStream.MoveNext(_timeout.Token)
             || Message.FromBytes(_currentConnection.ResponseStream.Current.Message.ToByteArray()) is not PointPdiVersionCheckCommand)
@@ -80,26 +83,11 @@ public class PointToInterlockingConnectionB4R1Impl<T> : IPointToInterlockingConn
         return 0;
     }
 
-    public void Setup()
-    {
-        _channel = GrpcChannel.ForAddress(_remoteEndpoint);
-        _client = new RastaClient(_channel);
-        _logger.LogTrace("Connecting...");
-        _timeout = new CancellationTokenSource();
-        _timeout.CancelAfter(10000);
-        _metadata = new Metadata { { "rasta-id", _localRastaId } };
-    }
-
-    public async void SendPointPosition(PointState state)
+    public async Task SendPointPosition(PointState state)
     {
         var pointState = new B4R1PointStateImpl(state);
         var response = new PointPointPositionMessage(_localId, _remoteId, pointState.PointPosition, pointState.DegradedPointPosition);
         await _currentConnection.RequestStream.WriteAsync(new SciPacket() { Message = ByteString.CopyFrom(response.ToByteArray()) });
-    }
-
-    public void Reset()
-    {
-
     }
 
     void IPointToInterlockingConnection.InitializeConnection()
@@ -107,7 +95,7 @@ public class PointToInterlockingConnectionB4R1Impl<T> : IPointToInterlockingConn
         throw new NotImplementedException();
     }
 
-    async public void SendTimeoutMessage()
+    async public Task SendTimeoutMessage()
     {
         var response = new PointTimeoutMessage(_localId, _remoteId);
         await _currentConnection.RequestStream.WriteAsync(new SciPacket() { Message = ByteString.CopyFrom(response.ToByteArray()) });

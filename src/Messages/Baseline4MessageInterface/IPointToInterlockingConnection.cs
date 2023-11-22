@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
 
 public interface IPointToInterlockingConnection: System.IDisposable {
-    void SendPointPosition(PointState state);
-    void SendTimeoutMessage();
+    Task SendPointPosition(PointState state);
+    Task SendTimeoutMessage();
     void Reset();
     void Setup();
     void Connect();
