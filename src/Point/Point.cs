@@ -1,17 +1,13 @@
-﻿using System.Net.WebSockets;
-using System.Text.Json;
-using Google.Protobuf;
-using Grpc.Core;
-using Sci;
+﻿using DegradedPointPosition = EulynxLive.Messages.IPointToInterlockingConnection.IPointToInterlockingConnection.DegradedPointPosition;
 using EulynxLive.Messages.IPointToInterlockingConnection;
-using PointPosition = EulynxLive.Messages.IPointToInterlockingConnection.IPointToInterlockingConnection.PointPosition;
-using DegradedPointPosition = EulynxLive.Messages.IPointToInterlockingConnection.IPointToInterlockingConnection.DegradedPointPosition;
-using PointState = EulynxLive.Messages.IPointToInterlockingConnection.IPointToInterlockingConnection.PointState;
-using static Sci.Rasta;
-using System.Text;
-using Grpc.Net.Client;
-using EulynxLive.Point.Components;
 using EulynxLive.Point.Proto;
+using Grpc.Core;
+using PointPosition = EulynxLive.Messages.IPointToInterlockingConnection.IPointToInterlockingConnection.PointPosition;
+using PointState = EulynxLive.Messages.IPointToInterlockingConnection.IPointToInterlockingConnection.PointState;
+using Sci;
+using System.Net.WebSockets;
+using System.Text;
+using System.Text.Json;
 
 namespace EulynxLive.Point
 {
