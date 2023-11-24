@@ -255,7 +255,7 @@ namespace EulynxLive.Point
                         }
                     }
                 }
-                catch (RpcException ex)
+                catch (RpcException)
                 {
                     _logger.LogWarning("Could not communicate with remote endpoint.");
                 }
