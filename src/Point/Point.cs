@@ -20,7 +20,6 @@ namespace EulynxLive.Point
         public bool AllPointMachinesCrucial { get; }
 
         private readonly ILogger<Point> _logger;
-        private readonly IConfiguration _configuration;
         private readonly List<WebSocket> _webSockets;
         private IPointToInterlockingConnection _connection;
         private readonly Random _random;
@@ -32,6 +31,16 @@ namespace EulynxLive.Point
 
         public Point(ILogger<Point> logger, IConfiguration configuration, IPointToInterlockingConnection connection)
         {
+            _logger = logger;
+
+            var config = configuration.GetSection("PointSettings").Get<PointConfiguration>() ?? throw new Exception("No configuration provided");
+            if (config.AllPointMachinesCrucial == null)
+            {
+                _logger.LogInformation("Assuming all point machines are crucial.");
+            }
+            _simulateRandomTimeouts = config.SimulateRandomTimeouts ?? false;
+            AllPointMachinesCrucial = config.AllPointMachinesCrucial ?? false;
+
             _webSockets = new List<WebSocket>();
             _pointState = new PointState()
             {
@@ -39,8 +48,6 @@ namespace EulynxLive.Point
                 DegradedPointPosition = AllPointMachinesCrucial ? DegradedPointPosition.NOT_APPLICABLE : DegradedPointPosition.NOT_DEGRADED
             };
             _random = new Random();
-            _logger = logger;
-            _configuration = configuration;
             _connection = connection;
         }
 

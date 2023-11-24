@@ -11,7 +11,6 @@ using static Sci.Rasta;
 
 public class PointToInterlockingConnectionB4R1Impl : IPointToInterlockingConnection
 {
-    public bool AllPointMachinesCrucial { get; }
     private readonly ILogger _logger;
     private readonly string _localId;
     private readonly string _localRastaId;
@@ -28,12 +27,6 @@ public class PointToInterlockingConnectionB4R1Impl : IPointToInterlockingConnect
         _currentConnection = null;
 
         var config = configuration.GetSection("PointSettings").Get<PointConfiguration>() ?? throw new Exception("No configuration provided");
-        if (config.AllPointMachinesCrucial == null)
-        {
-            _logger.LogInformation("Assuming all point machines are crucial.");
-        }
-
-        AllPointMachinesCrucial = config.AllPointMachinesCrucial ?? false;
         _localId = config.LocalId;
         _localRastaId = config.LocalRastaId.ToString();
         _remoteId = config.RemoteId;
