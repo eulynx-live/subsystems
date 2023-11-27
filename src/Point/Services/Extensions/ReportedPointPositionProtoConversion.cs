@@ -1,10 +1,10 @@
 using System;
-using EulynxLive.Point.Proto;
+using EulynxLive.FieldElementPoint.Proto;
 
 using ReportedPointPosition = EulynxLive.Messages.IPointToInterlockingConnection.IPointToInterlockingConnection.PointPosition ;
 using DegradedPointPosition = EulynxLive.Messages.IPointToInterlockingConnection.IPointToInterlockingConnection.DegradedPointPosition;
 
-namespace Point.Services.Extensions
+namespace FieldElementPoint.Services.Extensions
 {
     public static class ReportedPointPositionProtoConversion
     {

@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
-using EulynxLive.Point.Services;
+using EulynxLive.FieldElementPoint.Services;
 using EulynxLive.Messages.IPointToInterlockingConnection;
 
-namespace EulynxLive.Point
+namespace EulynxLive.FieldElementPoint
 {
     public class Startup
     {

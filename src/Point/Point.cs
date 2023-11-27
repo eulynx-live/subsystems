@@ -1,6 +1,6 @@
 ﻿using DegradedPointPosition = EulynxLive.Messages.IPointToInterlockingConnection.IPointToInterlockingConnection.DegradedPointPosition;
 using EulynxLive.Messages.IPointToInterlockingConnection;
-using EulynxLive.Point.Proto;
+using EulynxLive.FieldElementPoint.Proto;
 using Grpc.Core;
 using PointPosition = EulynxLive.Messages.IPointToInterlockingConnection.IPointToInterlockingConnection.PointPosition;
 using PointState = EulynxLive.Messages.IPointToInterlockingConnection.IPointToInterlockingConnection.PointState;
@@ -9,7 +9,7 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
 
-namespace EulynxLive.Point
+namespace EulynxLive.FieldElementPoint
 {
     public class Point : BackgroundService
     {

@@ -1,8 +1,8 @@
 using ReportedPointPosition = EulynxLive.Messages.Baseline4R1.PointPointPositionMessageReportedPointPosition;
 using ReportedDegradedPointPosition = EulynxLive.Messages.Baseline4R1.PointPointPositionMessageReportedDegradedPointPosition;
-using PointMachineStateMessage = EulynxLive.Point.Proto.PointMachineStateMessage.Types;
+using PointMachineStateMessage = EulynxLive.FieldElementPoint.Proto.PointMachineStateMessage.Types;
 
-namespace EulynxLive.Point.Components
+namespace EulynxLive.FieldElementPoint.Components
 {
     public class PointMachineState
     {

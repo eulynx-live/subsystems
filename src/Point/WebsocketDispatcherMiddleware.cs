@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Http;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
 
-namespace EulynxLive.Point
+namespace EulynxLive.FieldElementPoint
 {
     public class WebsocketDispatcherMiddleware
     {

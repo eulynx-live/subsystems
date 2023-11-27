@@ -1,12 +1,12 @@
 using System.Threading.Tasks;
 using Grpc.Core;
-using static EulynxLive.Point.Proto.Point;
-using EulynxLive.Point.Proto;
-using Point.Services.Extensions;
+using static EulynxLive.FieldElementPoint.Proto.Point;
+using EulynxLive.FieldElementPoint.Proto;
+using FieldElementPoint.Services.Extensions;
 using Google.Protobuf.WellKnownTypes;
 using System;
 
-namespace EulynxLive.Point.Services
+namespace EulynxLive.FieldElementPoint.Services
 {
     public class PointService : PointBase
     {

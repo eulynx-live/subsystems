@@ -1,15 +1,15 @@
-using EulynxLive.Messages.Baseline4R1;
 using EulynxLive.Messages.IPointToInterlockingConnection;
-using Point = EulynxLive.Point.Point;
+using Point = EulynxLive.FieldElementPoint.Point;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
+
 namespace FieldElementSubsystems.Test;
 
 public class PointTest
 {
-    private EulynxLive.Point.Point CreateDefaultPoint(IPointToInterlockingConnection? connection = null) =>
-        new EulynxLive.Point.Point(_logger, _configuration, connection ?? Mock.Of<IPointToInterlockingConnection>());
+    private Point CreateDefaultPoint(IPointToInterlockingConnection? connection = null) =>
+        new Point(_logger, _configuration, connection ?? Mock.Of<IPointToInterlockingConnection>());
 
     private Mock<IPointToInterlockingConnection> CreateDefaultMockConnection() {
         var mockConnection = new Mock<IPointToInterlockingConnection>();
@@ -35,7 +35,7 @@ public class PointTest
     private IConfiguration _configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(_testSettings)
             .Build();
-    private ILogger _logger = Mock.Of<ILogger<EulynxLive.Point.Point>>();
+    private ILogger _logger = Mock.Of<ILogger<Point>>();
 
     [Fact]
     public void Test_Parse_Configuration()
