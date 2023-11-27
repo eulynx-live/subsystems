@@ -1,7 +1,6 @@
-using Castle.Core.Logging;
 using EulynxLive.Messages.Baseline4R1;
 using EulynxLive.Messages.IPointToInterlockingConnection;
-using EulynxLive.Point;
+using Point = EulynxLive.Point.Point;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -9,39 +8,10 @@ namespace FieldElementSubsystems.Test;
 
 public class PointTest
 {
-    private IDictionary<string, string?> _testSettings = new Dictionary<string, string?> {
-            {"PointSettings:LocalId", "99W1" },
-            {"PointSettings:LocalRastaId", "100" },
-            {"PointSettings:RemoteId", "INTERLOCKING" },
-            {"PointSettings:RemoteEndpoint", "http://localhost:50051" },
-            {"PointSettings:AllPointMachinesCrucial", "true" },
-            {"PointSettings:SimulateRandomTimeouts", "false" },
-        };
+    private EulynxLive.Point.Point CreateDefaultPoint(IPointToInterlockingConnection? connection = null) =>
+        new EulynxLive.Point.Point(_logger, _configuration, connection ?? Mock.Of<IPointToInterlockingConnection>());
 
-    [Fact]
-    public void PointShouldParseConfiguration()
-    {
-        var configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(_testSettings)
-            .Build();
-
-        var point = new EulynxLive.Point.Point(Mock.Of<ILogger<EulynxLive.Point.Point>>(), configuration, Mock.Of<IPointToInterlockingConnection>());
-
-        Assert.True(point.AllPointMachinesCrucial);
-    }
-
-    [Fact]
-    public async void Test_Turnover()
-    {
-        
-        // Arrange
-        var configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(_testSettings)
-            .Build();
-
-        var logger = Mock.Of<ILogger<EulynxLive.Point.Point>>();
-
-        var point = new EulynxLive.Point.Point(logger, configuration, Mock.Of<IPointToInterlockingConnection>());
+    private Mock<IPointToInterlockingConnection> CreateDefaultMockConnection() {
         var mockConnection = new Mock<IPointToInterlockingConnection>();
         mockConnection
             .Setup(m => m.SendPointPosition(
@@ -51,6 +21,107 @@ public class PointTest
             .Setup(m => m.InitializeConnection(
                 It.IsAny<IPointToInterlockingConnection.PointState>()))
             .Returns(Task.FromResult(true));
+        return mockConnection;
+    }
+
+    private static IDictionary<string, string?> _testSettings = new Dictionary<string, string?> {
+            {"PointSettings:LocalId", "99W1" },
+            {"PointSettings:LocalRastaId", "100" },
+            {"PointSettings:RemoteId", "INTERLOCKING" },
+            {"PointSettings:RemoteEndpoint", "http://localhost:50051" },
+            {"PointSettings:AllPointMachinesCrucial", "true" },
+            {"PointSettings:SimulateRandomTimeouts", "false" },
+        };
+    private IConfiguration _configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(_testSettings)
+            .Build();
+    private ILogger _logger = Mock.Of<ILogger<EulynxLive.Point.Point>>();
+
+    [Fact]
+    public void Test_Parse_Configuration()
+    {
+        var point = CreateDefaultPoint();
+
+        Assert.True(point.AllPointMachinesCrucial);
+    }
+
+    [Fact]
+    public async void Test_Default_Position()
+    {
+        var point = CreateDefaultPoint();
+        await point.StartAsync(CancellationToken.None);
+
+        Assert.Equal(IPointToInterlockingConnection.PointPosition.NO_ENDPOSITION, point.PointState.PointPosition);
+    }
+
+    [Fact]
+    public async void Test_Turn_Left()
+    {        
+        // Arrange
+        var point = CreateDefaultPoint();
+        var mockConnection = CreateDefaultMockConnection();
+
+        var finished = false;
+        mockConnection
+            .SetupSequence(m => m.ReceivePointPosition())
+            .Returns(Task.FromResult<IPointToInterlockingConnection.PointPosition?>(IPointToInterlockingConnection.PointPosition.LEFT))
+            .Returns(() =>
+            {
+                finished = true;
+                return Task.FromResult<IPointToInterlockingConnection.PointPosition?>(null);
+            });
+
+        point = CreateDefaultPoint(mockConnection.Object);
+
+        // Act
+        await point.StartAsync(CancellationToken.None);
+        while (!finished)
+        {
+            await Task.Delay(1000);
+        }
+
+        // Assert
+        mockConnection.Verify(v => v.InitializeConnection(It.IsAny<IPointToInterlockingConnection.PointState>()));
+        Assert.Equal(IPointToInterlockingConnection.PointPosition.LEFT, point.PointState.PointPosition);
+    }
+
+    [Fact]
+    public async void Test_Turn_Right()
+    {        
+        // Arrange
+        var point = CreateDefaultPoint();
+        var mockConnection = CreateDefaultMockConnection();
+
+        var finished = false;
+        mockConnection
+            .SetupSequence(m => m.ReceivePointPosition())
+            .Returns(Task.FromResult<IPointToInterlockingConnection.PointPosition?>(IPointToInterlockingConnection.PointPosition.RIGHT))
+            .Returns(() =>
+            {
+                finished = true;
+                return Task.FromResult<IPointToInterlockingConnection.PointPosition?>(null);
+            });
+
+        point = CreateDefaultPoint(mockConnection.Object);
+
+        // Act
+        await point.StartAsync(CancellationToken.None);
+        while (!finished)
+        {
+            await Task.Delay(1000);
+        }
+
+        // Assert
+        mockConnection.Verify(v => v.InitializeConnection(It.IsAny<IPointToInterlockingConnection.PointState>()));
+        Assert.Equal(IPointToInterlockingConnection.PointPosition.RIGHT, point.PointState.PointPosition);
+    }
+
+    [Fact]
+    public async void Test_Turnover()
+    {        
+        // Arrange
+        var point = CreateDefaultPoint();
+        var mockConnection = CreateDefaultMockConnection();
 
         var finished = false;
         mockConnection
@@ -64,7 +135,7 @@ public class PointTest
                 return Task.FromResult<IPointToInterlockingConnection.PointPosition?>(null);
             });
 
-        point = new EulynxLive.Point.Point(logger, configuration, mockConnection.Object);
+        point = CreateDefaultPoint(mockConnection.Object);
 
         // Act
         await point.StartAsync(CancellationToken.None);

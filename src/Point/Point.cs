@@ -15,7 +15,7 @@ namespace EulynxLive.Point
     {
         public bool AllPointMachinesCrucial { get; }
 
-        private readonly ILogger<Point> _logger;
+        private readonly ILogger _logger;
         private readonly List<WebSocket> _webSockets;
         private IPointToInterlockingConnection _connection;
         private readonly Random _random;
@@ -25,7 +25,7 @@ namespace EulynxLive.Point
         private readonly PointState _pointState;
         public PointState PointState { get { return _pointState; } }
 
-        public Point(ILogger<Point> logger, IConfiguration configuration, IPointToInterlockingConnection connection)
+        public Point(ILogger logger, IConfiguration configuration, IPointToInterlockingConnection connection)
         {
             _logger = logger;
 
