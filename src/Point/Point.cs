@@ -21,7 +21,6 @@ namespace EulynxLive.Point
         private readonly Random _random;
         private readonly bool _simulateRandomTimeouts;
         private bool _initialized;
-        AsyncDuplexStreamingCall<SciPacket, SciPacket>? _currentConnection;
         private readonly PointState _pointState;
         public PointState PointState { get { return _pointState; } }
 
@@ -77,7 +76,7 @@ namespace EulynxLive.Point
             _pointState.PointPosition = PointPosition.UnintendetPosition;
 
 
-            if (_currentConnection != null)
+            if (_connection != null)
             {
                 await _connection.SendPointPosition(PointState);
             }
@@ -126,7 +125,7 @@ namespace EulynxLive.Point
         {
             _pointState.PointPosition = PointPosition.NoEndposition;
 
-            if (_currentConnection != null)
+            if (_connection != null)
             {
                 var degradedPointPosition = AllPointMachinesCrucial ?
                     DegradedPointPosition.NotApplicable : GetDegradedPointPosition(_pointState.PointPosition);
@@ -152,7 +151,7 @@ namespace EulynxLive.Point
         public async Task PutInEndPosition()
         {
 
-            if (_currentConnection != null)
+            if (_connection != null)
             {
                 if (_pointState.PointPosition != PointPosition.Right &&
                 _pointState.PointPosition != PointPosition.Left)
@@ -171,7 +170,7 @@ namespace EulynxLive.Point
                     if (finalPosition != null)
                     {
                         UpdatePointState((PointPosition)finalPosition, reportedDegradedPointPosition);
-                        _connection.SendPointPosition(PointState);
+                        await _connection.SendPointPosition(PointState);
                     }
                 }
             }
@@ -205,7 +204,7 @@ namespace EulynxLive.Point
                         if ((commandedPointPosition == PointPosition.Left && _pointState.PointPosition == PointPosition.Left)
                             || (commandedPointPosition == PointPosition.Right && _pointState.PointPosition == PointPosition.Right))
                         {
-                            _connection.SendPointPosition(PointState);
+                            await _connection.SendPointPosition(PointState);
                             continue;
                         }
 

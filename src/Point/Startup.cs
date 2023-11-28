@@ -21,7 +21,10 @@ namespace EulynxLive.Point
             services.AddGrpc();
             services.AddGrpcReflection();
 
-            services.AddSingleton<IPointToInterlockingConnection, PointToInterlockingConnection>();
+            services.AddSingleton<IPointToInterlockingConnection>(x =>
+            {
+                return new PointToInterlockingConnection(x.GetRequiredService<ILogger<PointToInterlockingConnection>>(), x.GetRequiredService<IConfiguration>(), CancellationToken.None);
+            });
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
@@ -29,9 +32,12 @@ namespace EulynxLive.Point
                 configuration.RootPath = "rasta-point-web/build";
             });
 
-            try {
+            try
+            {
                 services.AddSingleton<Point>();
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 Console.WriteLine($"Usage: --PointSettings:LocalId=<> --PointSettings:LocalRastaId=<> --PointSettings:RemoteId=<> --PointSettings:RemoteEndpoint=<>. {e.Message}");
                 Environment.Exit(1);
             }

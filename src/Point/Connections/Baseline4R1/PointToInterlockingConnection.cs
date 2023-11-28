@@ -1,12 +1,8 @@
 using EulynxLive.Messages.Baseline4R1;
-using EulynxLive.Point;
-using Google.Protobuf;
 using Grpc.Core;
-using Grpc.Net.Client;
-using Sci;
-using EulynxLive.Messages.IPointToInterlockingConnection;
 using static EulynxLive.Messages.IPointToInterlockingConnection.IPointToInterlockingConnection;
-using static Sci.Rasta;
+using EulynxLive.Point.Interfaces;
+using EulynxLive.Messages.IPointToInterlockingConnection;
 
 namespace EulynxLive.Point.EulynxBaseline4R1;
 
@@ -17,13 +13,19 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
     private readonly string _localRastaId;
     private readonly string _remoteId;
     private readonly string _remoteEndpoint;
-    AsyncDuplexStreamingCall<SciPacket, SciPacket>? _currentConnection;
+    IConnection? _currentConnection;
     private CancellationTokenSource _timeout;
+    private int _timeoutDuration;
+    private CancellationToken _stoppingToken;
 
     public PointToInterlockingConnection(
         ILogger<PointToInterlockingConnection> logger,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        CancellationToken stoppingToken, int timeoutDuration = 10000)
     {
+        _timeoutDuration = timeoutDuration;
+        _stoppingToken = stoppingToken;
+        _timeout = new CancellationTokenSource();
         _logger = logger;
         _currentConnection = null;
 
@@ -32,18 +34,14 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
         _localRastaId = config.LocalRastaId.ToString();
         _remoteId = config.RemoteId;
         _remoteEndpoint = config.RemoteEndpoint;
-        _timeout = new CancellationTokenSource();
     }
 
     public void Connect()
     {
-        var channel = GrpcChannel.ForAddress(_remoteEndpoint);
-        var client = new RastaClient(channel);
+        ResetTimeout();
         _logger.LogTrace("Connecting...");
-        _timeout = new CancellationTokenSource();
-        _timeout.CancelAfter(10000);
         var metadata = new Metadata { { "rasta-id", _localRastaId } };
-        _currentConnection = client.Stream(metadata, cancellationToken: _timeout.Token);
+        _currentConnection = new GrpcConnection(metadata, _remoteEndpoint, _timeout.Token);
     }
 
     public async Task<bool> InitializeConnection(PointState state)
@@ -97,6 +95,7 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
         {
             PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsARightHandPointMoving => PointPosition.Right,
             PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsALeftHandPointMoving => PointPosition.Left,
+            _ => throw new global::System.NotImplementedException(),
         } : null;
     }
 
@@ -108,20 +107,26 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
     private async Task SendMessage(Message message)
     {
         if (_currentConnection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
-        await _currentConnection.RequestStream.WriteAsync(new SciPacket() { Message = ByteString.CopyFrom(message.ToByteArray()) });
+        await _currentConnection.SendAsync(message.ToByteArray());
     }
 
     private async Task<T?> ReceiveMessage<T>() where T : Message
     {
         if (_currentConnection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
-        if (!await _currentConnection.ResponseStream.MoveNext(_timeout.Token)) return null;
+        ResetTimeout();
         
-        var message = Message.FromBytes(_currentConnection.ResponseStream.Current.Message.ToByteArray());
+        var message = Message.FromBytes(await _currentConnection.ReceiveAsync(_timeout.Token));
         if (message is not T)
         {
             _logger.LogError("Unexpected message: {}", message);
             return null;
         }
         return message as T;
+    }
+
+    private void ResetTimeout()
+    {
+        _timeout = CancellationTokenSource.CreateLinkedTokenSource(_stoppingToken);
+        _timeout.CancelAfter(_timeoutDuration);
     }
 }
