@@ -17,17 +17,17 @@ public interface IPointToInterlockingConnection: System.IDisposable {
 
     public enum PointPosition
     {
-        LEFT,
-        RIGHT,
-        TRAILED,
-        NO_ENDPOSITION
+        Left,
+        Right,
+        UnintendetPosition,
+        NoEndposition
     }
 
     public enum DegradedPointPosition
     {
-        DEGRADED_LEFT,
-        DEGRADED_RIGHT,
-        NOT_DEGRADED,
-        NOT_APPLICABLE
+        DegradedLeft,
+        DegradedRight,
+        NotDegraded,
+        NotApplicable
     }
 }

@@ -8,7 +8,9 @@ using EulynxLive.Messages.IPointToInterlockingConnection;
 using static EulynxLive.Messages.IPointToInterlockingConnection.IPointToInterlockingConnection;
 using static Sci.Rasta;
 
-public class PointToInterlockingConnectionB4R1Impl : IPointToInterlockingConnection
+namespace EulynxLive.Point.EulynxBaseline4R1;
+
+public class PointToInterlockingConnection : IPointToInterlockingConnection
 {
     private readonly ILogger _logger;
     private readonly string _localId;
@@ -18,8 +20,8 @@ public class PointToInterlockingConnectionB4R1Impl : IPointToInterlockingConnect
     AsyncDuplexStreamingCall<SciPacket, SciPacket>? _currentConnection;
     private CancellationTokenSource _timeout;
 
-    public PointToInterlockingConnectionB4R1Impl(
-        ILogger<PointToInterlockingConnectionB4R1Impl> logger,
+    public PointToInterlockingConnection(
+        ILogger<PointToInterlockingConnection> logger,
         IConfiguration configuration)
     {
         _logger = logger;
@@ -65,7 +67,7 @@ public class PointToInterlockingConnectionB4R1Impl : IPointToInterlockingConnect
         var startInitialization = new PointStartInitialisationMessage(_localId, _remoteId);
         await SendMessage(startInitialization);
 
-        var pointState = new B4R1PointStateImpl(state);
+        var pointState = new PointStateBaseline4R1(state);
         var initialPosition = new PointPointPositionMessage(_localId, _remoteId, pointState.PointPosition, pointState.DegradedPointPosition);
         await SendMessage(initialPosition);
 
@@ -76,7 +78,7 @@ public class PointToInterlockingConnectionB4R1Impl : IPointToInterlockingConnect
 
     public async Task SendPointPosition(PointState state)
     {
-        var pointState = new B4R1PointStateImpl(state);
+        var pointState = new PointStateBaseline4R1(state);
         var response = new PointPointPositionMessage(_localId, _remoteId, pointState.PointPosition, pointState.DegradedPointPosition);
         await SendMessage(response);
     }
@@ -93,8 +95,8 @@ public class PointToInterlockingConnectionB4R1Impl : IPointToInterlockingConnect
 
         return (message != null)? message.CommandedPointPosition switch
         {
-            PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsARightHandPointMoving => PointPosition.RIGHT,
-            PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsALeftHandPointMoving => PointPosition.LEFT,
+            PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsARightHandPointMoving => PointPosition.Right,
+            PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsALeftHandPointMoving => PointPosition.Left,
         } : null;
     }
 
@@ -105,13 +107,13 @@ public class PointToInterlockingConnectionB4R1Impl : IPointToInterlockingConnect
 
     private async Task SendMessage(Message message)
     {
-        if (_currentConnection == null) throw new NullReferenceException("Connection is null. Did you call Connect()?");
+        if (_currentConnection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
         await _currentConnection.RequestStream.WriteAsync(new SciPacket() { Message = ByteString.CopyFrom(message.ToByteArray()) });
     }
 
     private async Task<T?> ReceiveMessage<T>() where T : Message
     {
-        if (_currentConnection == null) throw new NullReferenceException("Connection is null. Did you call Connect()?");
+        if (_currentConnection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
         if (!await _currentConnection.ResponseStream.MoveNext(_timeout.Token)) return null;
         
         var message = Message.FromBytes(_currentConnection.ResponseStream.Current.Message.ToByteArray());
@@ -122,32 +124,4 @@ public class PointToInterlockingConnectionB4R1Impl : IPointToInterlockingConnect
         }
         return message as T;
     }
-}
-
-public class B4R1PointStateImpl
-{
-    private PointState _state;
-    public PointPointPositionMessageReportedPointPosition PointPosition { get => map(_state.PointPosition); }
-    public PointPointPositionMessageReportedDegradedPointPosition DegradedPointPosition { get => map(_state.DegradedPointPosition); }
-
-    public B4R1PointStateImpl(PointState state)
-    {
-        _state = state;
-    }
-
-    private PointPointPositionMessageReportedPointPosition map(PointPosition value) => value switch
-    {
-        IPointToInterlockingConnection.PointPosition.LEFT => PointPointPositionMessageReportedPointPosition.PointIsInALeftHandPositionDefinedEndPosition,
-        IPointToInterlockingConnection.PointPosition.RIGHT => PointPointPositionMessageReportedPointPosition.PointIsInARightHandPositionDefinedEndPosition,
-        IPointToInterlockingConnection.PointPosition.TRAILED => PointPointPositionMessageReportedPointPosition.PointIsTrailed,
-        IPointToInterlockingConnection.PointPosition.NO_ENDPOSITION => PointPointPositionMessageReportedPointPosition.PointIsInNoEndPosition,
-    };
-
-    private PointPointPositionMessageReportedDegradedPointPosition map(DegradedPointPosition value) => value switch
-    {
-        IPointToInterlockingConnection.DegradedPointPosition.DEGRADED_LEFT => PointPointPositionMessageReportedDegradedPointPosition.PointIsInADegradedLeftHandPosition,
-        IPointToInterlockingConnection.DegradedPointPosition.DEGRADED_RIGHT => PointPointPositionMessageReportedDegradedPointPosition.PointIsInADegradedRightHandPosition,
-        IPointToInterlockingConnection.DegradedPointPosition.NOT_DEGRADED => PointPointPositionMessageReportedDegradedPointPosition.PointIsNotInADegradedPosition,
-        IPointToInterlockingConnection.DegradedPointPosition.NOT_APPLICABLE => PointPointPositionMessageReportedDegradedPointPosition.DegradedPointPositionIsNotApplicable,
-    };
 }
