@@ -186,7 +186,7 @@ namespace EulynxLive.Point
                 await Reset();
                 try
                 {
-                    var success = await _connection.InitializeConnection(PointState);
+                    var success = await _connection.InitializeConnection(PointState, stoppingToken);
                     if (!success)
                     {
                         continue;
@@ -195,7 +195,7 @@ namespace EulynxLive.Point
 
                     while (true)
                     {
-                        var commandedPointPosition = await _connection.ReceivePointPosition();
+                        var commandedPointPosition = await _connection.ReceivePointPosition(stoppingToken);
                         if (commandedPointPosition == null)
                         {
                             break;
@@ -253,13 +253,17 @@ namespace EulynxLive.Point
                 catch (RpcException)
                 {
                     _logger.LogWarning("Could not communicate with remote endpoint.");
+                    await Reset();
+                    await Task.Delay(1000, stoppingToken);
+                }
+                catch (OperationCanceledException)
+                {
+                    await Reset();
+                    return;
                 }
                 catch (Exception ex)
                 {
                     _logger.LogWarning(ex, "Exception during simulation.");
-                }
-                finally
-                {
                     await Reset();
                     await Task.Delay(1000, stoppingToken);
                 }

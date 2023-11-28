@@ -44,10 +44,10 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
         _currentConnection = new GrpcConnection(metadata, _remoteEndpoint, _timeout.Token);
     }
 
-    public async Task<bool> InitializeConnection(PointState state)
+    public async Task<bool> InitializeConnection(PointState state, CancellationToken cancellationToken)
     {
         _logger.LogTrace("Connected. Waiting for request...");
-        if (await ReceiveMessage<PointPdiVersionCheckCommand>() == null)
+        if (await ReceiveMessage<PointPdiVersionCheckCommand>(cancellationToken) == null)
         {
             _logger.LogError("Unexpected message.");
             return false;
@@ -56,7 +56,7 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
         var versionCheckResponse = new PointPdiVersionCheckMessage(_localId, _remoteId, PointPdiVersionCheckMessageResultPdiVersionCheck.PDIVersionsFromReceiverAndSenderDoMatch, /* TODO */ 0, 0, new byte[] { });
         await SendMessage(versionCheckResponse);
 
-        if (await ReceiveMessage<PointInitialisationRequestCommand>() == null)
+        if (await ReceiveMessage<PointInitialisationRequestCommand>(cancellationToken) == null)
         {
             _logger.LogError("Unexpected message.");
             return false;
@@ -87,9 +87,9 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
         await SendMessage(response);
     }
 
-    public async Task<PointPosition?> ReceivePointPosition()
+    public async Task<PointPosition?> ReceivePointPosition(CancellationToken cancellationToken)
     {
-        var message = await ReceiveMessage<PointMovePointCommand>();
+        var message = await ReceiveMessage<PointMovePointCommand>(cancellationToken);
 
         return (message != null)? message.CommandedPointPosition switch
         {
@@ -110,7 +110,7 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
         await _currentConnection.SendAsync(message.ToByteArray());
     }
 
-    private async Task<T?> ReceiveMessage<T>() where T : Message
+    private async Task<T?> ReceiveMessage<T>(CancellationToken cancellationToken) where T : Message
     {
         if (_currentConnection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
         ResetTimeout();
