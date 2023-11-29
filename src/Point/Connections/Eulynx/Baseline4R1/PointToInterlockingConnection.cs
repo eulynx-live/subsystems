@@ -46,7 +46,7 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
         _currentConnection = new GrpcConnection(metadata, _remoteEndpoint, _timeout.Token);
     }
 
-    public async Task<bool> InitializeConnection(PointState state, CancellationToken cancellationToken)
+    public async Task<bool> InitializeConnection(IPointToInterlockingConnection.PointState state, CancellationToken cancellationToken)
     {
         _logger.LogTrace("Connected. Waiting for request...");
         if (await ReceiveMessage<PointPdiVersionCheckCommand>(cancellationToken) == null)
@@ -67,7 +67,7 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
         var startInitialization = new PointStartInitialisationMessage(_localId, _remoteId);
         await SendMessage(startInitialization);
 
-        var pointState = new PointStateBaseline4R1(state);
+        var pointState = new PointState(state);
         var initialPosition = new PointPointPositionMessage(_localId, _remoteId, pointState.PointPosition, pointState.DegradedPointPosition);
         await SendMessage(initialPosition);
 
@@ -76,9 +76,9 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
         return true;
     }
 
-    public async Task SendPointPosition(PointState state)
+    public async Task SendPointPosition(IPointToInterlockingConnection.PointState state)
     {
-        var pointState = new PointStateBaseline4R1(state);
+        var pointState = new PointState(state);
         var response = new PointPointPositionMessage(_localId, _remoteId, pointState.PointPosition, pointState.DegradedPointPosition);
         await SendMessage(response);
     }

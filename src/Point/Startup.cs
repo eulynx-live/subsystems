@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using EulynxLive.Point.Services;
 using IPointToInterlockingConnection =EulynxLive.Point.Interfaces.IPointToInterlockingConnection;
 using EulynxLive.Point.EulynxBaseline4R1;
+using EulynxLive.Point.Eulynx;
 
 namespace EulynxLive.Point
 {
@@ -21,10 +22,7 @@ namespace EulynxLive.Point
             services.AddGrpc();
             services.AddGrpcReflection();
 
-            services.AddSingleton<IPointToInterlockingConnection>(x =>
-            {
-                return new PointToInterlockingConnection(x.GetRequiredService<ILogger<PointToInterlockingConnection>>(), x.GetRequiredService<IConfiguration>(), CancellationToken.None);
-            });
+            services.AddSingleton<IPointToInterlockingConnection>(ConnectionFactory.CreateConnection<EulynxBaseline4R1.PointToInterlockingConnection>);
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>

@@ -1,31 +1,28 @@
 
-using EulynxLive.Messages.Baseline4R1;
+using EulynxLive.Messages.Baseline4R2;
 using IPointToInterlockingConnection = EulynxLive.Point.Interfaces.IPointToInterlockingConnection;
-using PointState = EulynxLive.Point.Interfaces.IPointToInterlockingConnection.PointState;
 using PointPosition = EulynxLive.Point.Interfaces.IPointToInterlockingConnection.PointPosition;
 using DegradedPointPosition = EulynxLive.Point.Interfaces.IPointToInterlockingConnection.DegradedPointPosition;
+using EulynxLive.Point.Eulynx;
 
-public record PointStateBaseline4R1
+namespace EulynxLive.Point.EulynxBaseline4R2;
+
+public record PointState : Eulynx.PointState<PointPointPositionMessageReportedPointPosition, PointPointPositionMessageReportedDegradedPointPosition>
 {
-    private PointState _state;
-    public PointPointPositionMessageReportedPointPosition PointPosition { get => MapInterfacePointPositionToConcrete(_state.PointPosition); }
-    public PointPointPositionMessageReportedDegradedPointPosition DegradedPointPosition { get => MapInterfaceDegradedPointPositionToConcrete(_state.DegradedPointPosition); }
-
-    public PointStateBaseline4R1(PointState state)
+    public PointState(IPointToInterlockingConnection.PointState state) : base(state)
     {
-        _state = state;
     }
 
-    private PointPointPositionMessageReportedPointPosition MapInterfacePointPositionToConcrete(PointPosition value) => value switch
+    public override PointPointPositionMessageReportedPointPosition MapInterfacePointPositionToConcrete(PointPosition value) => value switch
     {
         IPointToInterlockingConnection.PointPosition.Left => PointPointPositionMessageReportedPointPosition.PointIsInALeftHandPositionDefinedEndPosition,
         IPointToInterlockingConnection.PointPosition.Right => PointPointPositionMessageReportedPointPosition.PointIsInARightHandPositionDefinedEndPosition,
-        IPointToInterlockingConnection.PointPosition.UnintendetPosition => PointPointPositionMessageReportedPointPosition.PointIsTrailed,
+        IPointToInterlockingConnection.PointPosition.UnintendetPosition => PointPointPositionMessageReportedPointPosition.PointIsInUnintendedPosition,
         IPointToInterlockingConnection.PointPosition.NoEndposition => PointPointPositionMessageReportedPointPosition.PointIsInNoEndPosition,
         _ => throw new NotImplementedException(),
     };
 
-    private PointPointPositionMessageReportedDegradedPointPosition MapInterfaceDegradedPointPositionToConcrete(DegradedPointPosition value) => value switch
+    public override PointPointPositionMessageReportedDegradedPointPosition MapInterfaceDegradedPointPositionToConcrete(DegradedPointPosition value) => value switch
     {
         IPointToInterlockingConnection.DegradedPointPosition.DegradedLeft => PointPointPositionMessageReportedDegradedPointPosition.PointIsInADegradedLeftHandPosition,
         IPointToInterlockingConnection.DegradedPointPosition.DegradedRight => PointPointPositionMessageReportedDegradedPointPosition.PointIsInADegradedRightHandPosition,
