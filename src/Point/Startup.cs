@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using EulynxLive.Point.Services;
-using EulynxLive.Messages.IPointToInterlockingConnection;
+using IPointToInterlockingConnection =EulynxLive.Point.Interfaces.IPointToInterlockingConnection;
 using EulynxLive.Point.EulynxBaseline4R1;
 
 namespace EulynxLive.Point

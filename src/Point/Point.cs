@@ -1,10 +1,9 @@
-﻿using DegradedPointPosition = EulynxLive.Messages.IPointToInterlockingConnection.IPointToInterlockingConnection.DegradedPointPosition;
-using EulynxLive.Messages.IPointToInterlockingConnection;
-using EulynxLive.Point.Proto;
+﻿using EulynxLive.Point.Proto;
 using Grpc.Core;
-using PointPosition = EulynxLive.Messages.IPointToInterlockingConnection.IPointToInterlockingConnection.PointPosition;
-using PointState = EulynxLive.Messages.IPointToInterlockingConnection.IPointToInterlockingConnection.PointState;
-using Sci;
+using IPointToInterlockingConnection = EulynxLive.Point.Interfaces.IPointToInterlockingConnection;
+using PointPosition = EulynxLive.Point.Interfaces.IPointToInterlockingConnection.PointPosition;
+using PointState = EulynxLive.Point.Interfaces.IPointToInterlockingConnection.PointState;
+using DegradedPointPosition = EulynxLive.Point.Interfaces.IPointToInterlockingConnection.DegradedPointPosition;
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;

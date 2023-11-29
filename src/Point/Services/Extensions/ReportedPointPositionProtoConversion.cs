@@ -1,8 +1,6 @@
-using System;
 using EulynxLive.Point.Proto;
 
-using ReportedPointPosition = EulynxLive.Messages.IPointToInterlockingConnection.IPointToInterlockingConnection.PointPosition ;
-using DegradedPointPosition = EulynxLive.Messages.IPointToInterlockingConnection.IPointToInterlockingConnection.DegradedPointPosition;
+using ReportedPointPosition = EulynxLive.Point.Interfaces.IPointToInterlockingConnection.PointPosition ;
 
 namespace Point.Services.Extensions
 {

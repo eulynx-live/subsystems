@@ -1,4 +1,4 @@
-using EulynxLive.Messages.IPointToInterlockingConnection;
+using IPointToInterlockingConnection = EulynxLive.Point.Interfaces.IPointToInterlockingConnection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;

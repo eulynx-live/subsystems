@@ -1,9 +1,6 @@
-using System.Threading;
-using System.Threading.Tasks;
+namespace EulynxLive.Point.Interfaces;
 
-namespace EulynxLive.Messages.IPointToInterlockingConnection;
-
-public interface IPointToInterlockingConnection: System.IDisposable {
+public interface IPointToInterlockingConnection: IDisposable {
     Task SendPointPosition(PointState state);
     Task SendTimeoutMessage();
     void Connect();

@@ -1,7 +1,9 @@
 
 using EulynxLive.Messages.Baseline4R1;
-using EulynxLive.Messages.IPointToInterlockingConnection;
-using static EulynxLive.Messages.IPointToInterlockingConnection.IPointToInterlockingConnection;
+using IPointToInterlockingConnection = EulynxLive.Point.Interfaces.IPointToInterlockingConnection;
+using PointState = EulynxLive.Point.Interfaces.IPointToInterlockingConnection.PointState;
+using PointPosition = EulynxLive.Point.Interfaces.IPointToInterlockingConnection.PointPosition;
+using DegradedPointPosition = EulynxLive.Point.Interfaces.IPointToInterlockingConnection.DegradedPointPosition;
 
 public record PointStateBaseline4R1
 {

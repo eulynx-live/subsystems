@@ -1,8 +1,10 @@
 using EulynxLive.Messages.Baseline4R1;
 using Grpc.Core;
-using static EulynxLive.Messages.IPointToInterlockingConnection.IPointToInterlockingConnection;
+using IPointToInterlockingConnection = EulynxLive.Point.Interfaces.IPointToInterlockingConnection;
+using PointState = EulynxLive.Point.Interfaces.IPointToInterlockingConnection.PointState;
+using PointPosition = EulynxLive.Point.Interfaces.IPointToInterlockingConnection.PointPosition;
 using EulynxLive.Point.Interfaces;
-using EulynxLive.Messages.IPointToInterlockingConnection;
+
 
 namespace EulynxLive.Point.EulynxBaseline4R1;
 
