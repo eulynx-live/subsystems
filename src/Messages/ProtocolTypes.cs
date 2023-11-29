@@ -2,6 +2,7 @@ namespace EulynxLive.Messages
 {
     public enum ProtocolType: byte {
         // From: EU.SCI-XX.PDI.53
+        CC = 0xD0,
         AdjacentInterlockingSystem = 0x01,
         TrainDetectionSystem = 0x20,
         LightSignal = 0x30,
