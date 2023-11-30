@@ -7,8 +7,17 @@ namespace FieldElementSubsystems.Test;
 
 public class PointTest
 {
-    private EulynxLive.Point.Point CreateDefaultPoint(IPointToInterlockingConnection? connection = null) =>
-        new EulynxLive.Point.Point(_logger, _configuration, connection ?? Mock.Of<IPointToInterlockingConnection>(), async () => {});
+    private EulynxLive.Point.Point CreateDefaultPoint(IPointToInterlockingConnection? connection = null, IDictionary<string, string>? overwriteConfig= null) {
+        var config = _configuration;
+        if (overwriteConfig != null)
+        {
+            foreach (var (key, value) in overwriteConfig)
+            {
+                config[key] = value;
+            }
+        }
+        return new EulynxLive.Point.Point(_logger, config, connection ?? Mock.Of<IPointToInterlockingConnection>(), async () => {});
+    }
 
     private Mock<IPointToInterlockingConnection> CreateDefaultMockConnection() {
         var mockConnection = new Mock<IPointToInterlockingConnection>();
@@ -39,7 +48,7 @@ public class PointTest
     [Fact]
     public void Test_Parse_Configuration()
     {
-        var point = CreateDefaultPoint();
+        var point = CreateDefaultPoint(null, new Dictionary<string, string>() {{"PointSettings:AllPointMachinesCrucial", "true" }});
 
         Assert.True(point.AllPointMachinesCrucial);
     }
