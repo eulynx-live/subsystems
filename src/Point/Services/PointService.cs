@@ -17,15 +17,9 @@ namespace EulynxLive.Point.Services
             _point = point;
         }
 
-        public override async Task<Empty> SimulateUnintendedPosition(Empty request, ServerCallContext context)
+        public override async Task<Empty> PreventEndPosition(PreventedPositionMessage message, ServerCallContext context)
         {
-            await _point.SimulateUnintendedPosition();
-            return new Empty();
-        }
-
-        public override async Task<Empty> SetToDegradedPosition(PointDegradedMessage request, ServerCallContext context)
-        {
-            await _point.SetDegraded(request);
+            _point.PreventEndPosition(message);
             return new Empty();
         }
 

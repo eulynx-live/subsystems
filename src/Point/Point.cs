@@ -22,6 +22,7 @@ namespace EulynxLive.Point
         private readonly bool _simulateRandomTimeouts;
         private bool _initialized;
         private readonly PointState _pointState;
+        private PreventedPosition _preventedPosition;
         public PointState PointState { get { return _pointState; } }
 
         public Point(ILogger<Point> logger, IConfiguration configuration, IPointToInterlockingConnection connection, Func<Task> simulateTimeout)
@@ -43,6 +44,7 @@ namespace EulynxLive.Point
                 PointPosition = PointPosition.NoEndposition,
                 DegradedPointPosition = AllPointMachinesCrucial ? DegradedPointPosition.NotApplicable : DegradedPointPosition.NotDegraded
             };
+            _preventedPosition = PreventedPosition.None;
             _random = new Random();
             _connection = connection;
         }
@@ -72,77 +74,23 @@ namespace EulynxLive.Point
             _webSockets.Remove(webSocket);
         }
 
-        public async Task SimulateUnintendedPosition()
+        public void PreventEndPosition(PreventedPositionMessage message)
         {
-            _pointState.PointPosition = PointPosition.UnintendetPosition;
-
-
-            if (_connection != null)
-            {
-                await _connection.SendPointPosition(PointState);
-            }
-
-            await UpdateConnectedWebClients();
+            _preventedPosition = message.Position;
         }
 
-        private static DegradedPointPosition? GetDegradedPointPosition(PointPosition previousReportedPosition)
-            => previousReportedPosition switch
-            {
-                PointPosition.Right
-                    => DegradedPointPosition.DegradedRight,
-                PointPosition.Left
-                    => DegradedPointPosition.DegradedLeft,
-                PointPosition.UnintendetPosition
-                    => null,
-                PointPosition.NoEndposition
-                    => null,
-                _ => null,
-            };
-
-        private static PointPosition? GetPointPositionDegraded(Proto.PointPosition pointPosition) => pointPosition switch
-        {
-            Proto.PointPosition.NoEndPosition => PointPosition.NoEndposition,
-            Proto.PointPosition.UnintendedPosition => PointPosition.UnintendetPosition,
-            _ => null,
-        };
-
-        private void UpdatePointState(PointPosition pointPosition)
-        {
-            _pointState.PointPosition = pointPosition;
-        }
-
-        private void UpdatePointState(PointPosition pointPosition, DegradedPointPosition degradedPointPosition)
+        private void SetPointState(PointPosition pointPosition, DegradedPointPosition degradedPointPosition)
         {
             _pointState.PointPosition = pointPosition;
             _pointState.DegradedPointPosition = degradedPointPosition;
         }
 
-        /// <summary>
-        /// Sets the point into a degraded state.
-        /// <c>ReportedPointPosition</c> <param name="message">the PointDegradedMessage.</param>
-        /// </summary>
-        /// <returns></returns>
-        public async Task SetDegraded(PointDegradedMessage message)
-        {
-            _pointState.PointPosition = PointPosition.NoEndposition;
-
-            if (_connection != null)
-            {
-                var degradedPointPosition = AllPointMachinesCrucial ?
-                    DegradedPointPosition.NotApplicable : GetDegradedPointPosition(_pointState.PointPosition);
-
-                if (degradedPointPosition != null)
-                {
-                    var pointPosition = GetPointPositionDegraded(message.Position);
-                    if (pointPosition != null)
-                    {
-                        UpdatePointState(pointPosition.Value, degradedPointPosition.Value);
-                        await _connection.SendPointPosition(PointState);
-                    }
-                }
-            }
-
-            await UpdateConnectedWebClients();
+        private void UpdatePointState(PointPosition commandedPointPosition)
+        {   
+            PointPosition newPointPosition = _pointState.PointPosition;
+            DegradedPointPosition newDegradedPointPosition = _pointState.DegradedPointPosition;
+            HandlePreventedPointPosition(commandedPointPosition, ref newPointPosition, ref newDegradedPointPosition);
+            SetPointState(newPointPosition, newDegradedPointPosition);
         }
 
         /// <summary>
@@ -170,7 +118,7 @@ namespace EulynxLive.Point
                     };
                     if (finalPosition != null)
                     {
-                        UpdatePointState((PointPosition)finalPosition, reportedDegradedPointPosition);
+                        SetPointState((PointPosition)finalPosition, reportedDegradedPointPosition);
                         await _connection.SendPointPosition(PointState);
                     }
                 }
@@ -209,7 +157,7 @@ namespace EulynxLive.Point
                             continue;
                         }
 
-                        UpdatePointState(PointPosition.NoEndposition, DegradedPointPosition.NotApplicable);
+                        SetPointState(PointPosition.NoEndposition, DegradedPointPosition.NotApplicable);
 
                         await UpdateConnectedWebClients();
 
@@ -269,6 +217,35 @@ namespace EulynxLive.Point
                     await Task.Delay(1000, stoppingToken);
                 }
             }
+        }
+
+        private void HandlePreventedPointPosition(PointPosition commandedPosition, ref PointPosition pointPosition, ref DegradedPointPosition degradedPointPosition)
+        {
+            switch (_preventedPosition)
+            {
+                case PreventedPosition.PreventedLeft:
+                    if (commandedPosition == PointPosition.Left)
+                    {
+                        degradedPointPosition = DegradedPointPosition.DegradedLeft;
+                        pointPosition = PointPosition.NoEndposition;
+                    }
+                    break;
+                case PreventedPosition.PreventedRight:
+                    if (commandedPosition == PointPosition.Right)
+                    {
+                        degradedPointPosition = DegradedPointPosition.DegradedRight;
+                        pointPosition = PointPosition.NoEndposition;
+                    }
+                    break;
+                case PreventedPosition.Trailed:
+                    degradedPointPosition = AllPointMachinesCrucial ? DegradedPointPosition.NotApplicable : DegradedPointPosition.NotDegraded;
+                    pointPosition = PointPosition.UnintendetPosition;
+                    break;
+                default:
+                    pointPosition = commandedPosition;
+                    break;
+            }
+            _preventedPosition = PreventedPosition.None;
         }
 
         private async Task Reset()
