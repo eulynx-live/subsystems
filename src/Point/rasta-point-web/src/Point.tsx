@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import './Point.css';
+import * as google_protobuf_empty_pb from 'google-protobuf/google/protobuf/empty_pb';
 import { SimulatorState } from './SimulatorState';
 import { PointClient } from './proto/PointServiceClientPb';
-import { Nothing, PointDegradedMessage, PointPosition } from './proto/point_pb';
+
+import { PreventedPositionMessage, PreventedPosition, PointPosition } from './proto/point_pb';
 
 interface PointState {
     webSocket: WebSocket | null,
@@ -84,19 +86,24 @@ class Point extends Component<{}, PointState> {
                 <h2>Position</h2>
                 <p>{this.state.position}</p>
                 <button onClick={async () => {
-                    let request = new PointDegradedMessage();
-                    request.setPosition(PointPosition.NOENDPOSITION);
-                    await client.setDegraded(request, null);
-                }}>Set degraded (no endposition)</button>
+                    let request = new PreventedPositionMessage();
+                    request.setPosition(PreventedPosition.PREVENTEDLEFT);
+                    await client.preventEndPosition(request, null);
+                }}>Prevent position left</button>
+                <button onClick={async () => {
+                    let request = new PreventedPositionMessage();
+                    request.setPosition(PreventedPosition.PREVENTEDRIGHT);
+                    await client.preventEndPosition(request, null);
+                }}>Prevent position right</button>
                 <p></p>
                 <button onClick={async () => {
-                    let request = new PointDegradedMessage();
-                    request.setPosition(PointPosition.TRAILED);
-                    await client.setDegraded(request, null);
-                }}>Set degraded (trailed)</button>
+                    let request = new PreventedPositionMessage();
+                    request.setPosition(PreventedPosition.TRAILED);
+                    await client.preventEndPosition(request, null);
+                }}>Set to unintended position</button>
                 <p></p>
                 <button onClick={async () => {
-                    await client.finalizePosition(new Nothing(), null);
+                    await client.putInEndPosition(new google_protobuf_empty_pb.Empty(), null);
                 }}>Finalize position</button>
             </div>
         );

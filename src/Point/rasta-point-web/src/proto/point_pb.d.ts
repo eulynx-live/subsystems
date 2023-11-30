@@ -1,22 +1,23 @@
 import * as jspb from 'google-protobuf'
 
+import * as google_protobuf_empty_pb from 'google-protobuf/google/protobuf/empty_pb';
 
 
-export class PointDegradedMessage extends jspb.Message {
-  getPosition(): PointPosition;
-  setPosition(value: PointPosition): PointDegradedMessage;
+export class PreventedPositionMessage extends jspb.Message {
+  getPosition(): PreventedPosition;
+  setPosition(value: PreventedPosition): PreventedPositionMessage;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): PointDegradedMessage.AsObject;
-  static toObject(includeInstance: boolean, msg: PointDegradedMessage): PointDegradedMessage.AsObject;
-  static serializeBinaryToWriter(message: PointDegradedMessage, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): PointDegradedMessage;
-  static deserializeBinaryFromReader(message: PointDegradedMessage, reader: jspb.BinaryReader): PointDegradedMessage;
+  toObject(includeInstance?: boolean): PreventedPositionMessage.AsObject;
+  static toObject(includeInstance: boolean, msg: PreventedPositionMessage): PreventedPositionMessage.AsObject;
+  static serializeBinaryToWriter(message: PreventedPositionMessage, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PreventedPositionMessage;
+  static deserializeBinaryFromReader(message: PreventedPositionMessage, reader: jspb.BinaryReader): PreventedPositionMessage;
 }
 
-export namespace PointDegradedMessage {
+export namespace PreventedPositionMessage {
   export type AsObject = {
-    position: PointPosition,
+    position: PreventedPosition,
   }
 }
 
@@ -96,47 +97,15 @@ export namespace PointMachineStateMessage {
   }
 }
 
-export class SetPointMachineStateResponse extends jspb.Message {
-  getNewstate(): PointMachineStateMessage | undefined;
-  setNewstate(value?: PointMachineStateMessage): SetPointMachineStateResponse;
-  hasNewstate(): boolean;
-  clearNewstate(): SetPointMachineStateResponse;
-
-  getSuccess(): boolean;
-  setSuccess(value: boolean): SetPointMachineStateResponse;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): SetPointMachineStateResponse.AsObject;
-  static toObject(includeInstance: boolean, msg: SetPointMachineStateResponse): SetPointMachineStateResponse.AsObject;
-  static serializeBinaryToWriter(message: SetPointMachineStateResponse, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): SetPointMachineStateResponse;
-  static deserializeBinaryFromReader(message: SetPointMachineStateResponse, reader: jspb.BinaryReader): SetPointMachineStateResponse;
-}
-
-export namespace SetPointMachineStateResponse {
-  export type AsObject = {
-    newstate?: PointMachineStateMessage.AsObject,
-    success: boolean,
-  }
-}
-
-export class Nothing extends jspb.Message {
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): Nothing.AsObject;
-  static toObject(includeInstance: boolean, msg: Nothing): Nothing.AsObject;
-  static serializeBinaryToWriter(message: Nothing, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): Nothing;
-  static deserializeBinaryFromReader(message: Nothing, reader: jspb.BinaryReader): Nothing;
-}
-
-export namespace Nothing {
-  export type AsObject = {
-  }
-}
-
 export enum PointPosition { 
   RIGHT = 0,
   LEFT = 1,
   NOENDPOSITION = 2,
-  TRAILED = 3,
+  UNINTENDEDPOSITION = 3,
+}
+export enum PreventedPosition { 
+  PREVENTEDLEFT = 0,
+  PREVENTEDRIGHT = 1,
+  TRAILED = 2,
+  NONE = 3,
 }
