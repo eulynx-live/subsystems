@@ -32,7 +32,11 @@ namespace EulynxLive.Point
 
             try
             {
-                services.AddSingleton<Point>();
+                services.AddSingleton<Point>(x => 
+                {
+                    Func<Task> simulateTimout = async () => await Task.Delay(new Random().Next(1, 5) * 1000);
+                    return new Point(x.GetRequiredService<ILogger<Point>>(), x.GetRequiredService<IConfiguration>(), x.GetRequiredService<IPointToInterlockingConnection>(), simulateTimout);
+                });
             }
             catch (Exception e)
             {

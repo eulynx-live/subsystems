@@ -15,6 +15,7 @@ namespace EulynxLive.Point
         public bool AllPointMachinesCrucial { get; }
 
         private readonly ILogger<Point> _logger;
+        private readonly Func<Task> _simulateTimeout;
         private readonly List<WebSocket> _webSockets;
         private IPointToInterlockingConnection _connection;
         private readonly Random _random;
@@ -23,9 +24,10 @@ namespace EulynxLive.Point
         private readonly PointState _pointState;
         public PointState PointState { get { return _pointState; } }
 
-        public Point(ILogger<Point> logger, IConfiguration configuration, IPointToInterlockingConnection connection)
+        public Point(ILogger<Point> logger, IConfiguration configuration, IPointToInterlockingConnection connection, Func<Task> simulateTimeout)
         {
             _logger = logger;
+            _simulateTimeout = simulateTimeout;
 
             var config = configuration.GetSection("PointSettings").Get<PointConfiguration>() ?? throw new Exception("No configuration provided");
             if (config.AllPointMachinesCrucial == null)
@@ -239,7 +241,7 @@ namespace EulynxLive.Point
                         }
                         else
                         {
-                            await transitioningTask;
+                            await _simulateTimeout();
                             UpdatePointState(commandedPointPosition.Value);
 
                             await UpdateConnectedWebClients();
