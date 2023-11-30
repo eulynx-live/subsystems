@@ -42,7 +42,7 @@ namespace EulynxLive.Point
             _pointState = new PointState()
             {
                 PointPosition = PointPosition.NoEndposition,
-                DegradedPointPosition = AllPointMachinesCrucial ? DegradedPointPosition.NotApplicable : DegradedPointPosition.NotDegraded
+                DegradedPointPosition = RespectAllPointMachinesCrucial(DegradedPointPosition.NotDegraded)
             };
             _preventedPosition = PreventedPosition.None;
             _random = new Random();
@@ -90,7 +90,7 @@ namespace EulynxLive.Point
             PointPosition newPointPosition = _pointState.PointPosition;
             DegradedPointPosition newDegradedPointPosition = _pointState.DegradedPointPosition;
             HandlePreventedPointPosition(commandedPointPosition, ref newPointPosition, ref newDegradedPointPosition);
-            SetPointState(newPointPosition, newDegradedPointPosition);
+            SetPointState(newPointPosition, RespectAllPointMachinesCrucial(newDegradedPointPosition));
         }
 
         /// <summary>
@@ -105,8 +105,7 @@ namespace EulynxLive.Point
                 if (_pointState.PointPosition != PointPosition.Right &&
                 _pointState.PointPosition != PointPosition.Left)
                 {
-                    var reportedDegradedPointPosition = AllPointMachinesCrucial ?
-                            DegradedPointPosition.NotApplicable : DegradedPointPosition.NotDegraded;
+                    var reportedDegradedPointPosition = RespectAllPointMachinesCrucial(DegradedPointPosition.NotDegraded);
 
                     PointPosition? finalPosition = _pointState.DegradedPointPosition switch
                     {
@@ -125,6 +124,8 @@ namespace EulynxLive.Point
             }
             await UpdateConnectedWebClients();
         }
+
+        private DegradedPointPosition RespectAllPointMachinesCrucial(DegradedPointPosition degradedPointPosition) => AllPointMachinesCrucial ? DegradedPointPosition.NotApplicable : degradedPointPosition;
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -157,7 +158,7 @@ namespace EulynxLive.Point
                             continue;
                         }
 
-                        SetPointState(PointPosition.NoEndposition, DegradedPointPosition.NotApplicable);
+                        SetPointState(PointPosition.NoEndposition, RespectAllPointMachinesCrucial(_pointState.DegradedPointPosition));
 
                         await UpdateConnectedWebClients();
 
@@ -238,7 +239,7 @@ namespace EulynxLive.Point
                     }
                     break;
                 case PreventedPosition.Trailed:
-                    degradedPointPosition = AllPointMachinesCrucial ? DegradedPointPosition.NotApplicable : DegradedPointPosition.NotDegraded;
+                    degradedPointPosition = DegradedPointPosition.NotDegraded;
                     pointPosition = PointPosition.UnintendetPosition;
                     break;
                 default:
