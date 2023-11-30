@@ -7,7 +7,7 @@ namespace FieldElementSubsystems.Test;
 public class PointTest
 {
     private EulynxLive.Point.Point CreateDefaultPoint(IPointToInterlockingConnection? connection = null) =>
-        new EulynxLive.Point.Point(_logger, _configuration, connection ?? Mock.Of<IPointToInterlockingConnection>());
+        new EulynxLive.Point.Point(_logger, _configuration, connection ?? Mock.Of<IPointToInterlockingConnection>(), async () => {});
 
     private Mock<IPointToInterlockingConnection> CreateDefaultMockConnection() {
         var mockConnection = new Mock<IPointToInterlockingConnection>();
