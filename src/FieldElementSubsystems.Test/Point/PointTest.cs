@@ -2,6 +2,7 @@ using IPointToInterlockingConnection = EulynxLive.Point.Interfaces.IPointToInter
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
+using EulynxLive.Point.Proto;
 namespace FieldElementSubsystems.Test;
 
 public class PointTest
@@ -27,7 +28,7 @@ public class PointTest
             {"PointSettings:LocalRastaId", "100" },
             {"PointSettings:RemoteId", "INTERLOCKING" },
             {"PointSettings:RemoteEndpoint", "http://localhost:50051" },
-            {"PointSettings:AllPointMachinesCrucial", "true" },
+            {"PointSettings:AllPointMachinesCrucial", "false" },
             {"PointSettings:SimulateRandomTimeouts", "false" },
         };
     private IConfiguration _configuration = new ConfigurationBuilder()
@@ -133,5 +134,46 @@ public class PointTest
         // Assert
         mockConnection.Verify(v => v.InitializeConnection(It.IsAny<IPointToInterlockingConnection.PointState>(), It.IsAny<CancellationToken>()));
         Assert.Equal(IPointToInterlockingConnection.PointPosition.Left, point.PointState.PointPosition);
+    }
+
+    [Theory]
+    [InlineData(PreventedPosition.PreventedLeft, IPointToInterlockingConnection.PointPosition.Left, IPointToInterlockingConnection.PointPosition.NoEndposition, IPointToInterlockingConnection.DegradedPointPosition.DegradedLeft)]
+    [InlineData(PreventedPosition.PreventedRight, IPointToInterlockingConnection.PointPosition.Right, IPointToInterlockingConnection.PointPosition.NoEndposition, IPointToInterlockingConnection.DegradedPointPosition.DegradedRight)]
+    [InlineData(PreventedPosition.Trailed, IPointToInterlockingConnection.PointPosition.Left, IPointToInterlockingConnection.PointPosition.UnintendetPosition, IPointToInterlockingConnection.DegradedPointPosition.NotDegraded)]
+    [InlineData(PreventedPosition.None, IPointToInterlockingConnection.PointPosition.Right, IPointToInterlockingConnection.PointPosition.Right, IPointToInterlockingConnection.DegradedPointPosition.NotDegraded)]
+    public async Task Test_PreventEndPosition(PreventedPosition preventedPosition, IPointToInterlockingConnection.PointPosition actionedPosition, IPointToInterlockingConnection.PointPosition assertedPosition, IPointToInterlockingConnection.DegradedPointPosition assertedDegradedPosition)
+    {
+        var cancel = new CancellationTokenSource();
+        // Arrange
+        var point = CreateDefaultPoint();
+        var mockConnection = CreateDefaultMockConnection();
+
+        mockConnection
+            .SetupSequence(m => m.ReceivePointPosition(It.IsAny<CancellationToken>()))
+            .Returns(() => {
+                var message = new PreventedPositionMessage
+                {
+                    Position = preventedPosition
+                };
+                point.PreventEndPosition(message);
+
+                return Task.FromResult<IPointToInterlockingConnection.PointPosition?>(null);
+            })
+            .Returns(Task.FromResult<IPointToInterlockingConnection.PointPosition?>(actionedPosition))
+            .Returns(() =>
+            {
+                cancel.Cancel();
+                return new TaskCompletionSource<IPointToInterlockingConnection.PointPosition?>().Task;
+            });
+
+        point = CreateDefaultPoint(mockConnection.Object);
+
+        // Act
+        await point.StartAsync(CancellationToken.None);
+
+        // Assert
+        mockConnection.Verify(v => v.InitializeConnection(It.IsAny<IPointToInterlockingConnection.PointState>(), It.IsAny<CancellationToken>()));
+        Assert.Equal(assertedPosition, point.PointState.PointPosition);
+        Assert.Equal(assertedDegradedPosition, point.PointState.DegradedPointPosition);
     }
 }
