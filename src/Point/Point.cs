@@ -1,4 +1,4 @@
-using EulynxLive.Point.Proto;
+﻿using EulynxLive.Point.Proto;
 using Grpc.Core;
 using IPointToInterlockingConnection = EulynxLive.Point.Interfaces.IPointToInterlockingConnection;
 using PointPosition = EulynxLive.Point.Interfaces.IPointToInterlockingConnection.PointPosition;
@@ -76,6 +76,7 @@ namespace EulynxLive.Point
 
         public void PreventEndPosition(PreventedPositionMessage message)
         {
+            _logger.LogInformation("Preventing end position {}.", message.Position);
             _preventedPosition = message.Position;
         }
 
@@ -117,6 +118,7 @@ namespace EulynxLive.Point
                     };
                     if (finalPosition != null)
                     {
+                        _logger.LogInformation("Putting point into end position {}.", finalPosition);
                         SetPointState((PointPosition)finalPosition, reportedDegradedPointPosition);
                         await _connection.SendPointPosition(PointState);
                     }
@@ -154,6 +156,7 @@ namespace EulynxLive.Point
                         if ((commandedPointPosition == PointPosition.Left && _pointState.PointPosition == PointPosition.Left)
                             || (commandedPointPosition == PointPosition.Right && _pointState.PointPosition == PointPosition.Right))
                         {
+                            _logger.LogInformation("Point is already in position {}.", commandedPointPosition);
                             await _connection.SendPointPosition(PointState);
                             continue;
                         }
@@ -167,7 +170,6 @@ namespace EulynxLive.Point
                         var transitioningTask = Task.Delay(transitioningTime * 1000);
                         var pointMovementTimeout = 3 * 1000;
 
-                        _logger.LogDebug("Moving to {}.", commandedPointPosition);
 
                         if (_simulateRandomTimeouts)
                         {
