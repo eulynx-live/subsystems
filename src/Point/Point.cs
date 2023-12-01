@@ -222,6 +222,7 @@ namespace EulynxLive.Point
 
         private void HandlePreventedPointPosition(PointPosition commandedPosition, ref PointPosition pointPosition, ref DegradedPointPosition degradedPointPosition)
         {
+            pointPosition = commandedPosition;
             switch (_preventedPosition)
             {
                 case PreventedPosition.PreventedLeft:
@@ -243,7 +244,6 @@ namespace EulynxLive.Point
                     pointPosition = PointPosition.UnintendetPosition;
                     break;
             }
-            pointPosition = commandedPosition;
             _preventedPosition = PreventedPosition.None;
         }
 
