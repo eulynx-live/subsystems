@@ -29,6 +29,16 @@ namespace EulynxLive.Point.Services
             return new Empty();
         }
 
+        public override Task<PointDegradedPositionMessage> GetDegradedPointPosition(Empty request, ServerCallContext context)
+        {
+            var response = new PointDegradedPositionMessage()
+            {
+                Position = _point.PointState.DegradedPointPosition.ConvertToProtoMessage()
+            };
+
+            return Task.FromResult(response);
+        }
+
         public override Task<PointPositionMessage> GetPointPosition(Empty request, ServerCallContext context)
         {
             var response = new PointPositionMessage()

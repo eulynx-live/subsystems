@@ -12,6 +12,13 @@ enum PointPosition {
     UnintendedPosition = 3;
 }
 
+enum PointDegradedPosition {
+    DegradedRight = 0;
+    DegradedLeft = 1;
+    NotDegraded = 2;
+    NotApplicable = 3;
+}
+
 enum PreventedPosition {
     PreventedLeft = 0;
     PreventedRight = 1;
@@ -23,6 +30,7 @@ service Point {
     rpc PreventEndPosition (PreventedPositionMessage) returns (google.protobuf.Empty) {}
     rpc PutInEndPosition (google.protobuf.Empty) returns (google.protobuf.Empty) {}
     rpc GetPointPosition (google.protobuf.Empty) returns (PointPositionMessage) {}
+    rpc GetDegradedPointPosition (google.protobuf.Empty) returns (PointDegradedPositionMessage) {}
 
     rpc EstablishPointMachineState (PointMachineStateMessage) returns (google.protobuf.Empty) {}
     rpc GetPointMachineState (google.protobuf.Empty) returns (PointMachineStateMessage) {}
@@ -34,6 +42,10 @@ message PreventedPositionMessage {
 
 message PointPositionMessage {
     PointPosition position = 1;
+}
+
+message PointDegradedPositionMessage {
+    PointDegradedPosition position = 1;
 }
 
 message PointMachineStateMessage {
