@@ -1,4 +1,4 @@
-﻿using EulynxLive.Point.Proto;
+using EulynxLive.Point.Proto;
 using Grpc.Core;
 using IPointToInterlockingConnection = EulynxLive.Point.Interfaces.IPointToInterlockingConnection;
 using PointPosition = EulynxLive.Point.Interfaces.IPointToInterlockingConnection.PointPosition;
@@ -175,6 +175,7 @@ namespace EulynxLive.Point
                             {
                                 // transition completed within timeout
                                 UpdatePointState(commandedPointPosition.Value);
+                                _logger.LogDebug("Moving to {}.", _pointState.PointPosition);
 
                                 await UpdateConnectedWebClients();
 
@@ -192,6 +193,7 @@ namespace EulynxLive.Point
                         {
                             await _simulateTimeout();
                             UpdatePointState(commandedPointPosition.Value);
+                            _logger.LogDebug("Moving to {}.", _pointState.PointPosition);
 
                             await UpdateConnectedWebClients();
 
