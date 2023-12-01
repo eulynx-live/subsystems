@@ -150,6 +150,8 @@ public class PointTest
     [InlineData(PreventedPosition.PreventedRight, IPointToInterlockingConnection.PointPosition.Right, IPointToInterlockingConnection.PointPosition.NoEndposition, IPointToInterlockingConnection.DegradedPointPosition.DegradedRight)]
     [InlineData(PreventedPosition.Trailed, IPointToInterlockingConnection.PointPosition.Left, IPointToInterlockingConnection.PointPosition.UnintendetPosition, IPointToInterlockingConnection.DegradedPointPosition.NotDegraded)]
     [InlineData(PreventedPosition.None, IPointToInterlockingConnection.PointPosition.Right, IPointToInterlockingConnection.PointPosition.Right, IPointToInterlockingConnection.DegradedPointPosition.NotDegraded)]
+    [InlineData(PreventedPosition.PreventedLeft, IPointToInterlockingConnection.PointPosition.Right, IPointToInterlockingConnection.PointPosition.Right, IPointToInterlockingConnection.DegradedPointPosition.NotDegraded)]
+    [InlineData(PreventedPosition.PreventedRight, IPointToInterlockingConnection.PointPosition.Left, IPointToInterlockingConnection.PointPosition.Left, IPointToInterlockingConnection.DegradedPointPosition.NotDegraded)]
     public async Task Test_PreventEndPosition(PreventedPosition preventedPosition, IPointToInterlockingConnection.PointPosition actionedPosition, IPointToInterlockingConnection.PointPosition assertedPosition, IPointToInterlockingConnection.DegradedPointPosition assertedDegradedPosition)
     {
         var cancel = new CancellationTokenSource();

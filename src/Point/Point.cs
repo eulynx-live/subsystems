@@ -242,10 +242,8 @@ namespace EulynxLive.Point
                     degradedPointPosition = DegradedPointPosition.NotDegraded;
                     pointPosition = PointPosition.UnintendetPosition;
                     break;
-                default:
-                    pointPosition = commandedPosition;
-                    break;
             }
+            pointPosition = commandedPosition;
             _preventedPosition = PreventedPosition.None;
         }
 
