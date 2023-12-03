@@ -17,7 +17,7 @@ namespace EulynxLive.Point
         private readonly ILogger<Point> _logger;
         private readonly Func<Task> _simulateTimeout;
         private readonly List<WebSocket> _webSockets;
-        private IPointToInterlockingConnection _connection;
+        private readonly IPointToInterlockingConnection _connection;
         private readonly Random _random;
         private readonly bool _simulateRandomTimeouts;
         private bool _initialized;
@@ -190,7 +190,7 @@ namespace EulynxLive.Point
                     var success = await _connection.InitializeConnection(PointState, stoppingToken);
                     if (!success)
                     {
-                        continue;
+                        throw new Exception("Unable to initialize connection");
                     }
                     await UpdateConnectedWebClients();
 
@@ -215,14 +215,14 @@ namespace EulynxLive.Point
 
                         // Simulate point movement
                         var transitioningTime = _random.Next(1, 5);
-                        var transitioningTask = Task.Delay(transitioningTime * 1000);
+                        var transitioningTask = Task.Delay(transitioningTime * 1000, CancellationToken.None);
                         var pointMovementTimeout = 3 * 1000;
 
                         _logger.LogDebug("Moving to {}.", commandedPointPosition);
 
                         if (_simulateRandomTimeouts)
                         {
-                            if (await Task.WhenAny(transitioningTask, Task.Delay(pointMovementTimeout)) == transitioningTask)
+                            if (await Task.WhenAny(transitioningTask, Task.Delay(pointMovementTimeout, CancellationToken.None)) == transitioningTask)
                             {
                                 // transition completed within timeout
                                 UpdatePointState(commandedPointPosition.Value);

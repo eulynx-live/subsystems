@@ -1,6 +1,6 @@
 namespace EulynxLive.Point.Interfaces;
 
-public interface IPointToInterlockingConnection: IDisposable {
+public interface IPointToInterlockingConnection : IDisposable {
     Task SendPointPosition(PointState state);
     Task SendTimeoutMessage();
     void Connect();
