@@ -17,8 +17,8 @@ public interface IPointToInterlockingConnection: IDisposable {
     {
         Left,
         Right,
-        UnintendetPosition,
-        NoEndposition
+        UnintendedPosition,
+        NoEndPosition
     }
 
     public enum DegradedPointPosition

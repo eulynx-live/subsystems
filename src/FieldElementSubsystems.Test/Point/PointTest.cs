@@ -49,7 +49,7 @@ public class PointTest
         var point = CreateDefaultPoint();
         await point.StartAsync(CancellationToken.None);
 
-        Assert.Equal(IPointToInterlockingConnection.PointPosition.NoEndposition, point.PointState.PointPosition);
+        Assert.Equal(IPointToInterlockingConnection.PointPosition.NoEndPosition, point.PointState.PointPosition);
     }
 
     [Fact]

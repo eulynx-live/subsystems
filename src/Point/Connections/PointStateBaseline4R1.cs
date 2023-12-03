@@ -20,8 +20,8 @@ public record PointStateBaseline4R1
     {
         IPointToInterlockingConnection.PointPosition.Left => PointPointPositionMessageReportedPointPosition.PointIsInALeftHandPositionDefinedEndPosition,
         IPointToInterlockingConnection.PointPosition.Right => PointPointPositionMessageReportedPointPosition.PointIsInARightHandPositionDefinedEndPosition,
-        IPointToInterlockingConnection.PointPosition.UnintendetPosition => PointPointPositionMessageReportedPointPosition.PointIsTrailed,
-        IPointToInterlockingConnection.PointPosition.NoEndposition => PointPointPositionMessageReportedPointPosition.PointIsInNoEndPosition,
+        IPointToInterlockingConnection.PointPosition.UnintendedPosition => PointPointPositionMessageReportedPointPosition.PointIsTrailed,
+        IPointToInterlockingConnection.PointPosition.NoEndPosition => PointPointPositionMessageReportedPointPosition.PointIsInNoEndPosition,
         _ => throw new NotImplementedException(),
     };
 
