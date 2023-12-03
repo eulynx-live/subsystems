@@ -32,18 +32,18 @@ public class PointTest
         return mockConnection;
     }
 
-    private static IDictionary<string, string?> _testSettings = new Dictionary<string, string?> {
-            {"PointSettings:LocalId", "99W1" },
-            {"PointSettings:LocalRastaId", "100" },
-            {"PointSettings:RemoteId", "INTERLOCKING" },
-            {"PointSettings:RemoteEndpoint", "http://localhost:50051" },
-            {"PointSettings:AllPointMachinesCrucial", "false" },
-            {"PointSettings:SimulateRandomTimeouts", "false" },
-        };
+    private static readonly IDictionary<string, string?> _testSettings = new Dictionary<string, string?> {
+        {"PointSettings:LocalId", "99W1" },
+        {"PointSettings:LocalRastaId", "100" },
+        {"PointSettings:RemoteId", "INTERLOCKING" },
+        {"PointSettings:RemoteEndpoint", "http://localhost:50051" },
+        {"PointSettings:AllPointMachinesCrucial", "false" },
+        {"PointSettings:SimulateRandomTimeouts", "false" },
+    };
     private IConfiguration _configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(_testSettings)
             .Build();
-    private ILogger<EulynxLive.Point.Point> _logger = Mock.Of<ILogger<EulynxLive.Point.Point>>();
+    private readonly ILogger<EulynxLive.Point.Point> _logger = Mock.Of<ILogger<EulynxLive.Point.Point>>();
 
     [Fact]
     public void Test_Parse_Configuration()
@@ -54,12 +54,10 @@ public class PointTest
     }
 
     [Fact]
-    public async Task Test_Default_Position()
+    public void Test_Default_Position()
     {
         var point = CreateDefaultPoint();
-        await point.StartAsync(CancellationToken.None);
-
-        Assert.Equal(IPointToInterlockingConnection.PointPosition.NoEndposition, point.PointState.PointPosition);
+        Assert.Equal(IPointToInterlockingConnection.PointPosition.NoEndPosition, point.PointState.PointPosition);
     }
 
     [Fact]
@@ -92,10 +90,10 @@ public class PointTest
     [Fact]
     public async Task Test_Turn_Right()
     {
-        var cancel = new CancellationTokenSource();
         // Arrange
         var point = CreateDefaultPoint();
         var mockConnection = CreateDefaultMockConnection();
+        var cancel = new CancellationTokenSource();
 
         mockConnection
             .SetupSequence(m => m.ReceivePointPosition(It.IsAny<CancellationToken>()))
@@ -109,7 +107,7 @@ public class PointTest
         point = CreateDefaultPoint(mockConnection.Object);
 
         // Act
-        await point.StartAsync(CancellationToken.None);
+        await point.StartAsync(cancel.Token);
 
         // Assert
         mockConnection.Verify(v => v.InitializeConnection(It.IsAny<IPointToInterlockingConnection.PointState>(), It.IsAny<CancellationToken>()));
@@ -119,10 +117,10 @@ public class PointTest
     [Fact]
     public async Task Test_Turnover()
     {
-        var cancel = new CancellationTokenSource();
         // Arrange
         var point = CreateDefaultPoint();
         var mockConnection = CreateDefaultMockConnection();
+        var cancel = new CancellationTokenSource();
 
         mockConnection
             .SetupSequence(m => m.ReceivePointPosition(It.IsAny<CancellationToken>()))
@@ -138,7 +136,7 @@ public class PointTest
         point = CreateDefaultPoint(mockConnection.Object);
 
         // Act
-        await point.StartAsync(CancellationToken.None);
+        await point.StartAsync(cancel.Token);
 
         // Assert
         mockConnection.Verify(v => v.InitializeConnection(It.IsAny<IPointToInterlockingConnection.PointState>(), It.IsAny<CancellationToken>()));
@@ -146,9 +144,9 @@ public class PointTest
     }
 
     [Theory]
-    [InlineData(PreventedPosition.PreventedLeft, IPointToInterlockingConnection.PointPosition.Left, IPointToInterlockingConnection.PointPosition.NoEndposition, IPointToInterlockingConnection.DegradedPointPosition.DegradedLeft)]
-    [InlineData(PreventedPosition.PreventedRight, IPointToInterlockingConnection.PointPosition.Right, IPointToInterlockingConnection.PointPosition.NoEndposition, IPointToInterlockingConnection.DegradedPointPosition.DegradedRight)]
-    [InlineData(PreventedPosition.Trailed, IPointToInterlockingConnection.PointPosition.Left, IPointToInterlockingConnection.PointPosition.UnintendetPosition, IPointToInterlockingConnection.DegradedPointPosition.NotDegraded)]
+    [InlineData(PreventedPosition.PreventedLeft, IPointToInterlockingConnection.PointPosition.Left, IPointToInterlockingConnection.PointPosition.NoEndPosition, IPointToInterlockingConnection.DegradedPointPosition.DegradedLeft)]
+    [InlineData(PreventedPosition.PreventedRight, IPointToInterlockingConnection.PointPosition.Right, IPointToInterlockingConnection.PointPosition.NoEndPosition, IPointToInterlockingConnection.DegradedPointPosition.DegradedRight)]
+    [InlineData(PreventedPosition.Trailed, IPointToInterlockingConnection.PointPosition.Left, IPointToInterlockingConnection.PointPosition.UnintendedPosition, IPointToInterlockingConnection.DegradedPointPosition.NotDegraded)]
     [InlineData(PreventedPosition.None, IPointToInterlockingConnection.PointPosition.Right, IPointToInterlockingConnection.PointPosition.Right, IPointToInterlockingConnection.DegradedPointPosition.NotDegraded)]
     [InlineData(PreventedPosition.PreventedLeft, IPointToInterlockingConnection.PointPosition.Right, IPointToInterlockingConnection.PointPosition.Right, IPointToInterlockingConnection.DegradedPointPosition.NotDegraded)]
     [InlineData(PreventedPosition.PreventedRight, IPointToInterlockingConnection.PointPosition.Left, IPointToInterlockingConnection.PointPosition.Left, IPointToInterlockingConnection.DegradedPointPosition.NotDegraded)]
@@ -187,7 +185,7 @@ public class PointTest
         Assert.Equal(assertedPosition, point.PointState.PointPosition);
         Assert.Equal(assertedDegradedPosition, point.PointState.DegradedPointPosition);
     }
-    
+
     [Fact]
     public async Task Test_PreventEndPosition_Multiple_Times()
     {
@@ -218,7 +216,7 @@ public class PointTest
                 return Task.FromResult<IPointToInterlockingConnection.PointPosition?>(null);
             })
             .Returns(() => {
-                Assert.Equal(IPointToInterlockingConnection.PointPosition.NoEndposition, point.PointState.PointPosition);
+                Assert.Equal(IPointToInterlockingConnection.PointPosition.NoEndPosition, point.PointState.PointPosition);
                 Assert.Equal(IPointToInterlockingConnection.DegradedPointPosition.DegradedLeft, point.PointState.DegradedPointPosition);
 
                 return Task.FromResult<IPointToInterlockingConnection.PointPosition?>(null);
@@ -237,7 +235,7 @@ public class PointTest
 
         // Assert
         mockConnection.Verify(v => v.InitializeConnection(It.IsAny<IPointToInterlockingConnection.PointState>(), It.IsAny<CancellationToken>()));
-        Assert.Equal(IPointToInterlockingConnection.PointPosition.NoEndposition, point.PointState.PointPosition);
+        Assert.Equal(IPointToInterlockingConnection.PointPosition.NoEndPosition, point.PointState.PointPosition);
         Assert.Equal(IPointToInterlockingConnection.DegradedPointPosition.DegradedRight, point.PointState.DegradedPointPosition);
     }
 }

@@ -17,7 +17,7 @@ namespace EulynxLive.Point
         private readonly ILogger<Point> _logger;
         private readonly Func<Task> _simulateTimeout;
         private readonly List<WebSocket> _webSockets;
-        private IPointToInterlockingConnection _connection;
+        private readonly IPointToInterlockingConnection _connection;
         private readonly Random _random;
         private readonly bool _simulateRandomTimeouts;
         private bool _initialized;
@@ -41,7 +41,7 @@ namespace EulynxLive.Point
             _webSockets = new List<WebSocket>();
             _pointState = new PointState()
             {
-                PointPosition = PointPosition.NoEndposition,
+                PointPosition = PointPosition.NoEndPosition,
                 DegradedPointPosition = RespectAllPointMachinesCrucial(DegradedPointPosition.NotDegraded)
             };
             _preventedPosition = PreventedPosition.None;
@@ -87,7 +87,7 @@ namespace EulynxLive.Point
         }
 
         private void UpdatePointState(PointPosition commandedPointPosition)
-        {   
+        {
             PointPosition newPointPosition = _pointState.PointPosition;
             DegradedPointPosition newDegradedPointPosition = _pointState.DegradedPointPosition;
             HandlePreventedPointPosition(commandedPointPosition, ref newPointPosition, ref newDegradedPointPosition);
@@ -141,7 +141,7 @@ namespace EulynxLive.Point
                     var success = await _connection.InitializeConnection(PointState, stoppingToken);
                     if (!success)
                     {
-                        continue;
+                        throw new Exception("Unable to initialize connection");
                     }
                     await UpdateConnectedWebClients();
 
@@ -161,19 +161,19 @@ namespace EulynxLive.Point
                             continue;
                         }
 
-                        SetPointState(PointPosition.NoEndposition, RespectAllPointMachinesCrucial(_pointState.DegradedPointPosition));
+                        SetPointState(PointPosition.NoEndPosition, RespectAllPointMachinesCrucial(_pointState.DegradedPointPosition));
 
                         await UpdateConnectedWebClients();
 
                         // Simulate point movement
                         var transitioningTime = _random.Next(1, 5);
-                        var transitioningTask = Task.Delay(transitioningTime * 1000);
+                        var transitioningTask = Task.Delay(transitioningTime * 1000, CancellationToken.None);
                         var pointMovementTimeout = 3 * 1000;
 
 
                         if (_simulateRandomTimeouts)
                         {
-                            if (await Task.WhenAny(transitioningTask, Task.Delay(pointMovementTimeout)) == transitioningTask)
+                            if (await Task.WhenAny(transitioningTask, Task.Delay(pointMovementTimeout, CancellationToken.None)) == transitioningTask)
                             {
                                 // transition completed within timeout
                                 UpdatePointState(commandedPointPosition.Value);
@@ -233,19 +233,19 @@ namespace EulynxLive.Point
                     if (commandedPosition == PointPosition.Left)
                     {
                         degradedPointPosition = DegradedPointPosition.DegradedLeft;
-                        pointPosition = PointPosition.NoEndposition;
+                        pointPosition = PointPosition.NoEndPosition;
                     }
                     break;
                 case PreventedPosition.PreventedRight:
                     if (commandedPosition == PointPosition.Right)
                     {
                         degradedPointPosition = DegradedPointPosition.DegradedRight;
-                        pointPosition = PointPosition.NoEndposition;
+                        pointPosition = PointPosition.NoEndPosition;
                     }
                     break;
                 case PreventedPosition.Trailed:
                     degradedPointPosition = DegradedPointPosition.NotDegraded;
-                    pointPosition = PointPosition.UnintendetPosition;
+                    pointPosition = PointPosition.UnintendedPosition;
                     break;
             }
             _preventedPosition = PreventedPosition.None;
@@ -275,8 +275,8 @@ namespace EulynxLive.Point
             var positions = new Dictionary<PointPosition, string> {
                 {PointPosition.Right, "right"},
                 {PointPosition.Left, "left"},
-                {PointPosition.NoEndposition, "noEndPosition"},
-                {PointPosition.UnintendetPosition, "trailed"},
+                {PointPosition.NoEndPosition, "noEndPosition"},
+                {PointPosition.UnintendedPosition, "trailed"},
             };
             var options = new JsonSerializerOptions { WriteIndented = true };
             var serializedState = JsonSerializer.Serialize(new
