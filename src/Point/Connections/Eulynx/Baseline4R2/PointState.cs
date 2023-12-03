@@ -17,8 +17,8 @@ public record PointState : Eulynx.PointState<PointPointPositionMessageReportedPo
     {
         IPointToInterlockingConnection.PointPosition.Left => PointPointPositionMessageReportedPointPosition.PointIsInALeftHandPositionDefinedEndPosition,
         IPointToInterlockingConnection.PointPosition.Right => PointPointPositionMessageReportedPointPosition.PointIsInARightHandPositionDefinedEndPosition,
-        IPointToInterlockingConnection.PointPosition.UnintendetPosition => PointPointPositionMessageReportedPointPosition.PointIsInUnintendedPosition,
-        IPointToInterlockingConnection.PointPosition.NoEndposition => PointPointPositionMessageReportedPointPosition.PointIsInNoEndPosition,
+        IPointToInterlockingConnection.PointPosition.UnintendedPosition => PointPointPositionMessageReportedPointPosition.PointIsInUnintendedPosition,
+        IPointToInterlockingConnection.PointPosition.NoEndPosition => PointPointPositionMessageReportedPointPosition.PointIsInNoEndPosition,
         _ => throw new NotImplementedException(),
     };
 
