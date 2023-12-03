@@ -4,18 +4,12 @@ using PointPosition = EulynxLive.Point.Interfaces.IPointToInterlockingConnection
 using DegradedPointPosition = EulynxLive.Point.Interfaces.IPointToInterlockingConnection.DegradedPointPosition;
 
 namespace EulynxLive.Point.Eulynx;
-public abstract record PointState<PP, DP>
+public abstract record PointState<TPointPosition, TDegradedPointPosition>(IPointToInterlockingConnection.PointState State)
 {
-    private IPointToInterlockingConnection.PointState _state;
-    public PP PointPosition { get => MapInterfacePointPositionToConcrete(_state.PointPosition); }
-    public DP DegradedPointPosition { get => MapInterfaceDegradedPointPositionToConcrete(_state.DegradedPointPosition); }
+    public TPointPosition PointPosition => MapInterfacePointPositionToConcrete(State.PointPosition);
+    public TDegradedPointPosition DegradedPointPosition => MapInterfaceDegradedPointPositionToConcrete(State.DegradedPointPosition);
 
-    public PointState(IPointToInterlockingConnection.PointState state)
-    {
-        _state = state;
-    }
+    public abstract TPointPosition MapInterfacePointPositionToConcrete(PointPosition value);
 
-    public abstract PP MapInterfacePointPositionToConcrete(PointPosition value);
-
-    public abstract DP MapInterfaceDegradedPointPositionToConcrete(DegradedPointPosition value);
+    public abstract TDegradedPointPosition MapInterfaceDegradedPointPositionToConcrete(DegradedPointPosition value);
 }

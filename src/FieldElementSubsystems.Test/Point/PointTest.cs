@@ -9,7 +9,7 @@ public class PointTest
     private EulynxLive.Point.Point CreateDefaultPoint(IPointToInterlockingConnection? connection = null) =>
         new(_logger, _configuration, connection ?? Mock.Of<IPointToInterlockingConnection>(), () => Task.CompletedTask);
 
-    private Mock<IPointToInterlockingConnection> CreateDefaultMockConnection() {
+    private static Mock<IPointToInterlockingConnection> CreateDefaultMockConnection() {
         var mockConnection = new Mock<IPointToInterlockingConnection>();
         mockConnection
             .Setup(m => m.SendPointPosition(
