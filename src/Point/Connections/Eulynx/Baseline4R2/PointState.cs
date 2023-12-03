@@ -3,7 +3,6 @@ using EulynxLive.Messages.Baseline4R2;
 using IPointToInterlockingConnection = EulynxLive.Point.Interfaces.IPointToInterlockingConnection;
 using PointPosition = EulynxLive.Point.Interfaces.IPointToInterlockingConnection.PointPosition;
 using DegradedPointPosition = EulynxLive.Point.Interfaces.IPointToInterlockingConnection.DegradedPointPosition;
-using EulynxLive.Point.Eulynx;
 
 namespace EulynxLive.Point.EulynxBaseline4R2;
 

@@ -1,7 +1,6 @@
 using EulynxLive.Messages.Baseline4R1;
 using Grpc.Core;
 using IPointToInterlockingConnection = EulynxLive.Point.Interfaces.IPointToInterlockingConnection;
-using PointState = EulynxLive.Point.Interfaces.IPointToInterlockingConnection.PointState;
 using PointPosition = EulynxLive.Point.Interfaces.IPointToInterlockingConnection.PointPosition;
 using EulynxLive.Point.Interfaces;
 
@@ -17,8 +16,8 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
     private readonly string _remoteEndpoint;
     IConnection? _currentConnection;
     private CancellationTokenSource _timeout;
-    private int _timeoutDuration;
-    private CancellationToken _stoppingToken;
+    private readonly int _timeoutDuration;
+    private readonly CancellationToken _stoppingToken;
 
     public PointToInterlockingConnection(
         ILogger<PointToInterlockingConnection> logger,
@@ -116,7 +115,7 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
     {
         if (_currentConnection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
         ResetTimeout();
-        
+
         var message = Message.FromBytes(await _currentConnection.ReceiveAsync(_timeout.Token));
         if (message is not T)
         {
