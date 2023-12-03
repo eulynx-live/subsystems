@@ -8,6 +8,7 @@
     <Company>Systems Lab 21 GmbH</Company>
     <PackageDescription>EULYNX SCI message definitions</PackageDescription>
     <RepositoryUrl>https://github.com/eulynx-live/subsystems</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
 </Project>

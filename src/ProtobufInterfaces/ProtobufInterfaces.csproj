@@ -10,6 +10,7 @@
     <PackageDescription>EULYNX protobuf protocol interfaces</PackageDescription>
     <RepositoryUrl>https://github.com/eulynx-live/subsystems</RepositoryUrl>
     <Nullable>enable</Nullable>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
 
