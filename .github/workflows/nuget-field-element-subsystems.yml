@@ -1,0 +1,33 @@
+name: NuGet Package CI - FieldElementSubsystems
+
+on:
+  push:
+    branches: ["main"]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore src/FieldElementSubsystems
+
+      - name: Build
+        run: dotnet pack -c Release --no-restore src/FieldElementSubsystems /p:Version=1.0.2-build.${{ github.run_number }}
+
+      - name: Build and push NuGet Package
+        run: dotnet nuget push "src/FieldElementSubsystems/bin/Release/EulynxLive.FieldElementSubsystems.1.0.2-build.${{ github.run_number }}.nupkg" --api-key ${{ secrets.NUGET_REGISTRY }} --source https://api.nuget.org/v3/index.json

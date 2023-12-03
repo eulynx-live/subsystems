@@ -1,6 +1,6 @@
 using EulynxLive.Point.Proto;
 
-using ReportedPointPosition = EulynxLive.Point.Interfaces.IPointToInterlockingConnection.PointPosition ;
+using ReportedPointPosition = EulynxLive.FieldElementSubsystems.Interfaces.GenericPointPosition;
 
 namespace Point.Services.Extensions
 {

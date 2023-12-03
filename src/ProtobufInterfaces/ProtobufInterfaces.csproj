@@ -6,7 +6,7 @@
     <PackageId>EulynxLive.ProtobufInterfaces</PackageId>
     <Version>1.0.0</Version>
     <Authors>EULYNX Live</Authors>
-    <Company>GitHub</Company>
+    <Company>Systems Lab 21 GmbH</Company>
     <PackageDescription>EULYNX protobuf protocol interfaces</PackageDescription>
     <RepositoryUrl>https://github.com/eulynx-live/subsystems</RepositoryUrl>
     <Nullable>enable</Nullable>
