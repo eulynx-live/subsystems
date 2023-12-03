@@ -2,7 +2,7 @@ using EulynxLive.FieldElementSubsystems.Configuration;
 
 namespace EulynxLive.FieldElementSubsystems.Interfaces;
 
-public interface IPointToInterlockingConnection : IDisposable {
+public interface IPointToInterlockingConnection {
     PointConfiguration Configuration { get; }
     CancellationToken TimeoutToken { get; }
     Task SendPointPosition(GenericPointState state);

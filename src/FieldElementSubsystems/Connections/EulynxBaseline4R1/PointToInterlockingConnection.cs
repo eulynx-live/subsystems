@@ -99,11 +99,6 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
         } : null;
     }
 
-    public void Dispose()
-    {
-        _currentConnection?.Dispose();
-    }
-
     private async Task SendMessage(Message message)
     {
         if (_currentConnection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
