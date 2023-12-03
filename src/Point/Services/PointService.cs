@@ -52,10 +52,7 @@ namespace EulynxLive.Point.Services
                 throw new InvalidOperationException("Point has only crucial point machines");
             }
 
-            _point.PointState.AbilityToMove = request.AbilityToMove;
-            _point.PointState.LastPointPosition = request.LastPointPosition;
             _point.PointState.PointPosition = request.PointPosition.ConvertToReportedPointPosition();
-            _point.PointState.Target = request.Target;
 
             return Task.FromResult(new Empty());
         }
@@ -64,11 +61,8 @@ namespace EulynxLive.Point.Services
         {
             return Task.FromResult(new PointMachineStateMessage()
             {
-                AbilityToMove = _point.PointState.AbilityToMove,
                 Crucial = _point.AllPointMachinesCrucial ? PointMachineStateMessage.Types.Crucial.Crucial : PointMachineStateMessage.Types.Crucial.NonCrucial,
-                LastPointPosition = _point.PointState.LastPointPosition,
                 PointPosition = _point.PointState.PointPosition.ConvertToProtoMessage(),
-                Target = _point.PointState.Target,
             });
         }
     }

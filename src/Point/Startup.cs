@@ -1,12 +1,7 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using EulynxLive.Point.Services;
-using EulynxLive.Point.Components;
-using System;
+using IPointToInterlockingConnection =EulynxLive.Point.Interfaces.IPointToInterlockingConnection;
+using EulynxLive.Point.EulynxBaseline4R1;
 
 namespace EulynxLive.Point
 {
@@ -26,15 +21,27 @@ namespace EulynxLive.Point
             services.AddGrpc();
             services.AddGrpcReflection();
 
+            services.AddSingleton<IPointToInterlockingConnection>(x =>
+            {
+                return new PointToInterlockingConnection(x.GetRequiredService<ILogger<PointToInterlockingConnection>>(), x.GetRequiredService<IConfiguration>(), CancellationToken.None);
+            });
+
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
                 configuration.RootPath = "rasta-point-web/build";
             });
 
-            try {
-                services.AddSingleton<Point>();
-            } catch (Exception e) {
+            try
+            {
+                services.AddSingleton<Point>(x => 
+                {
+                    Func<Task> simulateTimout = async () => await Task.Delay(new Random().Next(1, 5) * 1000);
+                    return new Point(x.GetRequiredService<ILogger<Point>>(), x.GetRequiredService<IConfiguration>(), x.GetRequiredService<IPointToInterlockingConnection>(), simulateTimout);
+                });
+            }
+            catch (Exception e)
+            {
                 Console.WriteLine($"Usage: --PointSettings:LocalId=<> --PointSettings:LocalRastaId=<> --PointSettings:RemoteId=<> --PointSettings:RemoteEndpoint=<>. {e.Message}");
                 Environment.Exit(1);
             }
