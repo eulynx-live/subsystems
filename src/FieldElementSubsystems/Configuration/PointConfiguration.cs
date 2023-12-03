@@ -1,4 +1,4 @@
-namespace EulynxLive.Point;
+namespace EulynxLive.FieldElementSubsystems.Configuration;
 
 public record PointConfiguration(
     string LocalId,

@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using EulynxLive.Point.Services;
-using IPointToInterlockingConnection =EulynxLive.Point.Interfaces.IPointToInterlockingConnection;
-using EulynxLive.Point.EulynxBaseline4R1;
+using EulynxLive.FieldElementSubsystems.Interfaces;
+using EulynxLive.FieldElementSubsystems.Connections.EulynxBaseline4R1;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace EulynxLive.Point
 {
@@ -34,7 +35,7 @@ namespace EulynxLive.Point
 
             try
             {
-                services.AddSingleton<Point>(x => 
+                services.AddSingleton<Point>(x =>
                 {
                     Func<Task> simulateTimout = async () => await Task.Delay(new Random().Next(1, 5) * 1000);
                     return new Point(x.GetRequiredService<ILogger<Point>>(), x.GetRequiredService<IConfiguration>(), x.GetRequiredService<IPointToInterlockingConnection>(), simulateTimout);

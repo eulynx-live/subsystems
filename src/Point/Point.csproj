@@ -33,6 +33,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Messages\Messages.csproj" />
     <ProjectReference Include="..\ProtobufInterfaces\ProtobufInterfaces.csproj" />
+    <ProjectReference Include="..\FieldElementSubsystems\FieldElementSubsystems.csproj" />
   </ItemGroup>
 
   <ItemGroup>
