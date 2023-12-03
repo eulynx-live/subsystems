@@ -1,3 +1,4 @@
+using EulynxLive.FieldElementSubsystems.Configuration;
 using EulynxLive.FieldElementSubsystems.Interfaces;
 
 using Microsoft.Extensions.Configuration;
@@ -7,11 +8,21 @@ namespace FieldElementSubsystems.Test;
 
 public class PointTest
 {
-    private EulynxLive.Point.Point CreateDefaultPoint(IPointToInterlockingConnection? connection = null) =>
-        new(_logger, _configuration, connection ?? Mock.Of<IPointToInterlockingConnection>(), () => Task.CompletedTask);
+    private EulynxLive.Point.Point CreateDefaultPoint(IPointToInterlockingConnection? connection = null) {
+        return new(_logger, _configuration, connection ?? CreateDefaultMockConnection().Object, () => Task.CompletedTask);
+    }
 
     private Mock<IPointToInterlockingConnection> CreateDefaultMockConnection() {
         var mockConnection = new Mock<IPointToInterlockingConnection>();
+        mockConnection.Setup(x => x.Configuration).Returns(() => new PointConfiguration(
+                "99W1",
+                100,
+                "INTERLOCKING",
+                "http://localhost:50051",
+                true,
+                false
+            ));
+        mockConnection.Setup(x => x.TimeoutToken).Returns(() => CancellationToken.None);
         mockConnection
             .Setup(m => m.SendPointPosition(
                 It.IsAny<GenericPointState>()))
@@ -23,7 +34,7 @@ public class PointTest
         return mockConnection;
     }
 
-    private static readonly IDictionary<string, string?> _testSettings = new Dictionary<string, string?> {
+    private static readonly IDictionary<string, string?> TestSettings = new Dictionary<string, string?> {
         {"PointSettings:LocalId", "99W1" },
         {"PointSettings:LocalRastaId", "100" },
         {"PointSettings:RemoteId", "INTERLOCKING" },
@@ -32,8 +43,8 @@ public class PointTest
         {"PointSettings:SimulateRandomTimeouts", "false" },
     };
     private readonly IConfiguration _configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(_testSettings)
-            .Build();
+        .AddInMemoryCollection(TestSettings)
+        .Build();
     private readonly ILogger<EulynxLive.Point.Point> _logger = Mock.Of<ILogger<EulynxLive.Point.Point>>();
 
     [Fact]
@@ -55,7 +66,6 @@ public class PointTest
     public async Task Test_Turn_Left()
     {
         // Arrange
-        var point = CreateDefaultPoint();
         var mockConnection = CreateDefaultMockConnection();
         var cancel = new CancellationTokenSource();
 
@@ -68,7 +78,7 @@ public class PointTest
                 return new TaskCompletionSource<GenericPointPosition?>().Task;
             });
 
-        point = CreateDefaultPoint(mockConnection.Object);
+        var point = CreateDefaultPoint(mockConnection.Object);
 
         // Act
         await point.StartAsync(cancel.Token);
@@ -82,7 +92,6 @@ public class PointTest
     public async Task Test_Turn_Right()
     {
         // Arrange
-        var point = CreateDefaultPoint();
         var mockConnection = CreateDefaultMockConnection();
         var cancel = new CancellationTokenSource();
 
@@ -95,7 +104,7 @@ public class PointTest
                 return new TaskCompletionSource<GenericPointPosition?>().Task;
             });
 
-        point = CreateDefaultPoint(mockConnection.Object);
+        var point = CreateDefaultPoint(mockConnection.Object);
 
         // Act
         await point.StartAsync(cancel.Token);
@@ -109,7 +118,6 @@ public class PointTest
     public async Task Test_Turnover()
     {
         // Arrange
-        var point = CreateDefaultPoint();
         var mockConnection = CreateDefaultMockConnection();
         var cancel = new CancellationTokenSource();
 
@@ -124,7 +132,7 @@ public class PointTest
                 return new TaskCompletionSource<GenericPointPosition?>().Task;
             });
 
-        point = CreateDefaultPoint(mockConnection.Object);
+        var point = CreateDefaultPoint(mockConnection.Object);
 
         // Act
         await point.StartAsync(cancel.Token);
