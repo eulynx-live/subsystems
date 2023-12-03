@@ -1,8 +1,9 @@
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using EulynxLive.Point.Services;
-using IPointToInterlockingConnection =EulynxLive.Point.Interfaces.IPointToInterlockingConnection;
-using EulynxLive.Point.EulynxBaseline4R1;
-using EulynxLive.Point.Eulynx;
+using EulynxLive.FieldElementSubsystems.Interfaces;
+using EulynxBaseline4R1 = EulynxLive.FieldElementSubsystems.Connections.EulynxBaseline4R1;
+using EulynxBaseline4R2 = EulynxLive.FieldElementSubsystems.Connections.EulynxBaseline4R2;
+using EulynxLive.Point.Connections;
 
 namespace EulynxLive.Point
 {
@@ -22,7 +23,7 @@ namespace EulynxLive.Point
             services.AddGrpc();
             services.AddGrpcReflection();
 
-            services.AddSingleton<IPointToInterlockingConnection>(ConnectionFactory.CreateConnection<EulynxBaseline4R1.PointToInterlockingConnection>);
+            services.AddSingleton(ConnectionFactory.CreateConnection<EulynxBaseline4R1.PointToInterlockingConnection>);
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
@@ -32,7 +33,7 @@ namespace EulynxLive.Point
 
             try
             {
-                services.AddSingleton<Point>(x => 
+                services.AddSingleton<Point>(x =>
                 {
                     Func<Task> simulateTimout = async () => await Task.Delay(new Random().Next(1, 5) * 1000);
                     return new Point(x.GetRequiredService<ILogger<Point>>(), x.GetRequiredService<IConfiguration>(), x.GetRequiredService<IPointToInterlockingConnection>(), simulateTimout);

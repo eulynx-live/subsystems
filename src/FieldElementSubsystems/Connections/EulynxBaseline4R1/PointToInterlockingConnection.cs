@@ -1,19 +1,19 @@
+using EulynxLive.FieldElementSubsystems.Interfaces;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
+using EulynxLive.FieldElementSubsystems.Configuration;
 using EulynxLive.Messages.Baseline4R1;
-using Grpc.Core;
-using IPointToInterlockingConnection = EulynxLive.Point.Interfaces.IPointToInterlockingConnection;
-using PointPosition = EulynxLive.Point.Interfaces.IPointToInterlockingConnection.PointPosition;
-using EulynxLive.Point.Interfaces;
 
 
-namespace EulynxLive.Point.EulynxBaseline4R1;
+namespace EulynxLive.FieldElementSubsystems.Connections.EulynxBaseline4R1;
 
 public class PointToInterlockingConnection : IPointToInterlockingConnection
 {
     private readonly ILogger _logger;
     private readonly string _localId;
-    private readonly string _localRastaId;
     private readonly string _remoteId;
-    private readonly string _remoteEndpoint;
+    public PointConfiguration Configuration { get; }
+    public CancellationToken TimeoutToken => _timeout.Token;
     IConnection? _currentConnection;
     private CancellationTokenSource _timeout;
     private readonly int _timeoutDuration;
@@ -32,20 +32,17 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
 
         var config = configuration.GetSection("PointSettings").Get<PointConfiguration>() ?? throw new Exception("No configuration provided");
         _localId = config.LocalId;
-        _localRastaId = config.LocalRastaId.ToString();
         _remoteId = config.RemoteId;
-        _remoteEndpoint = config.RemoteEndpoint;
+        Configuration = config;
     }
 
-    public void Connect()
+    public void Connect(IConnection connection)
     {
         ResetTimeout();
-        _logger.LogTrace("Connecting...");
-        var metadata = new Metadata { { "rasta-id", _localRastaId } };
-        _currentConnection = new GrpcConnection(metadata, _remoteEndpoint, _timeout.Token);
+        _currentConnection = connection;
     }
 
-    public async Task<bool> InitializeConnection(IPointToInterlockingConnection.PointState state, CancellationToken cancellationToken)
+    public async Task<bool> InitializeConnection(GenericPointState state, CancellationToken cancellationToken)
     {
         _logger.LogTrace("Connected. Waiting for request...");
         if (await ReceiveMessage<PointPdiVersionCheckCommand>(cancellationToken) == null)
@@ -75,7 +72,7 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
         return true;
     }
 
-    public async Task SendPointPosition(IPointToInterlockingConnection.PointState state)
+    public async Task SendPointPosition(GenericPointState state)
     {
         var pointState = new PointState(state);
         var response = new PointPointPositionMessage(_localId, _remoteId, pointState.PointPosition, pointState.DegradedPointPosition);
@@ -88,21 +85,16 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
         await SendMessage(response);
     }
 
-    public async Task<PointPosition?> ReceivePointPosition(CancellationToken cancellationToken)
+    public async Task<GenericPointPosition?> ReceivePointPosition(CancellationToken cancellationToken)
     {
         var message = await ReceiveMessage<PointMovePointCommand>(cancellationToken);
 
         return (message != null)? message.CommandedPointPosition switch
         {
-            PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsARightHandPointMoving => PointPosition.Right,
-            PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsALeftHandPointMoving => PointPosition.Left,
-            _ => throw new global::System.NotImplementedException(),
+            PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsARightHandPointMoving => GenericPointPosition.Right,
+            PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsALeftHandPointMoving => GenericPointPosition.Left,
+            _ => throw new NotImplementedException(),
         } : null;
-    }
-
-    public void Dispose()
-    {
-        _currentConnection?.Dispose();
     }
 
     private async Task SendMessage(Message message)

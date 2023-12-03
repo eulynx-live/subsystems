@@ -1,6 +1,6 @@
-FROM mcr.microsoft.com/dotnet/aspnet:7.0
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
 
-COPY src/Point/bin/Release/net7.0/publish/ app/
+COPY src/Point/bin/Release/net8.0/publish/ app/
 
 WORKDIR /app
 
