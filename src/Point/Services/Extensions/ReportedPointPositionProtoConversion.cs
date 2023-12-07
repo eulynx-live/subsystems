@@ -1,8 +1,8 @@
 using ProtoDegradedPointPosition = EulynxLive.Point.Proto.PointDegradedPosition;
 using ProtoPointPosition = EulynxLive.Point.Proto.PointPosition;
 
-using ReportedPointPosition = EulynxLive.Point.Interfaces.IPointToInterlockingConnection.PointPosition ;
-using DegradedPointPosition = EulynxLive.Point.Interfaces.IPointToInterlockingConnection.DegradedPointPosition ;
+using ReportedPointPosition = EulynxLive.FieldElementSubsystems.Interfaces.GenericPointPosition ;
+using DegradedPointPosition = EulynxLive.FieldElementSubsystems.Interfaces.GenericDegradedPointPosition ;
 
 namespace Point.Services.Extensions
 {

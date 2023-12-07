@@ -1,4 +1,4 @@
-using EulynxLive.Point.Interfaces;
+using EulynxLive.FieldElementSubsystems.Interfaces;
 using Google.Protobuf;
 using Grpc.Core;
 using Grpc.Net.Client;
@@ -14,8 +14,8 @@ class GrpcConnection : IConnection
         public GrpcConnectionException(string message) : base(message) { }
     }
 
-    AsyncDuplexStreamingCall<SciPacket, SciPacket>? _connection;
-    private CancellationToken _stoppingToken;
+    readonly AsyncDuplexStreamingCall<SciPacket, SciPacket>? _connection;
+    private readonly CancellationToken _stoppingToken;
 
     public GrpcConnection(Metadata? metadata, string remoteEndpoint, CancellationToken stoppingToken)
     {

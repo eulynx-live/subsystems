@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProtobufInterfaces", "src\P
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FieldElementSubsystems.Test", "src\FieldElementSubsystems.Test\FieldElementSubsystems.Test.csproj", "{8585AF02-898B-4D21-94EA-17EB71EF3ADD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FieldElementSubsystems", "src\FieldElementSubsystems\FieldElementSubsystems.csproj", "{118CBBA0-D6BE-445C-A40E-E9A0C5950F32}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -56,6 +58,10 @@ Global
 		{8585AF02-898B-4D21-94EA-17EB71EF3ADD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8585AF02-898B-4D21-94EA-17EB71EF3ADD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8585AF02-898B-4D21-94EA-17EB71EF3ADD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{118CBBA0-D6BE-445C-A40E-E9A0C5950F32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{118CBBA0-D6BE-445C-A40E-E9A0C5950F32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{118CBBA0-D6BE-445C-A40E-E9A0C5950F32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{118CBBA0-D6BE-445C-A40E-E9A0C5950F32}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{BCBCDBD2-4E04-4C1D-A79E-40C4B6ED38DE} = {1146C126-94F3-476E-BADE-E40B22C98FA5}
@@ -65,5 +71,6 @@ Global
 		{767D8926-579F-4508-9CBC-3B46AA0ACE3D} = {1146C126-94F3-476E-BADE-E40B22C98FA5}
 		{965CC255-F89B-4FB5-9E21-3740C0CEDEE6} = {1146C126-94F3-476E-BADE-E40B22C98FA5}
 		{8585AF02-898B-4D21-94EA-17EB71EF3ADD} = {1146C126-94F3-476E-BADE-E40B22C98FA5}
+		{118CBBA0-D6BE-445C-A40E-E9A0C5950F32} = {1146C126-94F3-476E-BADE-E40B22C98FA5}
 	EndGlobalSection
 EndGlobal
