@@ -102,7 +102,13 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
     private async Task SendMessage(Message message)
     {
         if (_currentConnection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
-        await _currentConnection.SendAsync(message.ToByteArray());
+        await SendMessage(message.ToByteArray());
+    }
+
+    private async Task SendMessage(byte[] message)
+    {
+        if (_currentConnection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
+        await _currentConnection.SendAsync(message);
     }
 
     private async Task<T?> ReceiveMessage<T>(CancellationToken cancellationToken) where T : Message
@@ -123,5 +129,30 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
     {
         _timeout = CancellationTokenSource.CreateLinkedTokenSource(_stoppingToken);
         _timeout.CancelAfter(_timeoutDuration);
+    }
+
+    public async Task SendGenericMessage(byte[] message)
+    {
+        if (_currentConnection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
+        await SendMessage(message);
+    }
+
+    public async Task SendAbilityToMoveMessage(GenericAbiliyToMove abilityToMove)
+    {
+        if (_currentConnection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
+        if (abilityToMove == GenericAbiliyToMove.Unknown) 
+        {
+            _logger.LogInformation("Ability to move cannot be unknown.");
+            return;
+        }
+        
+        var abilityToMoveConverted = abilityToMove switch
+        {
+            GenericAbiliyToMove.CanMove => PointAbilityToMovePointMessageReportedAbilityToMovePointStatus.PointIsAbleToMove,
+            GenericAbiliyToMove.CannotMove => PointAbilityToMovePointMessageReportedAbilityToMovePointStatus.PointIsUnableToMove,
+            _ => throw new NotImplementedException(),
+        };
+        var response = new PointAbilityToMovePointMessage(_localId, _remoteId, abilityToMoveConverted);
+        await SendMessage(response);
     }
 }
