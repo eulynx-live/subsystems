@@ -154,7 +154,7 @@ public class PointTest
     [Theory]
     [InlineData(PreventedPosition.PreventedLeft, GenericPointPosition.Left, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.DegradedLeft)]
     [InlineData(PreventedPosition.PreventedRight, GenericPointPosition.Right, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.DegradedRight)]
-    [InlineData(PreventedPosition.Trailed, GenericPointPosition.Left, GenericPointPosition.UnintendedPosition, GenericDegradedPointPosition.NotDegraded)]
+    [InlineData(PreventedPosition.PreventTrailed, GenericPointPosition.Left, GenericPointPosition.UnintendedPosition, GenericDegradedPointPosition.NotDegraded)]
     [InlineData(PreventedPosition.None, GenericPointPosition.Right, GenericPointPosition.Right, GenericDegradedPointPosition.NotDegraded)]
     [InlineData(PreventedPosition.PreventedLeft, GenericPointPosition.Right, GenericPointPosition.Right, GenericDegradedPointPosition.NotDegraded)]
     [InlineData(PreventedPosition.PreventedRight, GenericPointPosition.Left, GenericPointPosition.Left, GenericDegradedPointPosition.NotDegraded)]

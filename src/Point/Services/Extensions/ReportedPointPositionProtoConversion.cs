@@ -1,8 +1,10 @@
 using ProtoDegradedPointPosition = EulynxLive.Point.Proto.PointDegradedPosition;
 using ProtoPointPosition = EulynxLive.Point.Proto.PointPosition;
+using ProtoAbilityToMove = EulynxLive.Point.Proto.AbilityToMove;
 
 using ReportedPointPosition = EulynxLive.FieldElementSubsystems.Interfaces.GenericPointPosition ;
 using DegradedPointPosition = EulynxLive.FieldElementSubsystems.Interfaces.GenericDegradedPointPosition ;
+using EulynxLive.FieldElementSubsystems.Interfaces;
 
 namespace Point.Services.Extensions
 {
@@ -48,4 +50,15 @@ namespace Point.Services.Extensions
             _ => throw new InvalidCastException($"Unable to convert point position message {pointPositionMessage} to reported point position.")
         };
     }
+
+    public static class AbilityToMoveConvertion
+    {
+        public static GenericAbiliyToMove ConvertToGenericAbilityToMove(this ProtoAbilityToMove protoAbilityToMove) => protoAbilityToMove switch
+        {
+            ProtoAbilityToMove.AbleToMove => GenericAbiliyToMove.CanMove,
+            ProtoAbilityToMove.UnableToMove => GenericAbiliyToMove.CannotMove,
+            ProtoAbilityToMove.Undefined => GenericAbiliyToMove.Unknown,
+            _ => throw new InvalidCastException($"Unable to convert proto ability to move {protoAbilityToMove} to reported point position.")
+        };
+    }   
 }

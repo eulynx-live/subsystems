@@ -6,6 +6,9 @@ using Point.Services.Extensions;
 using Google.Protobuf.WellKnownTypes;
 using System;
 
+//q: How can I send bytes via grpc?
+//a: https://stackoverflow.com/questions/49266766/how-to-send-byte-array-in-grpc
+
 namespace EulynxLive.Point.Services
 {
     public class PointService : PointBase
@@ -15,6 +18,24 @@ namespace EulynxLive.Point.Services
         public PointService(Point point)
         {
             _point = point;
+        }
+
+        public override async Task<Empty> SendTimeoutMessage(Empty request, ServerCallContext context)
+        {
+            await _point.SendTimeoutMessage();
+            return new Empty();
+        }
+
+        public override async Task<Empty> SendAbilityToMoveMessage(AbilityToMoveMessage request, ServerCallContext context)
+        {
+            await _point.SendAbilityToMoveMessage(request);
+            return new Empty();
+        }
+
+        public override async Task<Empty> SendGenericMessage(GenericSCIMessage request, ServerCallContext context)
+        {
+            await _point.SendGenericMessage(request);
+            return new Empty();
         }
 
         public override async Task<Empty> PreventEndPosition(PreventedPositionMessage message, ServerCallContext context)

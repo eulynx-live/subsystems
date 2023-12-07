@@ -4,7 +4,10 @@ using EulynxLive.Point.Proto;
 using Grpc.Core;
 using System.Net.WebSockets;
 using System.Text;
+using System.Collections.Generic;
 using System.Text.Json;
+
+using static Point.Services.Extensions.AbilityToMoveConvertion;
 
 namespace EulynxLive.Point
 {
@@ -72,12 +75,27 @@ namespace EulynxLive.Point
             _webSockets.Remove(webSocket);
         }
 
+        public async Task SendGenericMessage(GenericSCIMessage message){
+            _logger.LogInformation("Sending generic message: {}", message.Message);
+            await _connection.SendGenericMessage(message.Message.ToByteArray());
+        }
+
+        public async Task SendAbilityToMoveMessage(AbilityToMoveMessage message){
+            _logger.LogInformation("Ability to move message sent. Ability to move: {}", message.Ability);
+            await _connection.SendAbilityToMoveMessage(message.Ability.ConvertToGenericAbilityToMove());
+        }
+
+        public async Task SendTimeoutMessage(){
+            _logger.LogInformation("Timeout");
+            await _connection.SendTimeoutMessage();
+        }
+
         public async Task PreventEndPosition(PreventedPositionMessage message)
         {
             _logger.LogInformation("Preventing end position {}.", message.Position);
             
             // Action a Trailed command immediately, otherwise store the prevented position for the next command.
-            if (message.Position == PreventedPosition.Trailed)
+            if (message.Position == PreventedPosition.PreventTrailed)
             {
                 SetPointState(GenericPointPosition.UnintendedPosition, RespectAllPointMachinesCrucial(GenericDegradedPointPosition.NotDegraded));
                 await UpdateConnectedWebClients();
@@ -197,8 +215,7 @@ namespace EulynxLive.Point
                             else
                             {
                                 // timeout
-                                _logger.LogInformation("Timeout");
-                                await _connection.SendTimeoutMessage();
+                                await SendTimeoutMessage();
                             }
                         }
                         else
@@ -253,7 +270,7 @@ namespace EulynxLive.Point
                         pointPosition = GenericPointPosition.NoEndPosition;
                     }
                     break;
-                case PreventedPosition.Trailed:
+                case PreventedPosition.PreventTrailed:
                     degradedPointPosition = GenericDegradedPointPosition.NotDegraded;
                     pointPosition = GenericPointPosition.UnintendedPosition;
                     break;
