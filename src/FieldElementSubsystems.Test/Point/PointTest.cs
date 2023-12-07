@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
 using EulynxLive.Point.Proto;
+using Google.Protobuf;
 namespace FieldElementSubsystems.Test;
 
 public class PointTest
@@ -69,6 +70,87 @@ public class PointTest
     {
         var point = CreateDefaultPoint();
         Assert.Equal(GenericPointPosition.NoEndPosition, point.PointState.PointPosition);
+    }
+
+    [Fact]
+    public async Task Test_Send_Timeout()
+    {
+        // Arrange
+        var mockConnection = CreateDefaultMockConnection();
+        var cancel = new CancellationTokenSource();
+
+        mockConnection
+            .SetupSequence(m => m.SendTimeoutMessage())
+            .Returns(() =>
+            {
+                cancel.Cancel();
+                return new TaskCompletionSource<GenericPointPosition?>().Task;
+            });
+
+        var point = CreateDefaultPoint(mockConnection.Object);
+
+        // Act
+        await point.StartAsync(cancel.Token);
+        await point.SendTimeoutMessage();
+
+        // Assert
+        mockConnection.Verify(v => v.SendTimeoutMessage(), Times.Once());
+    }
+
+    [Fact]
+    public async Task Test_Send_AbilityToMove()
+    {
+        // Arrange
+        var mockConnection = CreateDefaultMockConnection();
+        var cancel = new CancellationTokenSource();
+
+        mockConnection
+            .SetupSequence(m => m.SendAbilityToMoveMessage(GenericAbiliyToMove.CannotMove))
+            .Returns(() =>
+            {
+                cancel.Cancel();
+                return new TaskCompletionSource<GenericPointPosition?>().Task;
+            });
+
+        var point = CreateDefaultPoint(mockConnection.Object);
+
+        // Act
+        await point.StartAsync(cancel.Token);
+        await point.SendAbilityToMoveMessage(new AbilityToMoveMessage() { Ability = AbilityToMove.UnableToMove });
+
+        // Assert
+        mockConnection.Verify(v => v.SendAbilityToMoveMessage(GenericAbiliyToMove.CannotMove), Times.Once());
+    }
+
+    [Fact]
+    public async Task Test_Send_Generic_Message()
+    {
+        // Arrange
+        var mockConnection = CreateDefaultMockConnection();
+        var cancel = new CancellationTokenSource();
+
+        var rawBytes = new byte[]{ 0x0d, 0x0e, 0x0a, 0x0d, 0x0b, 0x0e, 0x0e, 0x0f };
+        var genericMessage = new GenericSCIMessage()
+        {
+            Message = ByteString.CopyFrom (rawBytes)
+        };
+
+        mockConnection
+            .SetupSequence(m => m.SendGenericMessage(rawBytes))
+            .Returns(() =>
+            {
+                cancel.Cancel();
+                return new TaskCompletionSource<GenericPointPosition?>().Task;
+            });
+
+        var point = CreateDefaultPoint(mockConnection.Object);
+
+        // Act
+        await point.StartAsync(cancel.Token);
+        await point.SendGenericMessage(genericMessage);
+
+        // Assert
+        mockConnection.Verify(v => v.SendGenericMessage(rawBytes), Times.Once());
     }
 
     [Fact]
