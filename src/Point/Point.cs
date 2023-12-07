@@ -72,10 +72,19 @@ namespace EulynxLive.Point
             _webSockets.Remove(webSocket);
         }
 
-        public void PreventEndPosition(PreventedPositionMessage message)
+        public async Task PreventEndPosition(PreventedPositionMessage message)
         {
             _logger.LogInformation("Preventing end position {}.", message.Position);
-            _preventedPosition = message.Position;
+            
+            // Action a Trailed command immediately, otherwise store the prevented position for the next command.
+            if (message.Position == PreventedPosition.Trailed)
+            {
+                SetPointState(GenericPointPosition.UnintendedPosition, RespectAllPointMachinesCrucial(GenericDegradedPointPosition.NotDegraded));
+                await UpdateConnectedWebClients();
+            } else
+            {
+                _preventedPosition = message.Position;
+            }
         }
 
         private void SetPointState(GenericPointPosition pointPosition, GenericDegradedPointPosition degradedPointPosition)

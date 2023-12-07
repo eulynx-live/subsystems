@@ -167,14 +167,14 @@ public class PointTest
 
         mockConnection
             .SetupSequence(m => m.ReceivePointPosition(It.IsAny<CancellationToken>()))
-            .Returns(() => {
+            .Returns(async () => {
                 var message = new PreventedPositionMessage
                 {
                     Position = preventedPosition
                 };
-                point.PreventEndPosition(message);
+                await point.PreventEndPosition(message);
 
-                return Task.FromResult<GenericPointPosition?>(null);
+                return null;
             })
             .Returns(Task.FromResult<GenericPointPosition?>(actionedPosition))
             .Returns(() =>
@@ -204,24 +204,24 @@ public class PointTest
 
         mockConnection
             .SetupSequence(m => m.ReceivePointPosition(It.IsAny<CancellationToken>()))
-            .Returns(() => {
+            .Returns(async () => {
                 var message = new PreventedPositionMessage
                 {
                     Position = PreventedPosition.PreventedLeft
                 };
-                point.PreventEndPosition(message);
+                await point.PreventEndPosition(message);
 
-                return Task.FromResult<GenericPointPosition?>(null);
+                return null;
             })
             .Returns(Task.FromResult<GenericPointPosition?>(GenericPointPosition.Left))
-            .Returns(() => {
+            .Returns(async () => {
                 var message = new PreventedPositionMessage
                 {
                     Position = PreventedPosition.PreventedRight
                 };
-                point.PreventEndPosition(message);
+                await point.PreventEndPosition(message);
 
-                return Task.FromResult<GenericPointPosition?>(null);
+                return null;
             })
             .Returns(() => {
                 Assert.Equal(GenericPointPosition.NoEndPosition, point.PointState.PointPosition);
