@@ -14,7 +14,8 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
     private readonly string _remoteId;
     public PointConfiguration Configuration { get; }
     public CancellationToken TimeoutToken => _timeout.Token;
-    IConnection? _currentConnection;
+    private IConnection? _currentConnection;
+    public IConnection? CurrentConnection { get => _currentConnection; }
     private CancellationTokenSource _timeout;
     private readonly int _timeoutDuration;
     private readonly CancellationToken _stoppingToken;
