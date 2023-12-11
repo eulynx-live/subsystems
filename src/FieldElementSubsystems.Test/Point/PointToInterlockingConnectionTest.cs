@@ -112,4 +112,27 @@ public class PointToInterlockingConnectionTest{
         Assert.Equal(GenericPointPosition.Left, position1);
         Assert.Equal(GenericPointPosition.Right, position2);
     }
+
+    [Fact]
+    public async Task Test_TimeoutMessage(){
+        // Arrange
+        var mockConnection = new Mock<IConnection>();
+        mockConnection.SetupSequence(x => x.ReceiveAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new PointPdiVersionCheckCommand("99W1","100", 0x01).ToByteArray())
+            .ReturnsAsync(new PointInitialisationRequestCommand("99W1","100").ToByteArray());
+        var args = new List<byte[]>();
+        mockConnection.Setup(x => x.SendAsync(Capture.In(args)))
+            .Returns(Task.FromResult(0));
+
+        var connection = new PointToInterlockingConnection(Mock.Of<ILogger<PointToInterlockingConnection>>(), _configuration, CancellationToken.None);
+
+        // Act
+        connection.Connect(mockConnection.Object);
+        await connection.InitializeConnection(new GenericPointState(){PointPosition = GenericPointPosition.Left, DegradedPointPosition = GenericDegradedPointPosition.NotDegraded}, CancellationToken.None);
+        await connection.SendTimeoutMessage();
+
+        // Assert
+        mockConnection.Verify(v => v.SendAsync(It.IsAny<byte[]>()), Times.Exactly(5));
+        Assert.Equal(new PointTimeoutMessage("99W1________________", "INTERLOCKING________").ToByteArray(), args[4]);
+    }
 }
