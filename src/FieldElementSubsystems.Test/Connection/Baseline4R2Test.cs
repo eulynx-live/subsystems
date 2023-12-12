@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using PointMovePointCommand = EulynxLive.Messages.Baseline4R2.PointMovePointCommand;
 
-public class Baseline4R1Test{
+public class Baseline4R2Test{
 
     private static readonly IDictionary<string, string?> TestSettings = new Dictionary<string, string?> {
         {"PointSettings:LocalId", "99W1" },
