@@ -34,6 +34,7 @@ service Point {
     rpc SendTimeoutMessage (google.protobuf.Empty) returns (google.protobuf.Empty) {}
     rpc SendAbilityToMoveMessage (AbilityToMoveMessage) returns (google.protobuf.Empty) {}
     rpc SendGenericMessage (GenericSCIMessage) returns (google.protobuf.Empty) {}
+    rpc Reset (google.protobuf.Empty) returns (google.protobuf.Empty) {}
 
     rpc EstablishPointMachineState (PointMachineStateMessage) returns (google.protobuf.Empty) {}
     rpc GetPointMachineState (google.protobuf.Empty) returns (PointMachineStateMessage) {}
