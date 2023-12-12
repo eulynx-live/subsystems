@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using PointMovePointCommand = EulynxLive.Messages.Baseline4R1.PointMovePointCommand;
 
-public class PointToInterlockingConnectionTest{
+public class Baseline4R1Test{
 
     private static Mock<IConnection> CreateDefaultMockConnection(){
         var mockConnection = new Mock<IConnection>();
