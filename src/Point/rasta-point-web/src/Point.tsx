@@ -4,7 +4,7 @@ import * as google_protobuf_empty_pb from 'google-protobuf/google/protobuf/empty
 import { SimulatorState } from './SimulatorState';
 import { PointClient } from './proto/PointServiceClientPb';
 
-import { SimulatedPositionMessage, PreventedPosition, PointDegradedPosition } from './proto/point_pb';
+import { SimulatedPositionMessage, PreventedPosition, PointDegradedPosition, AbilityToMoveMessage, AbilityToMove } from './proto/point_pb';
 
 interface PointState {
     webSocket: WebSocket | null,
@@ -120,6 +120,21 @@ class Point extends Component<{}, PointState> {
                 <button onClick={async () => {
                     await client.putInEndPosition(new google_protobuf_empty_pb.Empty(), null);
                 }}>Finalize position</button>
+                <p></p>
+                <button onClick={async () => {
+                    await client.enableTimeout(new google_protobuf_empty_pb.Empty(), null);
+                }}>Simulate timeout</button>
+                <p></p>
+                <button onClick={async () => {
+                    let request = new AbilityToMoveMessage();
+                    request.setAbility(AbilityToMove.ABLE_TO_MOVE);
+                    await client.setAbilityToMove(request, null);
+                }}>Enable ability to move</button>
+                <button onClick={async () => {
+                    let request = new AbilityToMoveMessage();
+                    request.setAbility(AbilityToMove.UNABLE_TO_MOVE);
+                    await client.setAbilityToMove(request, null);
+                }}>Disable ability to move</button>
                 <p></p>
                 <button onClick={async () => {
                     await client.reset(new google_protobuf_empty_pb.Empty(), null);
