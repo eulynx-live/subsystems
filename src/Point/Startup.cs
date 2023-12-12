@@ -24,7 +24,7 @@ namespace EulynxLive.Point
 
             services.AddSingleton<IPointToInterlockingConnection>(x =>
             {
-                return new PointToInterlockingConnection(x.GetRequiredService<ILogger<PointToInterlockingConnection>>(), x.GetRequiredService<IConfiguration>(), CancellationToken.None);
+                return new PointToInterlockingConnection(x.GetRequiredService<ILogger<PointToInterlockingConnection>>(), x.GetRequiredService<IConfiguration>());
             });
 
             // In production, the React files will be served from this directory

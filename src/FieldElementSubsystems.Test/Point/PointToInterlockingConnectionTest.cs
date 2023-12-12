@@ -33,7 +33,7 @@ public class PointToInterlockingConnectionTest{
     public void Test_Connect(){
         // Arrange
         var mockConnection = new Mock<IConnection>();
-        var connection = new PointToInterlockingConnection(Mock.Of<ILogger<PointToInterlockingConnection>>(), _configuration, CancellationToken.None);
+        var connection = new PointToInterlockingConnection(Mock.Of<ILogger<PointToInterlockingConnection>>(), _configuration);
 
         // Act
         connection.Connect(mockConnection.Object);
@@ -50,7 +50,7 @@ public class PointToInterlockingConnectionTest{
         mockConnection.Setup(x => x.SendAsync(Capture.In(args)))
             .Returns(Task.FromResult(0));
 
-        var connection = new PointToInterlockingConnection(Mock.Of<ILogger<PointToInterlockingConnection>>(), _configuration, CancellationToken.None);
+        var connection = new PointToInterlockingConnection(Mock.Of<ILogger<PointToInterlockingConnection>>(), _configuration);
 
         // Act
         connection.Connect(mockConnection.Object);
@@ -73,7 +73,7 @@ public class PointToInterlockingConnectionTest{
         mockConnection.Setup(x => x.SendAsync(Capture.In(args)))
             .Returns(Task.FromResult(0));
 
-        var connection = new PointToInterlockingConnection(Mock.Of<ILogger<PointToInterlockingConnection>>(), _configuration, CancellationToken.None);
+        var connection = new PointToInterlockingConnection(Mock.Of<ILogger<PointToInterlockingConnection>>(), _configuration);
 
         // Act
         connection.Connect(mockConnection.Object);
@@ -101,7 +101,7 @@ public class PointToInterlockingConnectionTest{
             .ReturnsAsync(new PointMovePointCommand("99W1", "100", PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsALeftHandPointMoving).ToByteArray())
             .ReturnsAsync(new PointMovePointCommand("99W1", "100", PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsARightHandPointMoving).ToByteArray());
 
-        var connection = new PointToInterlockingConnection(Mock.Of<ILogger<PointToInterlockingConnection>>(), _configuration, CancellationToken.None);
+        var connection = new PointToInterlockingConnection(Mock.Of<ILogger<PointToInterlockingConnection>>(), _configuration);
 
         // Act
         connection.Connect(mockConnection.Object);
@@ -123,7 +123,7 @@ public class PointToInterlockingConnectionTest{
         mockConnection.Setup(x => x.SendAsync(Capture.In(args)))
             .Returns(Task.FromResult(0));
 
-        var connection = new PointToInterlockingConnection(Mock.Of<ILogger<PointToInterlockingConnection>>(), _configuration, CancellationToken.None);
+        var connection = new PointToInterlockingConnection(Mock.Of<ILogger<PointToInterlockingConnection>>(), _configuration);
 
         // Act
         connection.Connect(mockConnection.Object);
