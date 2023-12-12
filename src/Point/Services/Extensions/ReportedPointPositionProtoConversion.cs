@@ -41,7 +41,7 @@ namespace Point.Services.Extensions
             _ => throw new InvalidCastException($"Unable to convert reported point position {reportedPointPosition} to proto enum")
         };
 
-        public static DegradedPointPosition ConvertToReportedPointPosition(this ProtoDegradedPointPosition pointPositionMessage) => pointPositionMessage switch
+        public static DegradedPointPosition ConvertToDegradedPointPosition(this ProtoDegradedPointPosition pointPositionMessage) => pointPositionMessage switch
         {
             ProtoDegradedPointPosition.DegradedRight => DegradedPointPosition.DegradedRight,
             ProtoDegradedPointPosition.DegradedLeft => DegradedPointPosition.DegradedLeft,

@@ -8,9 +8,14 @@ using System.Collections.Generic;
 using System.Text.Json;
 
 using static Point.Services.Extensions.AbilityToMoveConvertion;
+using Point.Services.Extensions;
 
 namespace EulynxLive.Point
 {
+    public record SimulatedPosition{
+        public PreventedPosition PreventedPosition { get; set; }
+        public GenericDegradedPointPosition DegradedPointPosition { get; set; }
+    }
     public class Point : BackgroundService
     {
         public bool AllPointMachinesCrucial { get; }
@@ -22,7 +27,7 @@ namespace EulynxLive.Point
         private readonly Random _random;
         private readonly bool _simulateRandomTimeouts;
         private bool _initialized;
-        private PreventedPosition _preventedPosition;
+        private SimulatedPosition _simulatedPosition;
         private readonly GenericPointState _pointState;
         public GenericPointState PointState { get { return _pointState; } }
 
@@ -45,7 +50,11 @@ namespace EulynxLive.Point
                 DegradedPointPosition = RespectAllPointMachinesCrucial(GenericDegradedPointPosition.NotDegraded),
                 PointPosition = GenericPointPosition.NoEndPosition,
             };
-            _preventedPosition = PreventedPosition.None;
+            _simulatedPosition = new SimulatedPosition()
+            {
+                PreventedPosition = PreventedPosition.None,
+                DegradedPointPosition = RespectAllPointMachinesCrucial(GenericDegradedPointPosition.NotDegraded),
+            };
             _random = new Random();
             _connection = connection;
         }
@@ -90,18 +99,19 @@ namespace EulynxLive.Point
             await _connection.SendTimeoutMessage();
         }
 
-        public async Task PreventEndPosition(PreventedPositionMessage message)
+        public async Task PreventEndPosition(SimulatedPositionMessage simulatedPositionMessage)
         {
-            _logger.LogInformation("Preventing end position {}.", message.Position);
+            _logger.LogInformation("Preventing end position {} with degraded point position {}.", simulatedPositionMessage.Position, simulatedPositionMessage.DegradedPosition);
             
             // Action a Trailed command immediately, otherwise store the prevented position for the next command.
-            if (message.Position == PreventedPosition.PreventTrailed)
+            if (simulatedPositionMessage.Position == PreventedPosition.PreventTrailed)
             {
                 SetPointState(GenericPointPosition.UnintendedPosition, RespectAllPointMachinesCrucial(GenericDegradedPointPosition.NotDegraded));
                 await UpdateConnectedWebClients();
             } else
             {
-                _preventedPosition = message.Position;
+                _simulatedPosition.PreventedPosition = simulatedPositionMessage.Position;
+                _simulatedPosition.DegradedPointPosition = simulatedPositionMessage.DegradedPosition.ConvertToDegradedPointPosition();
             }
         }
 
@@ -254,28 +264,29 @@ namespace EulynxLive.Point
         private void HandlePreventedPointPosition(GenericPointPosition commandedPosition, ref GenericPointPosition pointPosition, ref GenericDegradedPointPosition degradedPointPosition)
         {
             pointPosition = commandedPosition;
-            switch (_preventedPosition)
+            switch (_simulatedPosition.PreventedPosition)
             {
                 case PreventedPosition.PreventedLeft:
                     if (commandedPosition == GenericPointPosition.Left)
                     {
-                        degradedPointPosition = GenericDegradedPointPosition.DegradedLeft;
+                        degradedPointPosition = RespectAllPointMachinesCrucial(_simulatedPosition.DegradedPointPosition);
                         pointPosition = GenericPointPosition.NoEndPosition;
                     }
                     break;
                 case PreventedPosition.PreventedRight:
                     if (commandedPosition == GenericPointPosition.Right)
                     {
-                        degradedPointPosition = GenericDegradedPointPosition.DegradedRight;
+                        degradedPointPosition = RespectAllPointMachinesCrucial(_simulatedPosition.DegradedPointPosition);
                         pointPosition = GenericPointPosition.NoEndPosition;
                     }
                     break;
                 case PreventedPosition.PreventTrailed:
-                    degradedPointPosition = GenericDegradedPointPosition.NotDegraded;
+                    degradedPointPosition = RespectAllPointMachinesCrucial(_simulatedPosition.DegradedPointPosition);
                     pointPosition = GenericPointPosition.UnintendedPosition;
                     break;
             }
-            _preventedPosition = PreventedPosition.None;
+            _simulatedPosition.PreventedPosition = PreventedPosition.None;
+            _simulatedPosition.DegradedPointPosition = GenericDegradedPointPosition.NotDegraded;
         }
 
         private async Task Reset()

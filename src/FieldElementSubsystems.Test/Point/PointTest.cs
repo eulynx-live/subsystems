@@ -234,13 +234,15 @@ public class PointTest
     }
 
     [Theory]
-    [InlineData(PreventedPosition.PreventedLeft, GenericPointPosition.Left, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.DegradedLeft)]
-    [InlineData(PreventedPosition.PreventedRight, GenericPointPosition.Right, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.DegradedRight)]
-    [InlineData(PreventedPosition.PreventTrailed, GenericPointPosition.Left, GenericPointPosition.UnintendedPosition, GenericDegradedPointPosition.NotDegraded)]
-    [InlineData(PreventedPosition.None, GenericPointPosition.Right, GenericPointPosition.Right, GenericDegradedPointPosition.NotDegraded)]
-    [InlineData(PreventedPosition.PreventedLeft, GenericPointPosition.Right, GenericPointPosition.Right, GenericDegradedPointPosition.NotDegraded)]
-    [InlineData(PreventedPosition.PreventedRight, GenericPointPosition.Left, GenericPointPosition.Left, GenericDegradedPointPosition.NotDegraded)]
-    public async Task Test_PreventEndPosition(PreventedPosition preventedPosition, GenericPointPosition actionedPosition, GenericPointPosition assertedPosition, GenericDegradedPointPosition assertedDegradedPosition)
+    [InlineData(PreventedPosition.PreventedLeft, PointDegradedPosition.DegradedLeft, GenericPointPosition.Left, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.DegradedLeft)]
+    [InlineData(PreventedPosition.PreventedRight, PointDegradedPosition.DegradedRight, GenericPointPosition.Right, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.DegradedRight)]
+    [InlineData(PreventedPosition.PreventTrailed, PointDegradedPosition.NotDegraded, null, GenericPointPosition.UnintendedPosition, GenericDegradedPointPosition.NotDegraded)]
+    [InlineData(PreventedPosition.None, PointDegradedPosition.NotDegraded, GenericPointPosition.Right, GenericPointPosition.Right, GenericDegradedPointPosition.NotDegraded)]
+    [InlineData(PreventedPosition.PreventedLeft, PointDegradedPosition.DegradedLeft, GenericPointPosition.Right, GenericPointPosition.Right, GenericDegradedPointPosition.NotDegraded)]
+    [InlineData(PreventedPosition.PreventedRight, PointDegradedPosition.DegradedRight, GenericPointPosition.Left, GenericPointPosition.Left, GenericDegradedPointPosition.NotDegraded)]
+    [InlineData(PreventedPosition.PreventedLeft, PointDegradedPosition.NotDegraded, GenericPointPosition.Left, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.NotDegraded)]
+    [InlineData(PreventedPosition.PreventedRight, PointDegradedPosition.NotDegraded, GenericPointPosition.Right, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.NotDegraded)]
+    public async Task Test_PreventEndPosition(PreventedPosition simulatedPosition, PointDegradedPosition simulatedDegradedPosition, GenericPointPosition? actionedPosition, GenericPointPosition assertedPosition, GenericDegradedPointPosition assertedDegradedPosition)
     {
         var cancel = new CancellationTokenSource();
         // Arrange
@@ -250,9 +252,10 @@ public class PointTest
         mockConnection
             .SetupSequence(m => m.ReceivePointPosition(It.IsAny<CancellationToken>()))
             .Returns(async () => {
-                var message = new PreventedPositionMessage
+                var message = new SimulatedPositionMessage
                 {
-                    Position = preventedPosition
+                    Position = simulatedPosition,
+                    DegradedPosition = simulatedDegradedPosition
                 };
                 await point.PreventEndPosition(message);
 
@@ -287,9 +290,10 @@ public class PointTest
         mockConnection
             .SetupSequence(m => m.ReceivePointPosition(It.IsAny<CancellationToken>()))
             .Returns(async () => {
-                var message = new PreventedPositionMessage
+                var message = new SimulatedPositionMessage
                 {
-                    Position = PreventedPosition.PreventedLeft
+                    Position = PreventedPosition.PreventedLeft,
+                    DegradedPosition = PointDegradedPosition.DegradedLeft
                 };
                 await point.PreventEndPosition(message);
 
@@ -297,9 +301,10 @@ public class PointTest
             })
             .Returns(Task.FromResult<GenericPointPosition?>(GenericPointPosition.Left))
             .Returns(async () => {
-                var message = new PreventedPositionMessage
+                var message = new SimulatedPositionMessage
                 {
-                    Position = PreventedPosition.PreventedRight
+                    Position = PreventedPosition.PreventedRight,
+                    DegradedPosition = PointDegradedPosition.DegradedRight
                 };
                 await point.PreventEndPosition(message);
 
