@@ -1,4 +1,4 @@
-﻿using EulynxLive.FieldElementSubsystems.Configuration;
+using EulynxLive.FieldElementSubsystems.Configuration;
 using EulynxLive.FieldElementSubsystems.Interfaces;
 using EulynxLive.Point.Proto;
 using Grpc.Core;
@@ -171,7 +171,7 @@ namespace EulynxLive.Point
             {
                 _logger.LogTrace("Connecting...");
                 var metadata = new Metadata { { "rasta-id", _connection.Configuration.LocalRastaId.ToString() } };
-                using var grpc = new GrpcConnection(metadata, _connection.Configuration.RemoteEndpoint, _connection.TimeoutToken);
+                using var grpc = new GrpcConnection(metadata, _connection.Configuration.RemoteEndpoint, stoppingToken);
                 _connection.Connect(grpc);
                 await Reset();
                 try
