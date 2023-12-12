@@ -3,6 +3,7 @@ using EulynxLive.FieldElementSubsystems.Interfaces;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using EulynxLive.FieldElementSubsystems.Configuration;
+using Grpc.Core;
 
 
 namespace EulynxLive.FieldElementSubsystems.Connections.EulynxBaseline4R1;
@@ -116,13 +117,24 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
         if (_currentConnection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
         ResetTimeout();
 
-        var message = Message.FromBytes(await _currentConnection.ReceiveAsync(CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _timeout.Token).Token));
-        if (message is not T)
+        try
         {
-            _logger.LogError("Unexpected message: {}", message);
+            var message = Message.FromBytes(await _currentConnection.ReceiveAsync(CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _timeout.Token).Token));
+            if (message is not T)
+            {
+                _logger.LogError("Unexpected message: {}", message);
+                return null;
+            }
+            return message as T;
+        }
+        catch (RpcException e) when (e.StatusCode == StatusCode.Cancelled)
+        {
             return null;
         }
-        return message as T;
+        catch (OperationCanceledException)
+        {
+            return null;
+        }
     }
 
     private void ResetTimeout()
