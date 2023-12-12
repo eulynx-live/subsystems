@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using EulynxLive.FieldElementSubsystems.Interfaces;
 using EulynxLive.FieldElementSubsystems.Configuration;
+using Grpc.Core;
 
 
 namespace EulynxLive.FieldElementSubsystems.Connections.EulynxBaseline4R2;
@@ -109,14 +110,27 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
     {
         if (_currentConnection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
         ResetTimeout();
-
-        var message = Message.FromBytes(await _currentConnection.ReceiveAsync(_timeout.Token));
-        if (message is not T)
+        try
         {
-            _logger.LogError("Unexpected message: {}", message);
+            var message = Message.FromBytes(await _currentConnection.ReceiveAsync(_timeout.Token));
+            if (message is not T)
+            {
+                _logger.LogError("Unexpected message: {}", message);
+                return null;
+            }
+            return message as T;
+        }
+        catch (RpcException)
+        {
+            if (_timeout.IsCancellationRequested)
+            {
+                _logger.LogError("Timeout");
+            }
+            return null;
+        } catch (TaskCanceledException)
+        {
             return null;
         }
-        return message as T;
     }
 
     private void ResetTimeout()
