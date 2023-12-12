@@ -1,13 +1,8 @@
-using System.Threading.Tasks;
 using Grpc.Core;
 using static EulynxLive.Point.Proto.Point;
 using EulynxLive.Point.Proto;
 using Point.Services.Extensions;
 using Google.Protobuf.WellKnownTypes;
-using System;
-
-//q: How can I send bytes via grpc?
-//a: https://stackoverflow.com/questions/49266766/how-to-send-byte-array-in-grpc
 
 namespace EulynxLive.Point.Services
 {
@@ -20,9 +15,9 @@ namespace EulynxLive.Point.Services
             _point = point;
         }
 
-        public override async Task<Empty> SendTimeoutMessage(Empty request, ServerCallContext context)
+        public override async Task<Empty> Reset(Empty request, ServerCallContext context)
         {
-            await _point.SendTimeoutMessage();
+            await _point.Reset();
             return new Empty();
         }
 

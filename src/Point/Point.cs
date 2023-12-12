@@ -1,4 +1,4 @@
-using EulynxLive.FieldElementSubsystems.Configuration;
+﻿using EulynxLive.FieldElementSubsystems.Configuration;
 using EulynxLive.FieldElementSubsystems.Interfaces;
 using EulynxLive.Point.Proto;
 using Grpc.Core;
@@ -99,6 +99,12 @@ namespace EulynxLive.Point
             await _connection.SendTimeoutMessage();
         }
 
+        /// <summary>
+        /// Stores the prevented position and degraded point position for the next command.
+        /// Actions a Trailed command immediately.
+        /// </summary>
+        /// <param name="simulatedPositionMessage"></param>
+        /// <returns></returns>
         public async Task PreventEndPosition(SimulatedPositionMessage simulatedPositionMessage)
         {
             _logger.LogInformation("Preventing end position {} with degraded point position {}.", simulatedPositionMessage.Position, simulatedPositionMessage.DegradedPosition);
@@ -121,6 +127,10 @@ namespace EulynxLive.Point
             _pointState.DegradedPointPosition = degradedPointPosition;
         }
 
+        /// <summary>
+        /// Updates the point state based on the commanded position and the currently prevented position.
+        /// <param name="commandedPointPosition"></param>
+        /// </summary>
         private void UpdatePointState(GenericPointPosition commandedPointPosition)
         {
             GenericPointPosition newPointPosition = _pointState.PointPosition;
@@ -162,7 +172,23 @@ namespace EulynxLive.Point
             await UpdateConnectedWebClients();
         }
 
-        private GenericDegradedPointPosition RespectAllPointMachinesCrucial(GenericDegradedPointPosition degradedPointPosition) => AllPointMachinesCrucial ? GenericDegradedPointPosition.NotApplicable : degradedPointPosition;
+        /// <summary>
+        /// Checks if AllPointMachinesCrucial is set and returns NotApplicable if it is.
+        /// </summary>
+        /// <param name="degradedPointPosition"></param>
+        /// <returns></returns>
+        private GenericDegradedPointPosition RespectAllPointMachinesCrucial(GenericDegradedPointPosition degradedPointPosition) 
+        {
+            if (AllPointMachinesCrucial)
+            {
+                if (degradedPointPosition != GenericDegradedPointPosition.NotDegraded && degradedPointPosition != GenericDegradedPointPosition.NotApplicable) 
+                    _logger.LogWarning("All point machines are crucial, ignoring degraded point position {}.", degradedPointPosition);
+                return GenericDegradedPointPosition.NotApplicable;
+            } else 
+            {
+                return degradedPointPosition;
+            }
+        }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -182,8 +208,8 @@ namespace EulynxLive.Point
                         throw new Exception("Unable to initialize connection");
                     }
                     await UpdateConnectedWebClients();
-
-                    while (true)
+                    _initialized = true;
+                    while (_initialized)
                     {
                         var commandedPointPosition = await _connection.ReceivePointPosition(stoppingToken);
                         if (commandedPointPosition == null)
@@ -261,6 +287,12 @@ namespace EulynxLive.Point
             }
         }
 
+        /// <summary>
+        /// Sets the pointPosition and degradedPointPosition based on the commanded position and the currently prevented position.
+        /// </summary>
+        /// <param name="commandedPosition"></param>
+        /// <param name="pointPosition"></param>
+        /// <param name="degradedPointPosition"></param>
         private void HandlePreventedPointPosition(GenericPointPosition commandedPosition, ref GenericPointPosition pointPosition, ref GenericDegradedPointPosition degradedPointPosition)
         {
             pointPosition = commandedPosition;
@@ -289,8 +321,9 @@ namespace EulynxLive.Point
             _simulatedPosition.DegradedPointPosition = GenericDegradedPointPosition.NotDegraded;
         }
 
-        private async Task Reset()
+        public async Task Reset()
         {
+            _logger.LogInformation("Resetting point.");
             _initialized = false;
             await UpdateConnectedWebClients();
         }
@@ -314,7 +347,7 @@ namespace EulynxLive.Point
                 {GenericPointPosition.Right, "right"},
                 {GenericPointPosition.Left, "left"},
                 {GenericPointPosition.NoEndPosition, "noEndPosition"},
-                {GenericPointPosition.UnintendedPosition, "trailed"},
+                {GenericPointPosition.UnintendedPosition, "unintendedPosition"},
             };
             var options = new JsonSerializerOptions { WriteIndented = true };
             var serializedState = JsonSerializer.Serialize(new
