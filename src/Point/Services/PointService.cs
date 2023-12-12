@@ -21,10 +21,16 @@ namespace EulynxLive.Point.Services
             return new Empty();
         }
 
-        public override async Task<Empty> SendAbilityToMoveMessage(AbilityToMoveMessage request, ServerCallContext context)
+        public override Task<Empty> EnableTimeout(Empty request, ServerCallContext context)
         {
-            await _point.SendAbilityToMoveMessage(request);
-            return new Empty();
+            _point.EnableTimeout();
+            return Task.FromResult(new Empty());
+        }
+
+        public override Task<Empty> SetAbilityToMove(AbilityToMoveMessage request, ServerCallContext context)
+        {
+            _point.SetAbilityToMove(request);
+            return Task.FromResult(new Empty());
         }
 
         public override async Task<Empty> SendGenericMessage(GenericSCIMessage request, ServerCallContext context)

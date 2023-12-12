@@ -212,8 +212,8 @@ export class PointClient {
     this.methodDescriptorGetDegradedPointPosition);
   }
 
-  methodDescriptorSendTimeoutMessage = new grpcWeb.MethodDescriptor(
-    '/point.Point/SendTimeoutMessage',
+  methodDescriptorEnableTimeout = new grpcWeb.MethodDescriptor(
+    '/point.Point/EnableTimeout',
     grpcWeb.MethodType.UNARY,
     google_protobuf_empty_pb.Empty,
     google_protobuf_empty_pb.Empty,
@@ -223,17 +223,17 @@ export class PointClient {
     google_protobuf_empty_pb.Empty.deserializeBinary
   );
 
-  sendTimeoutMessage(
+  enableTimeout(
     request: google_protobuf_empty_pb.Empty,
     metadata: grpcWeb.Metadata | null): Promise<google_protobuf_empty_pb.Empty>;
 
-  sendTimeoutMessage(
+  enableTimeout(
     request: google_protobuf_empty_pb.Empty,
     metadata: grpcWeb.Metadata | null,
     callback: (err: grpcWeb.RpcError,
                response: google_protobuf_empty_pb.Empty) => void): grpcWeb.ClientReadableStream<google_protobuf_empty_pb.Empty>;
 
-  sendTimeoutMessage(
+  enableTimeout(
     request: google_protobuf_empty_pb.Empty,
     metadata: grpcWeb.Metadata | null,
     callback?: (err: grpcWeb.RpcError,
@@ -241,22 +241,22 @@ export class PointClient {
     if (callback !== undefined) {
       return this.client_.rpcCall(
         this.hostname_ +
-          '/point.Point/SendTimeoutMessage',
+          '/point.Point/EnableTimeout',
         request,
         metadata || {},
-        this.methodDescriptorSendTimeoutMessage,
+        this.methodDescriptorEnableTimeout,
         callback);
     }
     return this.client_.unaryCall(
     this.hostname_ +
-      '/point.Point/SendTimeoutMessage',
+      '/point.Point/EnableTimeout',
     request,
     metadata || {},
-    this.methodDescriptorSendTimeoutMessage);
+    this.methodDescriptorEnableTimeout);
   }
 
-  methodDescriptorSendAbilityToMoveMessage = new grpcWeb.MethodDescriptor(
-    '/point.Point/SendAbilityToMoveMessage',
+  methodDescriptorSetAbilityToMove = new grpcWeb.MethodDescriptor(
+    '/point.Point/SetAbilityToMove',
     grpcWeb.MethodType.UNARY,
     point_pb.AbilityToMoveMessage,
     google_protobuf_empty_pb.Empty,
@@ -266,17 +266,17 @@ export class PointClient {
     google_protobuf_empty_pb.Empty.deserializeBinary
   );
 
-  sendAbilityToMoveMessage(
+  setAbilityToMove(
     request: point_pb.AbilityToMoveMessage,
     metadata: grpcWeb.Metadata | null): Promise<google_protobuf_empty_pb.Empty>;
 
-  sendAbilityToMoveMessage(
+  setAbilityToMove(
     request: point_pb.AbilityToMoveMessage,
     metadata: grpcWeb.Metadata | null,
     callback: (err: grpcWeb.RpcError,
                response: google_protobuf_empty_pb.Empty) => void): grpcWeb.ClientReadableStream<google_protobuf_empty_pb.Empty>;
 
-  sendAbilityToMoveMessage(
+  setAbilityToMove(
     request: point_pb.AbilityToMoveMessage,
     metadata: grpcWeb.Metadata | null,
     callback?: (err: grpcWeb.RpcError,
@@ -284,18 +284,18 @@ export class PointClient {
     if (callback !== undefined) {
       return this.client_.rpcCall(
         this.hostname_ +
-          '/point.Point/SendAbilityToMoveMessage',
+          '/point.Point/SetAbilityToMove',
         request,
         metadata || {},
-        this.methodDescriptorSendAbilityToMoveMessage,
+        this.methodDescriptorSetAbilityToMove,
         callback);
     }
     return this.client_.unaryCall(
     this.hostname_ +
-      '/point.Point/SendAbilityToMoveMessage',
+      '/point.Point/SetAbilityToMove',
     request,
     metadata || {},
-    this.methodDescriptorSendAbilityToMoveMessage);
+    this.methodDescriptorSetAbilityToMove);
   }
 
   methodDescriptorSendGenericMessage = new grpcWeb.MethodDescriptor(

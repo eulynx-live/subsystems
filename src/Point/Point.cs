@@ -12,9 +12,11 @@ using Point.Services.Extensions;
 
 namespace EulynxLive.Point
 {
-    public record SimulatedPosition{
+    public record SimulatedPointState{
         public PreventedPosition PreventedPosition { get; set; }
         public GenericDegradedPointPosition DegradedPointPosition { get; set; }
+        public Boolean SimulateTimeout { get; set; }
+        public AbilityToMove AbilityToMove { get; set; }
     }
     public class Point : BackgroundService
     {
@@ -25,9 +27,8 @@ namespace EulynxLive.Point
         private readonly List<WebSocket> _webSockets;
         private readonly IPointToInterlockingConnection _connection;
         private readonly Random _random;
-        private readonly bool _simulateRandomTimeouts;
         private bool _initialized;
-        private SimulatedPosition _simulatedPosition;
+        private SimulatedPointState _simulatedPointState;
         private readonly GenericPointState _pointState;
         public GenericPointState PointState { get { return _pointState; } }
 
@@ -41,7 +42,6 @@ namespace EulynxLive.Point
             {
                 _logger.LogInformation("Assuming all point machines are crucial.");
             }
-            _simulateRandomTimeouts = config.SimulateRandomTimeouts ?? false;
             AllPointMachinesCrucial = config.AllPointMachinesCrucial ?? false;
 
             _webSockets = new List<WebSocket>();
@@ -50,10 +50,12 @@ namespace EulynxLive.Point
                 DegradedPointPosition = RespectAllPointMachinesCrucial(GenericDegradedPointPosition.NotDegraded),
                 PointPosition = GenericPointPosition.NoEndPosition,
             };
-            _simulatedPosition = new SimulatedPosition()
+            _simulatedPointState = new SimulatedPointState()
             {
                 PreventedPosition = PreventedPosition.None,
                 DegradedPointPosition = RespectAllPointMachinesCrucial(GenericDegradedPointPosition.NotDegraded),
+                SimulateTimeout = false,
+                AbilityToMove = AbilityToMove.AbleToMove,
             };
             _random = new Random();
             _connection = connection;
@@ -89,14 +91,30 @@ namespace EulynxLive.Point
             await _connection.SendGenericMessage(message.Message.ToByteArray());
         }
 
-        public async Task SendAbilityToMoveMessage(AbilityToMoveMessage message){
+        private async Task SendAbilityToMoveMessage(AbilityToMoveMessage message){
             _logger.LogInformation("Ability to move message sent. Ability to move: {}", message.Ability);
             await _connection.SendAbilityToMoveMessage(message.Ability.ConvertToGenericAbilityToMove());
         }
 
-        public async Task SendTimeoutMessage(){
+        private async Task SendTimeoutMessage(){
             _logger.LogInformation("Timeout");
             await _connection.SendTimeoutMessage();
+        }
+
+        /// <summary>
+        /// Sets the timeout flag for the next command.
+        /// </summary>
+        public void EnableTimeout(){
+            _logger.LogInformation("Timeout on next command enabled.");
+            _simulatedPointState.SimulateTimeout = true;
+        }
+
+        /// <summary>
+        /// Sets the ability to move for the next command.
+        /// </summary> 
+        public void SetAbilityToMove(AbilityToMoveMessage abilityToMoveMessage){
+            _logger.LogInformation("Setting ability to move to {}.", abilityToMoveMessage.Ability);
+            _simulatedPointState.AbilityToMove = abilityToMoveMessage.Ability;
         }
 
         /// <summary>
@@ -116,8 +134,8 @@ namespace EulynxLive.Point
                 await UpdateConnectedWebClients();
             } else
             {
-                _simulatedPosition.PreventedPosition = simulatedPositionMessage.Position;
-                _simulatedPosition.DegradedPointPosition = simulatedPositionMessage.DegradedPosition.ConvertToDegradedPointPosition();
+                _simulatedPointState.PreventedPosition = simulatedPositionMessage.Position;
+                _simulatedPointState.DegradedPointPosition = simulatedPositionMessage.DegradedPosition.ConvertToDegradedPointPosition();
             }
         }
 
@@ -135,7 +153,10 @@ namespace EulynxLive.Point
         {
             GenericPointPosition newPointPosition = _pointState.PointPosition;
             GenericDegradedPointPosition newDegradedPointPosition = _pointState.DegradedPointPosition;
+
             HandlePreventedPointPosition(commandedPointPosition, ref newPointPosition, ref newDegradedPointPosition);
+            HandleAbilityToMove(ref newPointPosition, ref newDegradedPointPosition);
+
             SetPointState(newPointPosition, RespectAllPointMachinesCrucial(newDegradedPointPosition));
         }
 
@@ -232,31 +253,16 @@ namespace EulynxLive.Point
                         // Simulate point movement
                         var transitioningTime = _random.Next(1, 5);
                         var transitioningTask = Task.Delay(transitioningTime * 1000, CancellationToken.None);
-                        var pointMovementTimeout = 3 * 1000;
 
-
-                        if (_simulateRandomTimeouts)
+                        if (_simulatedPointState.SimulateTimeout)
                         {
-                            if (await Task.WhenAny(transitioningTask, Task.Delay(pointMovementTimeout, CancellationToken.None)) == transitioningTask)
-                            {
-                                // transition completed within timeout
-                                UpdatePointState(commandedPointPosition.Value);
-                                _logger.LogDebug("Moving to {}.", _pointState.PointPosition);
-
-                                await UpdateConnectedWebClients();
-
-                                _logger.LogInformation("End position reached.");
-                                await _connection.SendPointPosition(_pointState);
-                            }
-                            else
-                            {
-                                // timeout
-                                await SendTimeoutMessage();
-                            }
+                            // timeout
+                            await SendTimeoutMessage();
+                            await _simulateTimeout();
+                            _simulatedPointState.SimulateTimeout = false;
                         }
                         else
                         {
-                            await _simulateTimeout();
                             UpdatePointState(commandedPointPosition.Value);
                             _logger.LogDebug("Moving to {}.", _pointState.PointPosition);
 
@@ -296,29 +302,44 @@ namespace EulynxLive.Point
         private void HandlePreventedPointPosition(GenericPointPosition commandedPosition, ref GenericPointPosition pointPosition, ref GenericDegradedPointPosition degradedPointPosition)
         {
             pointPosition = commandedPosition;
-            switch (_simulatedPosition.PreventedPosition)
+            switch (_simulatedPointState.PreventedPosition)
             {
                 case PreventedPosition.PreventedLeft:
                     if (commandedPosition == GenericPointPosition.Left)
                     {
-                        degradedPointPosition = RespectAllPointMachinesCrucial(_simulatedPosition.DegradedPointPosition);
+                        degradedPointPosition = RespectAllPointMachinesCrucial(_simulatedPointState.DegradedPointPosition);
                         pointPosition = GenericPointPosition.NoEndPosition;
                     }
                     break;
                 case PreventedPosition.PreventedRight:
                     if (commandedPosition == GenericPointPosition.Right)
                     {
-                        degradedPointPosition = RespectAllPointMachinesCrucial(_simulatedPosition.DegradedPointPosition);
+                        degradedPointPosition = RespectAllPointMachinesCrucial(_simulatedPointState.DegradedPointPosition);
                         pointPosition = GenericPointPosition.NoEndPosition;
                     }
                     break;
                 case PreventedPosition.PreventTrailed:
-                    degradedPointPosition = RespectAllPointMachinesCrucial(_simulatedPosition.DegradedPointPosition);
+                    degradedPointPosition = RespectAllPointMachinesCrucial(_simulatedPointState.DegradedPointPosition);
                     pointPosition = GenericPointPosition.UnintendedPosition;
                     break;
             }
-            _simulatedPosition.PreventedPosition = PreventedPosition.None;
-            _simulatedPosition.DegradedPointPosition = GenericDegradedPointPosition.NotDegraded;
+            _simulatedPointState.PreventedPosition = PreventedPosition.None;
+            _simulatedPointState.DegradedPointPosition = GenericDegradedPointPosition.NotDegraded;
+        }
+
+        private void HandleAbilityToMove(ref GenericPointPosition pointPosition, ref GenericDegradedPointPosition degradedPointPosition)
+        {
+            switch (_simulatedPointState.AbilityToMove)
+            {
+                case AbilityToMove.AbleToMove:
+                    break;
+                case AbilityToMove.UnableToMove:
+                case AbilityToMove.Undefined:
+                    _logger.LogWarning("Point is unable to move.");
+                    degradedPointPosition = RespectAllPointMachinesCrucial(_pointState.DegradedPointPosition);
+                    pointPosition = _pointState.PointPosition;
+                    break;
+            }
         }
 
         public async Task Reset()

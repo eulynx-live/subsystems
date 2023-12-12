@@ -73,53 +73,68 @@ public class PointTest
     }
 
     [Fact]
-    public async Task Test_Send_Timeout()
+    public async Task Test_Timeout()
     {
         // Arrange
         var mockConnection = CreateDefaultMockConnection();
         var cancel = new CancellationTokenSource();
 
+        var point = CreateDefaultPoint(mockConnection.Object);
         mockConnection
-            .SetupSequence(m => m.SendTimeoutMessage())
+            .SetupSequence(m => m.ReceivePointPosition(It.IsAny<CancellationToken>()))
+            .Returns(() =>
+            {
+                point.EnableTimeout();
+                return Task.FromResult<GenericPointPosition?>(GenericPointPosition.Left);
+            })
             .Returns(() =>
             {
                 cancel.Cancel();
                 return new TaskCompletionSource<GenericPointPosition?>().Task;
             });
 
-        var point = CreateDefaultPoint(mockConnection.Object);
 
         // Act
         await point.StartAsync(cancel.Token);
-        await point.SendTimeoutMessage();
 
         // Assert
-        mockConnection.Verify(v => v.SendTimeoutMessage(), Times.Once());
+        Assert.Equal(GenericPointPosition.NoEndPosition, point.PointState.PointPosition);
     }
 
-    [Fact]
-    public async Task Test_Send_AbilityToMove()
+    [Theory]
+    [InlineData(AbilityToMove.AbleToMove, GenericPointPosition.Left)]
+    [InlineData(AbilityToMove.UnableToMove, GenericPointPosition.NoEndPosition)]
+    [InlineData(AbilityToMove.Undefined, GenericPointPosition.NoEndPosition)]
+    public async Task Test_AbilityToMove(AbilityToMove simulatedAbilityToMove, GenericPointPosition assertedPosition)
     {
         // Arrange
         var mockConnection = CreateDefaultMockConnection();
         var cancel = new CancellationTokenSource();
 
+        var point = CreateDefaultPoint(mockConnection.Object);
         mockConnection
-            .SetupSequence(m => m.SendAbilityToMoveMessage(GenericAbiliyToMove.CannotMove))
+            .SetupSequence(m => m.ReceivePointPosition(It.IsAny<CancellationToken>()))
+            .Returns(() =>
+            {
+                var message = new AbilityToMoveMessage
+                {
+                    Ability = simulatedAbilityToMove
+                };
+                point.SetAbilityToMove(message);
+                return Task.FromResult<GenericPointPosition?>(GenericPointPosition.Left);
+            })
             .Returns(() =>
             {
                 cancel.Cancel();
                 return new TaskCompletionSource<GenericPointPosition?>().Task;
             });
 
-        var point = CreateDefaultPoint(mockConnection.Object);
 
         // Act
         await point.StartAsync(cancel.Token);
-        await point.SendAbilityToMoveMessage(new AbilityToMoveMessage() { Ability = AbilityToMove.UnableToMove });
 
         // Assert
-        mockConnection.Verify(v => v.SendAbilityToMoveMessage(GenericAbiliyToMove.CannotMove), Times.Once());
+        Assert.Equal(assertedPosition, point.PointState.PointPosition);
     }
 
     [Fact]
