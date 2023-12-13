@@ -20,7 +20,8 @@ public class PointTest
                 "INTERLOCKING",
                 "http://localhost:50051",
                 true,
-                false
+                false,
+                ConnectionProtocol.EulynxBaseline4R1
             ));
         mockConnection.Setup(x => x.TimeoutToken).Returns(() => CancellationToken.None);
         mockConnection
