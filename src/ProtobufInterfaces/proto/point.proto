@@ -31,8 +31,6 @@ service Point {
     rpc PutInEndPosition (google.protobuf.Empty) returns (google.protobuf.Empty) {}
     rpc GetPointPosition (google.protobuf.Empty) returns (PointPositionMessage) {}
     rpc GetDegradedPointPosition (google.protobuf.Empty) returns (PointDegradedPositionMessage) {}
-    rpc SendTimeoutMessage (google.protobuf.Empty) returns (google.protobuf.Empty) {}
-    rpc SendAbilityToMoveMessage (AbilityToMoveMessage) returns (google.protobuf.Empty) {}
     rpc SendGenericMessage (GenericSCIMessage) returns (google.protobuf.Empty) {}
     rpc Reset (google.protobuf.Empty) returns (google.protobuf.Empty) {}
 

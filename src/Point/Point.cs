@@ -89,12 +89,7 @@ namespace EulynxLive.Point
             await _connection.SendGenericMessage(message.Message.ToByteArray());
         }
 
-        public async Task SendAbilityToMoveMessage(AbilityToMoveMessage message){
-            _logger.LogInformation("Ability to move message sent. Ability to move: {}", message.Ability);
-            await _connection.SendAbilityToMoveMessage(message.Ability.ConvertToGenericAbilityToMove());
-        }
-
-        public async Task SendTimeoutMessage(){
+        private async Task SendTimeoutMessage(){
             _logger.LogInformation("Timeout");
             await _connection.SendTimeoutMessage();
         }

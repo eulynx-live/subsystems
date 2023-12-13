@@ -73,56 +73,6 @@ public class PointTest
     }
 
     [Fact]
-    public async Task Test_Send_Timeout()
-    {
-        // Arrange
-        var mockConnection = CreateDefaultMockConnection();
-        var cancel = new CancellationTokenSource();
-
-        mockConnection
-            .SetupSequence(m => m.SendTimeoutMessage())
-            .Returns(() =>
-            {
-                cancel.Cancel();
-                return new TaskCompletionSource<GenericPointPosition?>().Task;
-            });
-
-        var point = CreateDefaultPoint(mockConnection.Object);
-
-        // Act
-        await point.StartAsync(cancel.Token);
-        await point.SendTimeoutMessage();
-
-        // Assert
-        mockConnection.Verify(v => v.SendTimeoutMessage(), Times.Once());
-    }
-
-    [Fact]
-    public async Task Test_Send_AbilityToMove()
-    {
-        // Arrange
-        var mockConnection = CreateDefaultMockConnection();
-        var cancel = new CancellationTokenSource();
-
-        mockConnection
-            .SetupSequence(m => m.SendAbilityToMoveMessage(GenericAbiliyToMove.CannotMove))
-            .Returns(() =>
-            {
-                cancel.Cancel();
-                return new TaskCompletionSource<GenericPointPosition?>().Task;
-            });
-
-        var point = CreateDefaultPoint(mockConnection.Object);
-
-        // Act
-        await point.StartAsync(cancel.Token);
-        await point.SendAbilityToMoveMessage(new AbilityToMoveMessage() { Ability = AbilityToMove.UnableToMove });
-
-        // Assert
-        mockConnection.Verify(v => v.SendAbilityToMoveMessage(GenericAbiliyToMove.CannotMove), Times.Once());
-    }
-
-    [Fact]
     public async Task Test_Send_Generic_Message()
     {
         // Arrange
