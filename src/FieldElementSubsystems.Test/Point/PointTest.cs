@@ -12,7 +12,7 @@ public class PointTest
         return new(_logger, _configuration, connection ?? CreateDefaultMockConnection().Object, () => Task.CompletedTask);
     }
 
-    private Mock<IPointToInterlockingConnection> CreateDefaultMockConnection() {
+    private static Mock<IPointToInterlockingConnection> CreateDefaultMockConnection() {
         var mockConnection = new Mock<IPointToInterlockingConnection>();
         mockConnection.Setup(x => x.Configuration).Returns(() => new PointConfiguration(
                 "99W1",
@@ -20,7 +20,8 @@ public class PointTest
                 "INTERLOCKING",
                 "http://localhost:50051",
                 true,
-                false
+                false,
+                ConnectionProtocol.EulynxBaseline4R1
             ));
         mockConnection.Setup(x => x.TimeoutToken).Returns(() => CancellationToken.None);
         mockConnection

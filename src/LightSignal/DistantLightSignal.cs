@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using EulynxLive.Messages;
 using System.Threading.Channels;
+using EulynxLive.Messages.Deprecated;
 
 namespace EulynxLive.LightSignal
 {

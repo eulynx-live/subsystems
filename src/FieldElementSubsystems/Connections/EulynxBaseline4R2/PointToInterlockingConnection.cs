@@ -1,11 +1,12 @@
-using EulynxLive.FieldElementSubsystems.Interfaces;
-using Microsoft.Extensions.Logging;
+using EulynxLive.Messages.Baseline4R2;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using EulynxLive.FieldElementSubsystems.Interfaces;
 using EulynxLive.FieldElementSubsystems.Configuration;
-using EulynxLive.Messages.Baseline4R1;
+using Grpc.Core;
 
 
-namespace EulynxLive.FieldElementSubsystems.Connections.EulynxBaseline4R1;
+namespace EulynxLive.FieldElementSubsystems.Connections.EulynxBaseline4R2;
 
 public class PointToInterlockingConnection : IPointToInterlockingConnection
 {
@@ -14,7 +15,8 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
     private readonly string _remoteId;
     public PointConfiguration Configuration { get; }
     public CancellationToken TimeoutToken => _timeout.Token;
-    IConnection? _currentConnection;
+    private IConnection? _currentConnection;
+    public IConnection? CurrentConnection { get => _currentConnection; }
     private CancellationTokenSource _timeout;
     private readonly int _timeoutDuration;
     private readonly CancellationToken _stoppingToken;
@@ -81,7 +83,8 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
 
     async public Task SendTimeoutMessage()
     {
-        var response = new PointTimeoutMessage(_localId, _remoteId);
+        // TODO: Double check if this is the right message
+        var response = new PointMovementFailedMessage(_localId, _remoteId);
         await SendMessage(response);
     }
 
@@ -107,14 +110,27 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
     {
         if (_currentConnection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
         ResetTimeout();
-
-        var message = Message.FromBytes(await _currentConnection.ReceiveAsync(_timeout.Token));
-        if (message is not T)
+        try
         {
-            _logger.LogError("Unexpected message: {}", message);
+            var message = Message.FromBytes(await _currentConnection.ReceiveAsync(_timeout.Token));
+            if (message is not T)
+            {
+                _logger.LogError("Unexpected message: {}", message);
+                return null;
+            }
+            return message as T;
+        }
+        catch (RpcException)
+        {
+            if (_timeout.IsCancellationRequested)
+            {
+                _logger.LogError("Timeout");
+            }
+            return null;
+        } catch (TaskCanceledException)
+        {
             return null;
         }
-        return message as T;
     }
 
     private void ResetTimeout()
