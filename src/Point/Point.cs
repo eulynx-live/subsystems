@@ -1,5 +1,6 @@
 ﻿using EulynxLive.FieldElementSubsystems.Configuration;
 using EulynxLive.FieldElementSubsystems.Interfaces;
+using EulynxLive.Point.Connections;
 using EulynxLive.Point.Proto;
 using Grpc.Core;
 using System.Net.WebSockets;

@@ -5,7 +5,7 @@ using Grpc.Net.Client;
 using Sci;
 using static Sci.Rasta;
 
-namespace EulynxLive.Point;
+namespace EulynxLive.Point.Connections;
 
 class GrpcConnection : IConnection
 {

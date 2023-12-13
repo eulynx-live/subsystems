@@ -1,10 +1,10 @@
 using System.Threading.Tasks;
-using Grpc.Core;
-using EulynxLive.Messages;
 using static EulynxLive.LightSignal.Proto.LightSignal;
 using EulynxLive.LightSignal.Proto;
+using EulynxLive.Messages.Deprecated;
 
-namespace EulynxLive.LightSignal.Services {
+namespace EulynxLive.LightSignal.Services
+{
     public class LightSignalService : LightSignalBase {
         private readonly EulynxLightSignal _lightSignal;
 

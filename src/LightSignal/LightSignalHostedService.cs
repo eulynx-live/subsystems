@@ -15,7 +15,7 @@ using static Sci.Rasta;
 using System.Text;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Configuration;
-using System.Threading.Channels;
+using EulynxLive.Messages.Deprecated;
 
 namespace EulynxLive.LightSignal
 {

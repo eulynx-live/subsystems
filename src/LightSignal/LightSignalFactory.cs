@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using EulynxLive.Messages;
+using EulynxLive.Messages.Deprecated;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -33,7 +35,7 @@ namespace EulynxLive.LightSignal
         public class LightSignalConfig
         {
             public string Id { get; set; }
-            public SignalTypeTypes Type { get; set; }   
+            public SignalTypeTypes Type { get; set; }
         }
 
         public List<EulynxLightSignal> Create(System.Threading.Channels.Channel<EulynxMessage> outgoingMessages)
