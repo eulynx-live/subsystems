@@ -86,22 +86,37 @@ public class PointTest
             Message = ByteString.CopyFrom (rawBytes)
         };
 
+        var point = CreateDefaultPoint(mockConnection.Object);
         mockConnection
-            .SetupSequence(m => m.SendGenericMessage(rawBytes))
+            .SetupSequence(m => m.ReceivePointPosition(It.IsAny<CancellationToken>()))
+            .Returns(Task.FromResult<GenericPointPosition?>(null))
+            .Returns(async () =>
+            {
+                await point.SendGenericMessage(genericMessage);
+                return null;
+            })
             .Returns(() =>
             {
                 cancel.Cancel();
                 return new TaskCompletionSource<GenericPointPosition?>().Task;
             });
 
-        var point = CreateDefaultPoint(mockConnection.Object);
+        var args = new List<byte[]>();
+
+        mockConnection
+            .SetupSequence(m => m.SendGenericMessage(Capture.In(args)))
+            .Returns(() =>
+            {
+                cancel.Cancel();
+                return new TaskCompletionSource<GenericPointPosition?>().Task;
+            });
+
 
         // Act
         await point.StartAsync(cancel.Token);
-        await point.SendGenericMessage(genericMessage);
 
         // Assert
-        mockConnection.Verify(v => v.SendGenericMessage(rawBytes), Times.Once());
+        Assert.Equal(rawBytes, args.ToArray()[0]);
     }
 
     [Fact]
