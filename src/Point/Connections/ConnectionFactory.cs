@@ -19,7 +19,7 @@ public class ConnectionFactory{
         var connectionProtocol = _configuration.GetSection("ConnectionSettings").Get<PointConfiguration>()?.ConnectionProtocol;
         switch (connectionProtocol){
             case ConnectionProtocol.EulynxBaseline4R1:
-                return new EulynxBaseline4R1.PointToInterlockingConnection(x.GetRequiredService<ILogger<EulynxBaseline4R1.PointToInterlockingConnection>>(), _configuration, CancellationToken.None);
+                return new EulynxBaseline4R1.PointToInterlockingConnection(x.GetRequiredService<ILogger<EulynxBaseline4R1.PointToInterlockingConnection>>(), _configuration);
             case ConnectionProtocol.EulynxBaseline4R2:
                 return new EulynxBaseline4R2.PointToInterlockingConnection(x.GetRequiredService<ILogger<EulynxBaseline4R2.PointToInterlockingConnection>>(), _configuration, CancellationToken.None);
             default:
