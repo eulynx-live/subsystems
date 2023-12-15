@@ -6,5 +6,6 @@ public record PointConfiguration(
     string RemoteId,
     string RemoteEndpoint,
     bool? AllPointMachinesCrucial = null,
-    bool? SimulateRandomTimeouts = null
+    bool? SimulateRandomTimeouts = null,
+    ConnectionProtocol? ConnectionProtocol = null
 );

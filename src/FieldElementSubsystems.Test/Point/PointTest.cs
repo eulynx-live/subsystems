@@ -22,7 +22,7 @@ public class PointTest
         return new EulynxLive.Point.Point(_logger, config, connection ?? Mock.Of<IPointToInterlockingConnection>(), async () => {});
     }
 
-    private Mock<IPointToInterlockingConnection> CreateDefaultMockConnection() {
+    private static Mock<IPointToInterlockingConnection> CreateDefaultMockConnection() {
         var mockConnection = new Mock<IPointToInterlockingConnection>();
         mockConnection.Setup(x => x.Configuration).Returns(() => new PointConfiguration(
                 "99W1",
@@ -30,7 +30,8 @@ public class PointTest
                 "INTERLOCKING",
                 "http://localhost:50051",
                 true,
-                false
+                false,
+                ConnectionProtocol.EulynxBaseline4R1
             ));
         mockConnection.Setup(x => x.TimeoutToken).Returns(() => CancellationToken.None);
         mockConnection
@@ -151,22 +152,37 @@ public class PointTest
             Message = ByteString.CopyFrom (rawBytes)
         };
 
+        var point = CreateDefaultPoint(mockConnection.Object);
         mockConnection
-            .SetupSequence(m => m.SendGenericMessage(rawBytes))
+            .SetupSequence(m => m.ReceivePointPosition(It.IsAny<CancellationToken>()))
+            .Returns(Task.FromResult<GenericPointPosition?>(null))
+            .Returns(async () =>
+            {
+                await point.SendGenericMessage(genericMessage);
+                return null;
+            })
             .Returns(() =>
             {
                 cancel.Cancel();
                 return new TaskCompletionSource<GenericPointPosition?>().Task;
             });
 
-        var point = CreateDefaultPoint(mockConnection.Object);
+        var args = new List<byte[]>();
+
+        mockConnection
+            .SetupSequence(m => m.SendGenericMessage(Capture.In(args)))
+            .Returns(() =>
+            {
+                cancel.Cancel();
+                return new TaskCompletionSource<GenericPointPosition?>().Task;
+            });
+
 
         // Act
         await point.StartAsync(cancel.Token);
-        await point.SendGenericMessage(genericMessage);
 
         // Assert
-        mockConnection.Verify(v => v.SendGenericMessage(rawBytes), Times.Once());
+        Assert.Equal(rawBytes, args.ToArray()[0]);
     }
 
     [Fact]

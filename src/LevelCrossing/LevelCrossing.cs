@@ -12,10 +12,11 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Sci;
 using EulynxLive.Messages;
-using NeuPro = EulynxLive.Messages.NeuPro;
+using NeuPro = EulynxLive.Messages.Deprecated.NeuPro;
 using static Sci.Rasta;
 using System.Text;
 using Grpc.Net.Client;
+using EulynxLive.Messages.Deprecated;
 
 namespace EulynxLive.LevelCrossing
 {

@@ -1,8 +1,8 @@
 
-using EulynxLive.Messages.Baseline4R1;
 using EulynxLive.FieldElementSubsystems.Interfaces;
+using EulynxLive.Messages.Baseline4R2;
 
-namespace EulynxLive.FieldElementSubsystems.Connections.EulynxBaseline4R1;
+namespace EulynxLive.FieldElementSubsystems.Connections.EulynxBaseline4R2;
 
 public record PointState(GenericPointState State) : SpecificPointState<
     PointPointPositionMessageReportedPointPosition,
@@ -13,7 +13,7 @@ public record PointState(GenericPointState State) : SpecificPointState<
     {
         GenericPointPosition.Left => PointPointPositionMessageReportedPointPosition.PointIsInALeftHandPositionDefinedEndPosition,
         GenericPointPosition.Right => PointPointPositionMessageReportedPointPosition.PointIsInARightHandPositionDefinedEndPosition,
-        GenericPointPosition.UnintendedPosition => PointPointPositionMessageReportedPointPosition.PointIsTrailed,
+        GenericPointPosition.UnintendedPosition => PointPointPositionMessageReportedPointPosition.PointIsInUnintendedPosition,
         GenericPointPosition.NoEndPosition => PointPointPositionMessageReportedPointPosition.PointIsInNoEndPosition,
         _ => throw new NotImplementedException(),
     };

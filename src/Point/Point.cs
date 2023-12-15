@@ -1,5 +1,6 @@
 ﻿using EulynxLive.FieldElementSubsystems.Configuration;
 using EulynxLive.FieldElementSubsystems.Interfaces;
+using EulynxLive.Point.Connections;
 using EulynxLive.Point.Proto;
 using Grpc.Core;
 using System.Net.WebSockets;
@@ -89,11 +90,6 @@ namespace EulynxLive.Point
         public async Task SendGenericMessage(GenericSCIMessage message){
             _logger.LogInformation("Sending generic message: {}", message.Message);
             await _connection.SendGenericMessage(message.Message.ToByteArray());
-        }
-
-        private async Task SendAbilityToMoveMessage(AbilityToMoveMessage message){
-            _logger.LogInformation("Ability to move message sent. Ability to move: {}", message.Ability);
-            await _connection.SendAbilityToMoveMessage(message.Ability.ConvertToGenericAbilityToMove());
         }
 
         private async Task SendTimeoutMessage(){
