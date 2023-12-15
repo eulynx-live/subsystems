@@ -84,7 +84,7 @@ namespace EulynxLive.Point.Services
                 throw new InvalidOperationException("Point has only crucial point machines");
             }
 
-            _point.PointState.PointPosition = request.PointPosition.ConvertToGenericPointPosition();
+            _point.PointState.PointPosition = request.PointPosition.ConvertToReportedPointPosition();
 
             return Task.FromResult(new Empty());
         }
