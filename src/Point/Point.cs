@@ -85,7 +85,7 @@ namespace EulynxLive.Point
             _webSockets.Remove(webSocket);
         }
 
-        public async Task SendGenericMessage(GenericSCIMessage message){
+        public async Task SendSCIMessage(GenericSCIMessage message){
             _logger.LogInformation("Sending generic message: {}", message.Message);
             await _connection.SendGenericMessage(message.Message.ToByteArray());
         }
@@ -131,7 +131,7 @@ namespace EulynxLive.Point
         {
             GenericPointPosition newPointPosition = _pointState.PointPosition;
             GenericDegradedPointPosition newDegradedPointPosition = _pointState.DegradedPointPosition;
-            HandlePreventedPointPosition(commandedPointPosition, ref newPointPosition, ref newDegradedPointPosition);
+            (newPointPosition, newDegradedPointPosition) = HandlePreventedPointPosition(commandedPointPosition);
             SetPointState(newPointPosition, RespectAllPointMachinesCrucial(newDegradedPointPosition));
         }
 
@@ -289,8 +289,11 @@ namespace EulynxLive.Point
         /// <param name="commandedPosition"></param>
         /// <param name="pointPosition"></param>
         /// <param name="degradedPointPosition"></param>
-        private void HandlePreventedPointPosition(GenericPointPosition commandedPosition, ref GenericPointPosition pointPosition, ref GenericDegradedPointPosition degradedPointPosition)
+        private Tuple<GenericPointPosition, GenericDegradedPointPosition> HandlePreventedPointPosition(GenericPointPosition commandedPosition)
         {
+            GenericPointPosition pointPosition = _pointState.PointPosition;
+            GenericDegradedPointPosition degradedPointPosition = _pointState.DegradedPointPosition;
+
             pointPosition = commandedPosition;
             switch (_simulatedPosition.PreventedPosition)
             {
@@ -315,6 +318,7 @@ namespace EulynxLive.Point
             }
             _simulatedPosition.PreventedPosition = PreventedPosition.None;
             _simulatedPosition.DegradedPointPosition = GenericDegradedPointPosition.NotDegraded;
+            return new Tuple<GenericPointPosition, GenericDegradedPointPosition>(pointPosition, degradedPointPosition);
         }
 
         public async Task Reset()

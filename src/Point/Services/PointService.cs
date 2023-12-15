@@ -23,7 +23,7 @@ namespace EulynxLive.Point.Services
 
         public override async Task<Empty> SendGenericMessage(GenericSCIMessage request, ServerCallContext context)
         {
-            await _point.SendGenericMessage(request);
+            await _point.SendSCIMessage(request);
             return new Empty();
         }
 
