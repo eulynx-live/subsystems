@@ -1,4 +1,4 @@
-using EulynxLive.FieldElementSubsystems.Configuration;
+﻿using EulynxLive.FieldElementSubsystems.Configuration;
 using EulynxLive.FieldElementSubsystems.Interfaces;
 using EulynxLive.Point.Proto;
 using Grpc.Core;
@@ -116,6 +116,16 @@ namespace EulynxLive.Point
             _logger.LogInformation("Setting ability to move to {}.", abilityToMoveMessage.Ability);
             _simulatedPointState.AbilityToMove = abilityToMoveMessage.Ability;
         }
+        
+        /// <summary>
+        /// Puts the point into an unintended position immediately.
+        /// </summary>
+        public async Task PutIntoUnintendedPosition(SimulatedPositionMessage simulatedPositionMessage)
+        {
+            _logger.LogInformation("Putting point into unintended position.");
+            SetPointState(GenericPointPosition.UnintendedPosition, RespectAllPointMachinesCrucial(simulatedPositionMessage.DegradedPosition.ConvertToDegradedPointPosition()));
+            await UpdateConnectedWebClients();
+        }
 
         /// <summary>
         /// Stores the prevented position and degraded point position for the next command.
@@ -123,26 +133,18 @@ namespace EulynxLive.Point
         /// </summary>
         /// <param name="simulatedPositionMessage"></param>
         /// <returns></returns>
-        public async Task PreventEndPosition(SimulatedPositionMessage simulatedPositionMessage)
+        public void PreventEndPosition(SimulatedPositionMessage simulatedPositionMessage)
         {
             if ((simulatedPositionMessage.Position == PreventedPosition.PreventedLeft && simulatedPositionMessage.DegradedPosition == PointDegradedPosition.DegradedRight) ||
-                (simulatedPositionMessage.Position == PreventedPosition.PreventedRight && simulatedPositionMessage.DegradedPosition == PointDegradedPosition.DegradedLeft))
+                (simulatedPositionMessage.Position == PreventedPosition.PreventedRight && simulatedPositionMessage.DegradedPosition == PointDegradedPosition.DegradedLeft) ||
+                (simulatedPositionMessage.Position == PreventedPosition.PreventTrailed))
             {
-                _logger.LogWarning("Prevented position {} and degraded position {} are not compatible.", simulatedPositionMessage.Position, simulatedPositionMessage.DegradedPosition);
-                return;
+                throw new InvalidOperationException($"Prevented position {simulatedPositionMessage.Position} and degraded position {simulatedPositionMessage.DegradedPosition} are not compatible.");
             }
             
-            // Action a Trailed command immediately, otherwise store the prevented position for the next command.
-            if (simulatedPositionMessage.Position == PreventedPosition.PreventTrailed)
-            {
-                SetPointState(GenericPointPosition.UnintendedPosition, RespectAllPointMachinesCrucial(GenericDegradedPointPosition.NotDegraded));
-                await UpdateConnectedWebClients();
-            } else
-            {
-                _simulatedPointState.PreventedPosition = simulatedPositionMessage.Position;
-                _simulatedPointState.DegradedPointPosition = simulatedPositionMessage.DegradedPosition.ConvertToDegradedPointPosition();
-                _logger.LogInformation("Preventing end position {} with degraded point position {}.", _simulatedPointState.PreventedPosition, _simulatedPointState.DegradedPointPosition);
-            }
+            _simulatedPointState.PreventedPosition = simulatedPositionMessage.Position;
+            _simulatedPointState.DegradedPointPosition = simulatedPositionMessage.DegradedPosition.ConvertToDegradedPointPosition();
+            _logger.LogInformation("Preventing end position {} with degraded point position {} on next command.", _simulatedPointState.PreventedPosition, _simulatedPointState.DegradedPointPosition);
         }
 
         private void SetPointState(GenericPointPosition pointPosition, GenericDegradedPointPosition degradedPointPosition)

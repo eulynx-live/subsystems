@@ -28,6 +28,7 @@ enum PreventedPosition {
 
 service Point {
     rpc PreventEndPosition (SimulatedPositionMessage) returns (google.protobuf.Empty) {}
+    rpc PutIntoUnintendedPosition (SimulatedPositionMessage) returns (google.protobuf.Empty) {}
     rpc PutInEndPosition (google.protobuf.Empty) returns (google.protobuf.Empty) {}
     rpc GetPointPosition (google.protobuf.Empty) returns (PointPositionMessage) {}
     rpc GetDegradedPointPosition (google.protobuf.Empty) returns (PointDegradedPositionMessage) {}

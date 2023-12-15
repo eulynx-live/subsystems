@@ -41,7 +41,13 @@ namespace EulynxLive.Point.Services
 
         public override async Task<Empty> PreventEndPosition(SimulatedPositionMessage message, ServerCallContext context)
         {
-            await _point.PreventEndPosition(message);
+            _point.PreventEndPosition(message);
+            return new Empty();
+        }
+
+        public override async Task<Empty> PutIntoUnintendedPosition(SimulatedPositionMessage message, ServerCallContext context)
+        {
+            await _point.PutIntoUnintendedPosition(message);
             return new Empty();
         }
 
@@ -78,7 +84,7 @@ namespace EulynxLive.Point.Services
                 throw new InvalidOperationException("Point has only crucial point machines");
             }
 
-            _point.PointState.PointPosition = request.PointPosition.ConvertToReportedPointPosition();
+            _point.PointState.PointPosition = request.PointPosition.ConvertToGenericPointPosition();
 
             return Task.FromResult(new Empty());
         }
