@@ -99,6 +99,7 @@ public class PointTest
 
         // Assert
         Assert.Equal(GenericPointPosition.NoEndPosition, point.PointState.PointPosition);
+        mockConnection.Verify(v => v.SendTimeoutMessage(), Times.Once());
     }
 
     [Theory]

@@ -114,7 +114,7 @@ class Point extends Component<{}, PointState> {
                 <button onClick={async () => {
                     let request = new SimulatedPositionMessage();
                     request.setPosition(PreventedPosition.PREVENTTRAILED);
-                    await client.preventEndPosition(request, null);
+                    await client.putIntoUnintendedPosition(request, null);
                 }}>Set to unintended position</button>
                 <p></p>
                 <button onClick={async () => {
