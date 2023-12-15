@@ -1,4 +1,4 @@
-﻿using EulynxLive.FieldElementSubsystems.Configuration;
+using EulynxLive.FieldElementSubsystems.Configuration;
 using EulynxLive.FieldElementSubsystems.Interfaces;
 using EulynxLive.Point.Proto;
 using Grpc.Core;
@@ -125,7 +125,12 @@ namespace EulynxLive.Point
         /// <returns></returns>
         public async Task PreventEndPosition(SimulatedPositionMessage simulatedPositionMessage)
         {
-            _logger.LogInformation("Preventing end position {} with degraded point position {}.", simulatedPositionMessage.Position, simulatedPositionMessage.DegradedPosition);
+            if ((simulatedPositionMessage.Position == PreventedPosition.PreventedLeft && simulatedPositionMessage.DegradedPosition == PointDegradedPosition.DegradedRight) ||
+                (simulatedPositionMessage.Position == PreventedPosition.PreventedRight && simulatedPositionMessage.DegradedPosition == PointDegradedPosition.DegradedLeft))
+            {
+                _logger.LogWarning("Prevented position {} and degraded position {} are not compatible.", simulatedPositionMessage.Position, simulatedPositionMessage.DegradedPosition);
+                return;
+            }
             
             // Action a Trailed command immediately, otherwise store the prevented position for the next command.
             if (simulatedPositionMessage.Position == PreventedPosition.PreventTrailed)
@@ -136,6 +141,7 @@ namespace EulynxLive.Point
             {
                 _simulatedPointState.PreventedPosition = simulatedPositionMessage.Position;
                 _simulatedPointState.DegradedPointPosition = simulatedPositionMessage.DegradedPosition.ConvertToDegradedPointPosition();
+                _logger.LogInformation("Preventing end position {} with degraded point position {}.", _simulatedPointState.PreventedPosition, _simulatedPointState.DegradedPointPosition);
             }
         }
 
