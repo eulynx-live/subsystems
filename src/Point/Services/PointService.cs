@@ -1,10 +1,8 @@
-using System.Threading.Tasks;
 using Grpc.Core;
 using static EulynxLive.Point.Proto.Point;
 using EulynxLive.Point.Proto;
 using Point.Services.Extensions;
 using Google.Protobuf.WellKnownTypes;
-using System;
 
 namespace EulynxLive.Point.Services
 {
@@ -17,15 +15,21 @@ namespace EulynxLive.Point.Services
             _point = point;
         }
 
-        public override async Task<Empty> SimulateUnintendedPosition(Empty request, ServerCallContext context)
+        public override async Task<Empty> Reset(Empty request, ServerCallContext context)
         {
-            await _point.SimulateUnintendedPosition();
+            await _point.Reset();
             return new Empty();
         }
 
-        public override async Task<Empty> SetToDegradedPosition(PointDegradedMessage request, ServerCallContext context)
+        public override async Task<Empty> SendGenericMessage(GenericSCIMessage request, ServerCallContext context)
         {
-            await _point.SetDegraded(request);
+            await _point.SendSCIMessage(request);
+            return new Empty();
+        }
+
+        public override async Task<Empty> PreventEndPosition(SimulatedPositionMessage message, ServerCallContext context)
+        {
+            await _point.PreventEndPosition(message);
             return new Empty();
         }
 
@@ -33,6 +37,16 @@ namespace EulynxLive.Point.Services
         {
             await _point.PutInEndPosition();
             return new Empty();
+        }
+
+        public override Task<PointDegradedPositionMessage> GetDegradedPointPosition(Empty request, ServerCallContext context)
+        {
+            var response = new PointDegradedPositionMessage()
+            {
+                Position = _point.PointState.DegradedPointPosition.ConvertToProtoMessage()
+            };
+
+            return Task.FromResult(response);
         }
 
         public override Task<PointPositionMessage> GetPointPosition(Empty request, ServerCallContext context)

@@ -17,6 +17,7 @@
 
 import * as grpcWeb from 'grpc-web';
 
+import * as google_protobuf_empty_pb from 'google-protobuf/google/protobuf/empty_pb';
 import * as point_pb from './point_pb';
 
 
@@ -39,158 +40,115 @@ export class PointClient {
     this.options_ = options;
   }
 
-  methodDescriptorSimulateTrailed = new grpcWeb.MethodDescriptor(
-    '/point.Point/SimulateTrailed',
+  methodDescriptorPreventEndPosition = new grpcWeb.MethodDescriptor(
+    '/point.Point/PreventEndPosition',
     grpcWeb.MethodType.UNARY,
-    point_pb.Nothing,
-    point_pb.Nothing,
-    (request: point_pb.Nothing) => {
+    point_pb.SimulatedPositionMessage,
+    google_protobuf_empty_pb.Empty,
+    (request: point_pb.SimulatedPositionMessage) => {
       return request.serializeBinary();
     },
-    point_pb.Nothing.deserializeBinary
+    google_protobuf_empty_pb.Empty.deserializeBinary
   );
 
-  simulateTrailed(
-    request: point_pb.Nothing,
-    metadata: grpcWeb.Metadata | null): Promise<point_pb.Nothing>;
+  preventEndPosition(
+    request: point_pb.SimulatedPositionMessage,
+    metadata: grpcWeb.Metadata | null): Promise<google_protobuf_empty_pb.Empty>;
 
-  simulateTrailed(
-    request: point_pb.Nothing,
+  preventEndPosition(
+    request: point_pb.SimulatedPositionMessage,
     metadata: grpcWeb.Metadata | null,
     callback: (err: grpcWeb.RpcError,
-               response: point_pb.Nothing) => void): grpcWeb.ClientReadableStream<point_pb.Nothing>;
+               response: google_protobuf_empty_pb.Empty) => void): grpcWeb.ClientReadableStream<google_protobuf_empty_pb.Empty>;
 
-  simulateTrailed(
-    request: point_pb.Nothing,
+  preventEndPosition(
+    request: point_pb.SimulatedPositionMessage,
     metadata: grpcWeb.Metadata | null,
     callback?: (err: grpcWeb.RpcError,
-               response: point_pb.Nothing) => void) {
+               response: google_protobuf_empty_pb.Empty) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
         this.hostname_ +
-          '/point.Point/SimulateTrailed',
+          '/point.Point/PreventEndPosition',
         request,
         metadata || {},
-        this.methodDescriptorSimulateTrailed,
+        this.methodDescriptorPreventEndPosition,
         callback);
     }
     return this.client_.unaryCall(
     this.hostname_ +
-      '/point.Point/SimulateTrailed',
+      '/point.Point/PreventEndPosition',
     request,
     metadata || {},
-    this.methodDescriptorSimulateTrailed);
+    this.methodDescriptorPreventEndPosition);
   }
 
-  methodDescriptorSetDegraded = new grpcWeb.MethodDescriptor(
-    '/point.Point/SetDegraded',
+  methodDescriptorPutInEndPosition = new grpcWeb.MethodDescriptor(
+    '/point.Point/PutInEndPosition',
     grpcWeb.MethodType.UNARY,
-    point_pb.PointDegradedMessage,
-    point_pb.Nothing,
-    (request: point_pb.PointDegradedMessage) => {
+    google_protobuf_empty_pb.Empty,
+    google_protobuf_empty_pb.Empty,
+    (request: google_protobuf_empty_pb.Empty) => {
       return request.serializeBinary();
     },
-    point_pb.Nothing.deserializeBinary
+    google_protobuf_empty_pb.Empty.deserializeBinary
   );
 
-  setDegraded(
-    request: point_pb.PointDegradedMessage,
-    metadata: grpcWeb.Metadata | null): Promise<point_pb.Nothing>;
+  putInEndPosition(
+    request: google_protobuf_empty_pb.Empty,
+    metadata: grpcWeb.Metadata | null): Promise<google_protobuf_empty_pb.Empty>;
 
-  setDegraded(
-    request: point_pb.PointDegradedMessage,
+  putInEndPosition(
+    request: google_protobuf_empty_pb.Empty,
     metadata: grpcWeb.Metadata | null,
     callback: (err: grpcWeb.RpcError,
-               response: point_pb.Nothing) => void): grpcWeb.ClientReadableStream<point_pb.Nothing>;
+               response: google_protobuf_empty_pb.Empty) => void): grpcWeb.ClientReadableStream<google_protobuf_empty_pb.Empty>;
 
-  setDegraded(
-    request: point_pb.PointDegradedMessage,
+  putInEndPosition(
+    request: google_protobuf_empty_pb.Empty,
     metadata: grpcWeb.Metadata | null,
     callback?: (err: grpcWeb.RpcError,
-               response: point_pb.Nothing) => void) {
+               response: google_protobuf_empty_pb.Empty) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
         this.hostname_ +
-          '/point.Point/SetDegraded',
+          '/point.Point/PutInEndPosition',
         request,
         metadata || {},
-        this.methodDescriptorSetDegraded,
+        this.methodDescriptorPutInEndPosition,
         callback);
     }
     return this.client_.unaryCall(
     this.hostname_ +
-      '/point.Point/SetDegraded',
+      '/point.Point/PutInEndPosition',
     request,
     metadata || {},
-    this.methodDescriptorSetDegraded);
-  }
-
-  methodDescriptorFinalizePosition = new grpcWeb.MethodDescriptor(
-    '/point.Point/FinalizePosition',
-    grpcWeb.MethodType.UNARY,
-    point_pb.Nothing,
-    point_pb.Nothing,
-    (request: point_pb.Nothing) => {
-      return request.serializeBinary();
-    },
-    point_pb.Nothing.deserializeBinary
-  );
-
-  finalizePosition(
-    request: point_pb.Nothing,
-    metadata: grpcWeb.Metadata | null): Promise<point_pb.Nothing>;
-
-  finalizePosition(
-    request: point_pb.Nothing,
-    metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.RpcError,
-               response: point_pb.Nothing) => void): grpcWeb.ClientReadableStream<point_pb.Nothing>;
-
-  finalizePosition(
-    request: point_pb.Nothing,
-    metadata: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.RpcError,
-               response: point_pb.Nothing) => void) {
-    if (callback !== undefined) {
-      return this.client_.rpcCall(
-        this.hostname_ +
-          '/point.Point/FinalizePosition',
-        request,
-        metadata || {},
-        this.methodDescriptorFinalizePosition,
-        callback);
-    }
-    return this.client_.unaryCall(
-    this.hostname_ +
-      '/point.Point/FinalizePosition',
-    request,
-    metadata || {},
-    this.methodDescriptorFinalizePosition);
+    this.methodDescriptorPutInEndPosition);
   }
 
   methodDescriptorGetPointPosition = new grpcWeb.MethodDescriptor(
     '/point.Point/GetPointPosition',
     grpcWeb.MethodType.UNARY,
-    point_pb.Nothing,
+    google_protobuf_empty_pb.Empty,
     point_pb.PointPositionMessage,
-    (request: point_pb.Nothing) => {
+    (request: google_protobuf_empty_pb.Empty) => {
       return request.serializeBinary();
     },
     point_pb.PointPositionMessage.deserializeBinary
   );
 
   getPointPosition(
-    request: point_pb.Nothing,
+    request: google_protobuf_empty_pb.Empty,
     metadata: grpcWeb.Metadata | null): Promise<point_pb.PointPositionMessage>;
 
   getPointPosition(
-    request: point_pb.Nothing,
+    request: google_protobuf_empty_pb.Empty,
     metadata: grpcWeb.Metadata | null,
     callback: (err: grpcWeb.RpcError,
                response: point_pb.PointPositionMessage) => void): grpcWeb.ClientReadableStream<point_pb.PointPositionMessage>;
 
   getPointPosition(
-    request: point_pb.Nothing,
+    request: google_protobuf_empty_pb.Empty,
     metadata: grpcWeb.Metadata | null,
     callback?: (err: grpcWeb.RpcError,
                response: point_pb.PointPositionMessage) => void) {
@@ -211,72 +169,287 @@ export class PointClient {
     this.methodDescriptorGetPointPosition);
   }
 
-  methodDescriptorSetPointMachineState = new grpcWeb.MethodDescriptor(
-    '/point.Point/SetPointMachineState',
+  methodDescriptorGetDegradedPointPosition = new grpcWeb.MethodDescriptor(
+    '/point.Point/GetDegradedPointPosition',
     grpcWeb.MethodType.UNARY,
-    point_pb.PointMachineStateMessage,
-    point_pb.SetPointMachineStateResponse,
-    (request: point_pb.PointMachineStateMessage) => {
+    google_protobuf_empty_pb.Empty,
+    point_pb.PointDegradedPositionMessage,
+    (request: google_protobuf_empty_pb.Empty) => {
       return request.serializeBinary();
     },
-    point_pb.SetPointMachineStateResponse.deserializeBinary
+    point_pb.PointDegradedPositionMessage.deserializeBinary
   );
 
-  setPointMachineState(
-    request: point_pb.PointMachineStateMessage,
-    metadata: grpcWeb.Metadata | null): Promise<point_pb.SetPointMachineStateResponse>;
+  getDegradedPointPosition(
+    request: google_protobuf_empty_pb.Empty,
+    metadata: grpcWeb.Metadata | null): Promise<point_pb.PointDegradedPositionMessage>;
 
-  setPointMachineState(
-    request: point_pb.PointMachineStateMessage,
+  getDegradedPointPosition(
+    request: google_protobuf_empty_pb.Empty,
     metadata: grpcWeb.Metadata | null,
     callback: (err: grpcWeb.RpcError,
-               response: point_pb.SetPointMachineStateResponse) => void): grpcWeb.ClientReadableStream<point_pb.SetPointMachineStateResponse>;
+               response: point_pb.PointDegradedPositionMessage) => void): grpcWeb.ClientReadableStream<point_pb.PointDegradedPositionMessage>;
 
-  setPointMachineState(
-    request: point_pb.PointMachineStateMessage,
+  getDegradedPointPosition(
+    request: google_protobuf_empty_pb.Empty,
     metadata: grpcWeb.Metadata | null,
     callback?: (err: grpcWeb.RpcError,
-               response: point_pb.SetPointMachineStateResponse) => void) {
+               response: point_pb.PointDegradedPositionMessage) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
         this.hostname_ +
-          '/point.Point/SetPointMachineState',
+          '/point.Point/GetDegradedPointPosition',
         request,
         metadata || {},
-        this.methodDescriptorSetPointMachineState,
+        this.methodDescriptorGetDegradedPointPosition,
         callback);
     }
     return this.client_.unaryCall(
     this.hostname_ +
-      '/point.Point/SetPointMachineState',
+      '/point.Point/GetDegradedPointPosition',
     request,
     metadata || {},
-    this.methodDescriptorSetPointMachineState);
+    this.methodDescriptorGetDegradedPointPosition);
+  }
+
+  methodDescriptorSendTimeoutMessage = new grpcWeb.MethodDescriptor(
+    '/point.Point/SendTimeoutMessage',
+    grpcWeb.MethodType.UNARY,
+    google_protobuf_empty_pb.Empty,
+    google_protobuf_empty_pb.Empty,
+    (request: google_protobuf_empty_pb.Empty) => {
+      return request.serializeBinary();
+    },
+    google_protobuf_empty_pb.Empty.deserializeBinary
+  );
+
+  sendTimeoutMessage(
+    request: google_protobuf_empty_pb.Empty,
+    metadata: grpcWeb.Metadata | null): Promise<google_protobuf_empty_pb.Empty>;
+
+  sendTimeoutMessage(
+    request: google_protobuf_empty_pb.Empty,
+    metadata: grpcWeb.Metadata | null,
+    callback: (err: grpcWeb.RpcError,
+               response: google_protobuf_empty_pb.Empty) => void): grpcWeb.ClientReadableStream<google_protobuf_empty_pb.Empty>;
+
+  sendTimeoutMessage(
+    request: google_protobuf_empty_pb.Empty,
+    metadata: grpcWeb.Metadata | null,
+    callback?: (err: grpcWeb.RpcError,
+               response: google_protobuf_empty_pb.Empty) => void) {
+    if (callback !== undefined) {
+      return this.client_.rpcCall(
+        this.hostname_ +
+          '/point.Point/SendTimeoutMessage',
+        request,
+        metadata || {},
+        this.methodDescriptorSendTimeoutMessage,
+        callback);
+    }
+    return this.client_.unaryCall(
+    this.hostname_ +
+      '/point.Point/SendTimeoutMessage',
+    request,
+    metadata || {},
+    this.methodDescriptorSendTimeoutMessage);
+  }
+
+  methodDescriptorSendAbilityToMoveMessage = new grpcWeb.MethodDescriptor(
+    '/point.Point/SendAbilityToMoveMessage',
+    grpcWeb.MethodType.UNARY,
+    point_pb.AbilityToMoveMessage,
+    google_protobuf_empty_pb.Empty,
+    (request: point_pb.AbilityToMoveMessage) => {
+      return request.serializeBinary();
+    },
+    google_protobuf_empty_pb.Empty.deserializeBinary
+  );
+
+  sendAbilityToMoveMessage(
+    request: point_pb.AbilityToMoveMessage,
+    metadata: grpcWeb.Metadata | null): Promise<google_protobuf_empty_pb.Empty>;
+
+  sendAbilityToMoveMessage(
+    request: point_pb.AbilityToMoveMessage,
+    metadata: grpcWeb.Metadata | null,
+    callback: (err: grpcWeb.RpcError,
+               response: google_protobuf_empty_pb.Empty) => void): grpcWeb.ClientReadableStream<google_protobuf_empty_pb.Empty>;
+
+  sendAbilityToMoveMessage(
+    request: point_pb.AbilityToMoveMessage,
+    metadata: grpcWeb.Metadata | null,
+    callback?: (err: grpcWeb.RpcError,
+               response: google_protobuf_empty_pb.Empty) => void) {
+    if (callback !== undefined) {
+      return this.client_.rpcCall(
+        this.hostname_ +
+          '/point.Point/SendAbilityToMoveMessage',
+        request,
+        metadata || {},
+        this.methodDescriptorSendAbilityToMoveMessage,
+        callback);
+    }
+    return this.client_.unaryCall(
+    this.hostname_ +
+      '/point.Point/SendAbilityToMoveMessage',
+    request,
+    metadata || {},
+    this.methodDescriptorSendAbilityToMoveMessage);
+  }
+
+  methodDescriptorSendGenericMessage = new grpcWeb.MethodDescriptor(
+    '/point.Point/SendGenericMessage',
+    grpcWeb.MethodType.UNARY,
+    point_pb.GenericSCIMessage,
+    google_protobuf_empty_pb.Empty,
+    (request: point_pb.GenericSCIMessage) => {
+      return request.serializeBinary();
+    },
+    google_protobuf_empty_pb.Empty.deserializeBinary
+  );
+
+  sendGenericMessage(
+    request: point_pb.GenericSCIMessage,
+    metadata: grpcWeb.Metadata | null): Promise<google_protobuf_empty_pb.Empty>;
+
+  sendGenericMessage(
+    request: point_pb.GenericSCIMessage,
+    metadata: grpcWeb.Metadata | null,
+    callback: (err: grpcWeb.RpcError,
+               response: google_protobuf_empty_pb.Empty) => void): grpcWeb.ClientReadableStream<google_protobuf_empty_pb.Empty>;
+
+  sendGenericMessage(
+    request: point_pb.GenericSCIMessage,
+    metadata: grpcWeb.Metadata | null,
+    callback?: (err: grpcWeb.RpcError,
+               response: google_protobuf_empty_pb.Empty) => void) {
+    if (callback !== undefined) {
+      return this.client_.rpcCall(
+        this.hostname_ +
+          '/point.Point/SendGenericMessage',
+        request,
+        metadata || {},
+        this.methodDescriptorSendGenericMessage,
+        callback);
+    }
+    return this.client_.unaryCall(
+    this.hostname_ +
+      '/point.Point/SendGenericMessage',
+    request,
+    metadata || {},
+    this.methodDescriptorSendGenericMessage);
+  }
+
+  methodDescriptorReset = new grpcWeb.MethodDescriptor(
+    '/point.Point/Reset',
+    grpcWeb.MethodType.UNARY,
+    google_protobuf_empty_pb.Empty,
+    google_protobuf_empty_pb.Empty,
+    (request: google_protobuf_empty_pb.Empty) => {
+      return request.serializeBinary();
+    },
+    google_protobuf_empty_pb.Empty.deserializeBinary
+  );
+
+  reset(
+    request: google_protobuf_empty_pb.Empty,
+    metadata: grpcWeb.Metadata | null): Promise<google_protobuf_empty_pb.Empty>;
+
+  reset(
+    request: google_protobuf_empty_pb.Empty,
+    metadata: grpcWeb.Metadata | null,
+    callback: (err: grpcWeb.RpcError,
+               response: google_protobuf_empty_pb.Empty) => void): grpcWeb.ClientReadableStream<google_protobuf_empty_pb.Empty>;
+
+  reset(
+    request: google_protobuf_empty_pb.Empty,
+    metadata: grpcWeb.Metadata | null,
+    callback?: (err: grpcWeb.RpcError,
+               response: google_protobuf_empty_pb.Empty) => void) {
+    if (callback !== undefined) {
+      return this.client_.rpcCall(
+        this.hostname_ +
+          '/point.Point/Reset',
+        request,
+        metadata || {},
+        this.methodDescriptorReset,
+        callback);
+    }
+    return this.client_.unaryCall(
+    this.hostname_ +
+      '/point.Point/Reset',
+    request,
+    metadata || {},
+    this.methodDescriptorReset);
+  }
+
+  methodDescriptorEstablishPointMachineState = new grpcWeb.MethodDescriptor(
+    '/point.Point/EstablishPointMachineState',
+    grpcWeb.MethodType.UNARY,
+    point_pb.PointMachineStateMessage,
+    google_protobuf_empty_pb.Empty,
+    (request: point_pb.PointMachineStateMessage) => {
+      return request.serializeBinary();
+    },
+    google_protobuf_empty_pb.Empty.deserializeBinary
+  );
+
+  establishPointMachineState(
+    request: point_pb.PointMachineStateMessage,
+    metadata: grpcWeb.Metadata | null): Promise<google_protobuf_empty_pb.Empty>;
+
+  establishPointMachineState(
+    request: point_pb.PointMachineStateMessage,
+    metadata: grpcWeb.Metadata | null,
+    callback: (err: grpcWeb.RpcError,
+               response: google_protobuf_empty_pb.Empty) => void): grpcWeb.ClientReadableStream<google_protobuf_empty_pb.Empty>;
+
+  establishPointMachineState(
+    request: point_pb.PointMachineStateMessage,
+    metadata: grpcWeb.Metadata | null,
+    callback?: (err: grpcWeb.RpcError,
+               response: google_protobuf_empty_pb.Empty) => void) {
+    if (callback !== undefined) {
+      return this.client_.rpcCall(
+        this.hostname_ +
+          '/point.Point/EstablishPointMachineState',
+        request,
+        metadata || {},
+        this.methodDescriptorEstablishPointMachineState,
+        callback);
+    }
+    return this.client_.unaryCall(
+    this.hostname_ +
+      '/point.Point/EstablishPointMachineState',
+    request,
+    metadata || {},
+    this.methodDescriptorEstablishPointMachineState);
   }
 
   methodDescriptorGetPointMachineState = new grpcWeb.MethodDescriptor(
     '/point.Point/GetPointMachineState',
     grpcWeb.MethodType.UNARY,
-    point_pb.Nothing,
+    google_protobuf_empty_pb.Empty,
     point_pb.PointMachineStateMessage,
-    (request: point_pb.Nothing) => {
+    (request: google_protobuf_empty_pb.Empty) => {
       return request.serializeBinary();
     },
     point_pb.PointMachineStateMessage.deserializeBinary
   );
 
   getPointMachineState(
-    request: point_pb.Nothing,
+    request: google_protobuf_empty_pb.Empty,
     metadata: grpcWeb.Metadata | null): Promise<point_pb.PointMachineStateMessage>;
 
   getPointMachineState(
-    request: point_pb.Nothing,
+    request: google_protobuf_empty_pb.Empty,
     metadata: grpcWeb.Metadata | null,
     callback: (err: grpcWeb.RpcError,
                response: point_pb.PointMachineStateMessage) => void): grpcWeb.ClientReadableStream<point_pb.PointMachineStateMessage>;
 
   getPointMachineState(
-    request: point_pb.Nothing,
+    request: google_protobuf_empty_pb.Empty,
     metadata: grpcWeb.Metadata | null,
     callback?: (err: grpcWeb.RpcError,
                response: point_pb.PointMachineStateMessage) => void) {

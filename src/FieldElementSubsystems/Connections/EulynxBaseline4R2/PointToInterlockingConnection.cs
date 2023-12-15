@@ -106,6 +106,12 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
         await _currentConnection.SendAsync(message.ToByteArray());
     }
 
+    private async Task SendMessage(byte[] message)
+    {
+        if (_currentConnection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
+        await _currentConnection.SendAsync(message);
+    }
+
     private async Task<T?> ReceiveMessage<T>(CancellationToken cancellationToken) where T : Message
     {
         if (_currentConnection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
@@ -137,5 +143,12 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
     {
         _timeout = CancellationTokenSource.CreateLinkedTokenSource(_stoppingToken);
         _timeout.CancelAfter(_timeoutDuration);
+    }
+
+    
+    public async Task SendGenericMessage(byte[] message)
+    {
+        if (_currentConnection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
+        await SendMessage(message);
     }
 }

@@ -12,23 +12,58 @@ enum PointPosition {
     UnintendedPosition = 3;
 }
 
+enum PointDegradedPosition {
+    DegradedRight = 0;
+    DegradedLeft = 1;
+    NotDegraded = 2;
+    NotApplicable = 3;
+}
+
+enum PreventedPosition {
+    None = 0;
+    PreventedLeft = 1;
+    PreventedRight = 2;
+    PreventTrailed = 3;
+}
 
 service Point {
-    rpc SimulateUnintendedPosition (google.protobuf.Empty) returns (google.protobuf.Empty) {}
-    rpc SetToDegradedPosition (PointDegradedMessage) returns (google.protobuf.Empty) {}
+    rpc PreventEndPosition (SimulatedPositionMessage) returns (google.protobuf.Empty) {}
     rpc PutInEndPosition (google.protobuf.Empty) returns (google.protobuf.Empty) {}
     rpc GetPointPosition (google.protobuf.Empty) returns (PointPositionMessage) {}
+    rpc GetDegradedPointPosition (google.protobuf.Empty) returns (PointDegradedPositionMessage) {}
+    rpc SendGenericMessage (GenericSCIMessage) returns (google.protobuf.Empty) {}
+    rpc Reset (google.protobuf.Empty) returns (google.protobuf.Empty) {}
 
     rpc EstablishPointMachineState (PointMachineStateMessage) returns (google.protobuf.Empty) {}
     rpc GetPointMachineState (google.protobuf.Empty) returns (PointMachineStateMessage) {}
 }
 
-message PointDegradedMessage {
-    PointPosition position = 1;
+enum AbilityToMove {
+    UNDEFINED = 0;
+    ABLE_TO_MOVE = 1;
+    UNABLE_TO_MOVE = 2;
+}
+
+message AbilityToMoveMessage{
+    AbilityToMove ability = 1;
+}
+
+message GenericSCIMessage{
+    bytes message = 1;
+    int32 data_length = 2;
+}
+
+message SimulatedPositionMessage {
+    PreventedPosition position = 1;
+    PointDegradedPosition degradedPosition = 2;
 }
 
 message PointPositionMessage {
     PointPosition position = 1;
+}
+
+message PointDegradedPositionMessage {
+    PointDegradedPosition position = 1;
 }
 
 message PointMachineStateMessage {
