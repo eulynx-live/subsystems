@@ -59,25 +59,5 @@ namespace EulynxLive.Point.Services
             return Task.FromResult(response);
         }
 
-        public override Task<Empty> EstablishPointMachineState(PointMachineStateMessage request, ServerCallContext context)
-        {
-            // Perform validation
-            if (request.Crucial == PointMachineStateMessage.Types.Crucial.Crucial && !_point.AllPointMachinesCrucial) {
-                throw new InvalidOperationException("Point has only crucial point machines");
-            }
-
-            _point.PointState.PointPosition = request.PointPosition.ConvertToReportedPointPosition();
-
-            return Task.FromResult(new Empty());
-        }
-
-        public override Task<PointMachineStateMessage> GetPointMachineState(Empty request, ServerCallContext context)
-        {
-            return Task.FromResult(new PointMachineStateMessage()
-            {
-                Crucial = _point.AllPointMachinesCrucial ? PointMachineStateMessage.Types.Crucial.Crucial : PointMachineStateMessage.Types.Crucial.NonCrucial,
-                PointPosition = _point.PointState.PointPosition.ConvertToProtoMessage(),
-            });
-        }
     }
 }
