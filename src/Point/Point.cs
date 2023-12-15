@@ -178,7 +178,7 @@ namespace EulynxLive.Point
             if (AllPointMachinesCrucial)
             {
                 if (degradedPointPosition != GenericDegradedPointPosition.NotDegraded && degradedPointPosition != GenericDegradedPointPosition.NotApplicable) 
-                    _logger.LogWarning("All point machines are crucial, ignoring degraded point position {}.", degradedPointPosition);
+                    throw new InvalidCastException($"All point machines are crucial, ignoring degraded point position {degradedPointPosition}.");
                 return GenericDegradedPointPosition.NotApplicable;
             } else 
             {
