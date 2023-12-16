@@ -87,16 +87,16 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
         await SendMessage(response);
     }
 
-    public async Task<GenericPointPosition?> ReceiveMovePointCommand(CancellationToken cancellationToken)
+    public async Task<GenericPointPosition> ReceiveMovePointCommand(CancellationToken cancellationToken)
     {
         var message = await ReceiveMessage<PointMovePointCommand>(cancellationToken);
 
-        return (message != null)? message.CommandedPointPosition switch
+        return message.CommandedPointPosition switch
         {
             PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsARightHandPointMoving => GenericPointPosition.Right,
             PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsALeftHandPointMoving => GenericPointPosition.Left,
             _ => throw new NotImplementedException(),
-        } : null;
+        };
     }
 
     private async Task SendMessage(Message message)
@@ -111,29 +111,15 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
         await CurrentConnection.SendAsync(message);
     }
 
-    private async Task<T?> ReceiveMessage<T>(CancellationToken cancellationToken) where T : Message
+    private async Task<T> ReceiveMessage<T>(CancellationToken cancellationToken) where T : Message
     {
         if (CurrentConnection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
         ResetTimeout();
 
-        try
-        {
-            var message = Message.FromBytes(await CurrentConnection.ReceiveAsync(CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _timeout.Token).Token));
-            if (message is not T)
-            {
-                _logger.LogError("Unexpected message: {}", message);
-                return null;
-            }
-            return message as T;
-        }
-        catch (RpcException e) when (e.StatusCode == StatusCode.Cancelled)
-        {
-            return null;
-        }
-        catch (OperationCanceledException)
-        {
-            return null;
-        }
+        var message = Message.FromBytes(await CurrentConnection.ReceiveAsync(CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _timeout.Token).Token));
+        if (message is T tMessage) return tMessage;
+        _logger.LogError("Unexpected message: {}", message);
+        throw new InvalidOperationException("Unexpected message.");
     }
 
     private void ResetTimeout()

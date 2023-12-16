@@ -20,26 +20,26 @@ enum PointDegradedPosition {
 }
 
 enum PreventedPosition {
-    None = 0;
-    PreventedLeft = 1;
-    PreventedRight = 2;
-    PreventTrailed = 3;
+    DoNotPrevent = 0;
+    SetUnintendedOrTrailed = 1;
+    SetNoEndPosition = 2;
 }
 
 service Point {
     rpc GetPointPosition (google.protobuf.Empty) returns (PointPositionMessage) {}
     rpc GetDegradedPointPosition (google.protobuf.Empty) returns (PointDegradedPositionMessage) {}
 
-    rpc PutIntoUnintendedPosition (SimulatedPositionMessage) returns (google.protobuf.Empty) {}
-    rpc PutIntoTrailedPosition (SimulatedPositionMessage) returns (google.protobuf.Empty) {}
+    rpc PutIntoUnintendedPosition (DegradedPositionMessage) returns (google.protobuf.Empty) {}
+    rpc PutIntoTrailedPosition (DegradedPositionMessage) returns (google.protobuf.Empty) {}
     rpc SetAbilityToMove (AbilityToMoveMessage) returns (google.protobuf.Empty) {}
 
     rpc SendSciMessage (SciMessage) returns (google.protobuf.Empty) {}
     rpc OverrideSciMessage (SciMessage) returns (google.protobuf.Empty) {}
 
-    rpc SchedulePreventEndPosition (SimulatedPositionMessage) returns (google.protobuf.Empty) {}
-    rpc ScheduleReachEndPosition (google.protobuf.Empty) returns (google.protobuf.Empty) {}
-    rpc ScheduleTimeout (google.protobuf.Empty) returns (google.protobuf.Empty) {}
+    rpc SchedulePreventRightEndPosition (PreventedPositionMessage) returns (google.protobuf.Empty) {}
+    rpc SchedulePreventLeftEndPosition (PreventedPositionMessage) returns (google.protobuf.Empty) {}
+    rpc ScheduleTimeoutRight (google.protobuf.Empty) returns (google.protobuf.Empty) {}
+    rpc ScheduleTimeoutLeft (google.protobuf.Empty) returns (google.protobuf.Empty) {}
 
     rpc Reset (google.protobuf.Empty) returns (google.protobuf.Empty) {}
 }
@@ -58,9 +58,13 @@ message SciMessage{
     bytes message = 1;
 }
 
-message SimulatedPositionMessage {
+message PreventedPositionMessage {
     PreventedPosition position = 1;
-    PointDegradedPosition degradedPosition = 2;
+    bool degradedPosition = 2;
+}
+
+message DegradedPositionMessage {
+    bool degradedPosition = 1;
 }
 
 message PointPositionMessage {

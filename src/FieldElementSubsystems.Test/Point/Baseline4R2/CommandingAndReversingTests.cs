@@ -38,13 +38,13 @@ public class CommandingAndReversingTests
             .ReturnsAsync(new PointPdiVersionCheckCommand("99W1", "100", 0x01).ToByteArray())
             .ReturnsAsync(new PointInitialisationRequestCommand("99W1", "100").ToByteArray());
 
-        foreach (var commandedPointPosition in commandedPointPositions.SkipLast(1)) {
+        foreach (var commandedPointPosition in commandedPointPositions) {
             sequenceSetup = sequenceSetup.ReturnsAsync(new PointMovePointCommand("99W1", "100", commandedPointPosition).ToByteArray());
         }
 
-        sequenceSetup.ReturnsAsync(() => {
+        sequenceSetup.Returns(() => {
             cancel.Cancel();
-            return new PointMovePointCommand("99W1", "100", commandedPointPositions.Last()).ToByteArray();
+            return new TaskCompletionSource<byte[]>().Task;
         });
 
         var receivedBytes = new List<byte[]>();

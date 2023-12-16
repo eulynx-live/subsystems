@@ -4,8 +4,11 @@ using EulynxLive.Point.Proto;
 namespace EulynxLive.Point
 {
     public record SimulatedPointState(
-        PreventedPosition PreventedPosition,
-        GenericDegradedPointPosition DegradedPointPosition,
-        bool SimulateTimeout
+        PreventedPosition PreventedPositionLeft,
+        PreventedPosition PreventedPositionRight,
+        bool DegradedPositionLeft,
+        bool DegradedPositionRight,
+        bool SimulateTimeoutLeft,
+        bool SimulateTimeoutRight
     );
 }

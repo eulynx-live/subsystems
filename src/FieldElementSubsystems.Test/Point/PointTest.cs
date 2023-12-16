@@ -7,36 +7,51 @@ using Moq;
 using EulynxLive.Point.Proto;
 using Google.Protobuf;
 using EulynxLive.Point;
+
 namespace FieldElementSubsystems.Test;
 
 public class PointTest
 {
-    private EulynxLive.Point.Point CreateDefaultPoint(IPointToInterlockingConnection? connection = null, IDictionary<string, string>? overwriteConfig= null) {
-        var config = _configuration;
-        if (overwriteConfig != null)
+    private static (EulynxLive.Point.Point, Func<Task> simulatePoint, Mock<IPointToInterlockingConnection>, CancellationTokenSource) CreateDefaultPoint(bool allPointMachinesCrucial, GenericPointState initialPointState)
+    {
+        var settings = new Dictionary<string, string?> {
+            {"PointSettings:LocalId", "99W1" },
+            {"PointSettings:LocalRastaId", "100" },
+            {"PointSettings:RemoteId", "INTERLOCKING" },
+            {"PointSettings:RemoteEndpoint", "http://localhost:50051" },
+            {"PointSettings:AllPointMachinesCrucial", allPointMachinesCrucial.ToString() },
+            {"PointSettings:InitialLastCommandedPointPosition", initialPointState.LastCommandedPointPosition.ToString() },
+            {"PointSettings:InitialPointPosition", initialPointState.PointPosition.ToString() },
+            {"PointSettings:InitialDegradedPointPosition", initialPointState.DegradedPointPosition.ToString() },
+            {"PointSettings:InitialAbilityToMove", initialPointState.AbilityToMove.ToString() },
+        };
+
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(settings)
+            .Build();
+
+        var cancel = new CancellationTokenSource();
+        var config = configuration.GetSection("PointSettings").Get<PointConfiguration>()!;
+        var mockConnection = CreateDefaultMockConnection(config);
+
+        var point = new EulynxLive.Point.Point(Mock.Of<ILogger<EulynxLive.Point.Point>>(), configuration, mockConnection.Object, Mock.Of<IConnectionProvider>(), () => Task.CompletedTask);
+
+        async Task SimulatePoint()
         {
-            foreach (var (key, value) in overwriteConfig)
+            try
             {
-                config[key] = value;
+                await point.StartAsync(cancel.Token);
             }
+            catch (OperationCanceledException) { }
         }
-        return new EulynxLive.Point.Point(_logger, config, connection ?? Mock.Of<IPointToInterlockingConnection>(), Mock.Of<IConnectionProvider>(), () => Task.CompletedTask);
+
+        return (point, SimulatePoint, mockConnection, cancel);
     }
 
-    private static Mock<IPointToInterlockingConnection> CreateDefaultMockConnection(GenericPointState initialPointState) {
+    private static Mock<IPointToInterlockingConnection> CreateDefaultMockConnection(PointConfiguration configuration)
+    {
         var mockConnection = new Mock<IPointToInterlockingConnection>();
-        mockConnection.Setup(x => x.Configuration).Returns(() => new PointConfiguration(
-                "99W1",
-                100,
-                "INTERLOCKING",
-                "http://localhost:50051",
-                true,
-                initialPointState.LastCommandedPointPosition,
-                initialPointState.PointPosition,
-                initialPointState.DegradedPointPosition,
-                initialPointState.AbilityToMove,
-                ConnectionProtocol.EulynxBaseline4R1
-            ));
+        mockConnection.Setup(x => x.Configuration).Returns(() => configuration);
         mockConnection.Setup(x => x.TimeoutToken).Returns(() => CancellationToken.None);
         mockConnection
             .Setup(m => m.SendPointPosition(
@@ -49,22 +64,23 @@ public class PointTest
         return mockConnection;
     }
 
-    private static readonly IDictionary<string, string?> TestSettings = new Dictionary<string, string?> {
-        {"PointSettings:LocalId", "99W1" },
-        {"PointSettings:LocalRastaId", "100" },
-        {"PointSettings:RemoteId", "INTERLOCKING" },
-        {"PointSettings:RemoteEndpoint", "http://localhost:50051" },
-        {"PointSettings:AllPointMachinesCrucial", "false" },
-    };
-    private readonly IConfiguration _configuration = new ConfigurationBuilder()
-        .AddInMemoryCollection(TestSettings)
-        .Build();
+    // private static readonly IDictionary<string, string?> TestSettings = new Dictionary<string, string?> {
+    //     {"PointSettings:LocalId", "99W1" },
+    //     {"PointSettings:LocalRastaId", "100" },
+    //     {"PointSettings:RemoteId", "INTERLOCKING" },
+    //     {"PointSettings:RemoteEndpoint", "http://localhost:50051" },
+    //     {"PointSettings:AllPointMachinesCrucial", "false" },
+    // };
+
+    // private readonly IConfiguration _configuration = new ConfigurationBuilder()
+    //     .AddInMemoryCollection(TestSettings)
+    //     .Build();
     private readonly ILogger<EulynxLive.Point.Point> _logger = Mock.Of<ILogger<EulynxLive.Point.Point>>();
 
     [Fact]
     public void Test_Parse_Configuration()
     {
-        var point = CreateDefaultPoint(null, new Dictionary<string, string>() {{"PointSettings:AllPointMachinesCrucial", "true" }});
+        var (point, pointTask, connection, cancel) = CreateDefaultPoint(true, new GenericPointState(null, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.NotApplicable, GenericAbilityToMove.AbleToMove));
 
         Assert.True(point.AllPointMachinesCrucial);
     }
@@ -72,38 +88,64 @@ public class PointTest
     [Fact]
     public void Test_Default_Position()
     {
-        var point = CreateDefaultPoint();
+        var (point, pointTask, connection, cancel) = CreateDefaultPoint(true, new GenericPointState(null, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.NotApplicable, GenericAbilityToMove.AbleToMove));
         Assert.Equal(GenericPointPosition.NoEndPosition, point.PointState.PointPosition);
     }
 
     [Fact]
-    public async Task Test_Timeout()
+    public async Task Test_TimeoutLeft()
     {
         // Arrange
-        var mockConnection = CreateDefaultMockConnection(new GenericPointState(null, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.NotApplicable, GenericAbilityToMove.AbleToMove));
-        var cancel = new CancellationTokenSource();
+        var (point, pointTask, connection, cancel) = CreateDefaultPoint(true, new GenericPointState(null, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.NotApplicable, GenericAbilityToMove.AbleToMove));
 
-        var point = CreateDefaultPoint(mockConnection.Object);
-        mockConnection
+        connection
             .SetupSequence(m => m.ReceiveMovePointCommand(It.IsAny<CancellationToken>()))
             .Returns(() =>
             {
-                point.EnableTimeout();
-                return Task.FromResult<GenericPointPosition?>(GenericPointPosition.Left);
+                point.EnableTimeoutLeft();
+                return Task.FromResult(GenericPointPosition.Left);
             })
             .Returns(() =>
             {
                 cancel.Cancel();
-                return new TaskCompletionSource<GenericPointPosition?>().Task;
+                return new TaskCompletionSource<GenericPointPosition>().Task;
             });
 
 
         // Act
-        await point.StartAsync(cancel.Token);
+        await pointTask();
 
         // Assert
         Assert.Equal(GenericPointPosition.NoEndPosition, point.PointState.PointPosition);
-        mockConnection.Verify(v => v.SendTimeoutMessage(), Times.Once());
+        connection.Verify(v => v.SendTimeoutMessage(), Times.Once());
+    }
+
+    [Fact]
+    public async Task Test_TimeoutRight()
+    {
+        // Arrange
+        var (point, pointTask, connection, cancel) = CreateDefaultPoint(true, new GenericPointState(null, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.NotApplicable, GenericAbilityToMove.AbleToMove));
+
+        connection
+            .SetupSequence(m => m.ReceiveMovePointCommand(It.IsAny<CancellationToken>()))
+            .Returns(() =>
+            {
+                point.EnableTimeoutRight();
+                return Task.FromResult(GenericPointPosition.Right);
+            })
+            .Returns(() =>
+            {
+                cancel.Cancel();
+                return new TaskCompletionSource<GenericPointPosition>().Task;
+            });
+
+
+        // Act
+        await pointTask();
+
+        // Assert
+        Assert.Equal(GenericPointPosition.NoEndPosition, point.PointState.PointPosition);
+        connection.Verify(v => v.SendTimeoutMessage(), Times.Once());
     }
 
     [Theory]
@@ -113,11 +155,9 @@ public class PointTest
     public async Task Test_AbilityToMove(AbilityToMove simulatedAbilityToMove, GenericPointPosition assertedPosition)
     {
         // Arrange
-        var mockConnection = CreateDefaultMockConnection(new GenericPointState(null, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.NotApplicable, GenericAbilityToMove.AbleToMove));
-        var cancel = new CancellationTokenSource();
+        var (point, pointTask, connection, cancel) = CreateDefaultPoint(true, new GenericPointState(null, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.NotApplicable, GenericAbilityToMove.AbleToMove));
 
-        var point = CreateDefaultPoint(mockConnection.Object);
-        mockConnection
+        connection
             .SetupSequence(m => m.ReceiveMovePointCommand(It.IsAny<CancellationToken>()))
             .Returns(() =>
             {
@@ -126,17 +166,17 @@ public class PointTest
                     Ability = simulatedAbilityToMove
                 };
                 point.SetAbilityToMove(message);
-                return Task.FromResult<GenericPointPosition?>(GenericPointPosition.Left);
+                return Task.FromResult(GenericPointPosition.Left);
             })
             .Returns(() =>
             {
                 cancel.Cancel();
-                return new TaskCompletionSource<GenericPointPosition?>().Task;
+                return new TaskCompletionSource<GenericPointPosition>().Task;
             });
 
 
         // Act
-        await point.StartAsync(cancel.Token);
+        await pointTask();
 
         // Assert
         Assert.Equal(assertedPosition, point.PointState.PointPosition);
@@ -146,33 +186,25 @@ public class PointTest
     public async Task Test_Send_SCI_Message()
     {
         // Arrange
-        var mockConnection = CreateDefaultMockConnection(new GenericPointState(null, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.NotApplicable, GenericAbilityToMove.AbleToMove));
-        var cancel = new CancellationTokenSource();
+        var (point, pointTask, connection, cancel) = CreateDefaultPoint(true, new GenericPointState(null, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.NotApplicable, GenericAbilityToMove.AbleToMove));
 
-        var rawBytes = new byte[]{ 0x0d, 0x0e, 0x0a, 0x0d, 0x0b, 0x0e, 0x0e, 0x0f };
+        var rawBytes = new byte[] { 0x0d, 0x0e, 0x0a, 0x0d, 0x0b, 0x0e, 0x0e, 0x0f };
         var genericMessage = new SciMessage()
         {
-            Message = ByteString.CopyFrom (rawBytes)
+            Message = ByteString.CopyFrom(rawBytes)
         };
 
-        var point = CreateDefaultPoint(mockConnection.Object);
-        mockConnection
+        connection
             .SetupSequence(m => m.ReceiveMovePointCommand(It.IsAny<CancellationToken>()))
-            .Returns(Task.FromResult<GenericPointPosition?>(null))
             .Returns(async () =>
             {
                 await point.SendSciMessage(genericMessage);
-                return null;
-            })
-            .Returns(() =>
-            {
-                cancel.Cancel();
-                return new TaskCompletionSource<GenericPointPosition?>().Task;
+                return await new TaskCompletionSource<GenericPointPosition>().Task;
             });
 
         var args = new List<byte[]>();
 
-        mockConnection
+        connection
             .SetupSequence(m => m.SendSciMessage(Capture.In(args)))
             .Returns(() =>
             {
@@ -182,7 +214,7 @@ public class PointTest
 
 
         // Act
-        await point.StartAsync(cancel.Token);
+        await pointTask();
 
         // Assert
         Assert.Equal(rawBytes, args.ToArray()[0]);
@@ -192,25 +224,22 @@ public class PointTest
     public async Task Test_Turn_Left()
     {
         // Arrange
-        var mockConnection = CreateDefaultMockConnection(new GenericPointState(null, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.NotApplicable, GenericAbilityToMove.AbleToMove));
-        var cancel = new CancellationTokenSource();
+        var (point, pointTask, connection, cancel) = CreateDefaultPoint(true, new GenericPointState(null, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.NotApplicable, GenericAbilityToMove.AbleToMove));
 
-        mockConnection
+        connection
             .SetupSequence(m => m.ReceiveMovePointCommand(It.IsAny<CancellationToken>()))
-            .Returns(Task.FromResult<GenericPointPosition?>(GenericPointPosition.Left))
+            .Returns(Task.FromResult(GenericPointPosition.Left))
             .Returns(() =>
             {
                 cancel.Cancel();
-                return new TaskCompletionSource<GenericPointPosition?>().Task;
+                return new TaskCompletionSource<GenericPointPosition>().Task;
             });
 
-        var point = CreateDefaultPoint(mockConnection.Object);
-
         // Act
-        await point.StartAsync(cancel.Token);
+        await pointTask();
 
         // Assert
-        mockConnection.Verify(v => v.InitializeConnection(It.IsAny<GenericPointState>(), It.IsAny<CancellationToken>()));
+        connection.Verify(v => v.InitializeConnection(It.IsAny<GenericPointState>(), It.IsAny<CancellationToken>()));
         Assert.Equal(GenericPointPosition.Left, point.PointState.PointPosition);
     }
 
@@ -218,25 +247,22 @@ public class PointTest
     public async Task Test_Turn_Right()
     {
         // Arrange
-        var mockConnection = CreateDefaultMockConnection(new GenericPointState(null, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.NotApplicable, GenericAbilityToMove.AbleToMove));
-        var cancel = new CancellationTokenSource();
+        var (point, pointTask, connection, cancel) = CreateDefaultPoint(true, new GenericPointState(null, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.NotApplicable, GenericAbilityToMove.AbleToMove));
 
-        mockConnection
+        connection
             .SetupSequence(m => m.ReceiveMovePointCommand(It.IsAny<CancellationToken>()))
-            .Returns(Task.FromResult<GenericPointPosition?>(GenericPointPosition.Right))
+            .Returns(Task.FromResult(GenericPointPosition.Right))
             .Returns(() =>
             {
                 cancel.Cancel();
-                return new TaskCompletionSource<GenericPointPosition?>().Task;
+                return new TaskCompletionSource<GenericPointPosition>().Task;
             });
 
-        var point = CreateDefaultPoint(mockConnection.Object);
-
         // Act
-        await point.StartAsync(cancel.Token);
+        await pointTask();
 
         // Assert
-        mockConnection.Verify(v => v.InitializeConnection(It.IsAny<GenericPointState>(), It.IsAny<CancellationToken>()));
+        connection.Verify(v => v.InitializeConnection(It.IsAny<GenericPointState>(), It.IsAny<CancellationToken>()));
         Assert.Equal(GenericPointPosition.Right, point.PointState.PointPosition);
     }
 
@@ -244,167 +270,130 @@ public class PointTest
     public async Task Test_Turnover()
     {
         // Arrange
-        var mockConnection = CreateDefaultMockConnection(new GenericPointState(null, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.NotApplicable, GenericAbilityToMove.AbleToMove));
-        var cancel = new CancellationTokenSource();
+        var (point, pointTask, connection, cancel) = CreateDefaultPoint(true, new GenericPointState(null, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.NotApplicable, GenericAbilityToMove.AbleToMove));
 
-        mockConnection
+        connection
             .SetupSequence(m => m.ReceiveMovePointCommand(It.IsAny<CancellationToken>()))
-            .Returns(Task.FromResult<GenericPointPosition?>(GenericPointPosition.Right))
-            .Returns(Task.FromResult<GenericPointPosition?>(null))
-            .Returns(Task.FromResult<GenericPointPosition?>(GenericPointPosition.Left))
+            .Returns(Task.FromResult(GenericPointPosition.Right))
+            .Returns(Task.FromResult(GenericPointPosition.Left))
             .Returns(() =>
             {
                 cancel.Cancel();
-                return new TaskCompletionSource<GenericPointPosition?>().Task;
+                return new TaskCompletionSource<GenericPointPosition>().Task;
             });
 
-        var point = CreateDefaultPoint(mockConnection.Object);
-
         // Act
-        await point.StartAsync(cancel.Token);
+        await pointTask();
 
         // Assert
-        mockConnection.Verify(v => v.InitializeConnection(It.IsAny<GenericPointState>(), It.IsAny<CancellationToken>()));
+        connection.Verify(v => v.InitializeConnection(It.IsAny<GenericPointState>(), It.IsAny<CancellationToken>()));
         Assert.Equal(GenericPointPosition.Left, point.PointState.PointPosition);
     }
 
     [Theory]
-    [InlineData(PreventedPosition.PreventedLeft, PointDegradedPosition.DegradedLeft, GenericPointPosition.Left, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.DegradedLeft)]
-    [InlineData(PreventedPosition.PreventedRight, PointDegradedPosition.DegradedRight, GenericPointPosition.Right, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.DegradedRight)]
-    [InlineData(PreventedPosition.None, PointDegradedPosition.NotDegraded, GenericPointPosition.Right, GenericPointPosition.Right, GenericDegradedPointPosition.NotDegraded)]
-    [InlineData(PreventedPosition.PreventedLeft, PointDegradedPosition.DegradedLeft, GenericPointPosition.Right, GenericPointPosition.Right, GenericDegradedPointPosition.NotDegraded)]
-    [InlineData(PreventedPosition.PreventedRight, PointDegradedPosition.DegradedRight, GenericPointPosition.Left, GenericPointPosition.Left, GenericDegradedPointPosition.NotDegraded)]
-    [InlineData(PreventedPosition.PreventedLeft, PointDegradedPosition.NotDegraded, GenericPointPosition.Left, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.NotDegraded)]
-    [InlineData(PreventedPosition.PreventedRight, PointDegradedPosition.NotDegraded, GenericPointPosition.Right, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.NotDegraded)]
-    public async Task Test_PreventEndPosition(PreventedPosition simulatedPosition, PointDegradedPosition simulatedDegradedPosition, GenericPointPosition? actionedPosition, GenericPointPosition assertedPosition, GenericDegradedPointPosition assertedDegradedPosition)
+    [InlineData(PreventedPosition.SetNoEndPosition, true, GenericPointPosition.Left, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.DegradedLeft)]
+    [InlineData(PreventedPosition.DoNotPrevent, false, GenericPointPosition.Right, GenericPointPosition.Right, GenericDegradedPointPosition.NotDegraded)]
+    [InlineData(PreventedPosition.SetNoEndPosition, true, GenericPointPosition.Right, GenericPointPosition.Right, GenericDegradedPointPosition.NotDegraded)]
+    [InlineData(PreventedPosition.SetNoEndPosition, false, GenericPointPosition.Left, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.NotDegraded)]
+    public async Task Test_PreventEndPosition(PreventedPosition simulatedPosition, bool degradePosition, GenericPointPosition commandedPosition, GenericPointPosition expectedPosition, GenericDegradedPointPosition expectedDegradedPosition)
     {
-        var cancel = new CancellationTokenSource();
         // Arrange
-        var point = CreateDefaultPoint();
-        var mockConnection = CreateDefaultMockConnection(new GenericPointState(null, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.NotApplicable, GenericAbilityToMove.AbleToMove));
+        var (point, pointTask, connection, cancel) = CreateDefaultPoint(false, new GenericPointState(GenericPointPosition.Right, GenericPointPosition.Right, GenericDegradedPointPosition.NotDegraded, GenericAbilityToMove.AbleToMove));
 
-        mockConnection
+        var message = new PreventedPositionMessage
+        {
+            Position = simulatedPosition,
+            DegradedPosition = degradePosition
+        };
+        point.PreventLeftEndPosition(message);
+
+        connection
             .SetupSequence(m => m.ReceiveMovePointCommand(It.IsAny<CancellationToken>()))
-            .Returns(() => {
-                var message = new SimulatedPositionMessage
-                {
-                    Position = simulatedPosition,
-                    DegradedPosition = simulatedDegradedPosition
-                };
-                point.PreventEndPosition(message);
-
-                return Task.FromResult<GenericPointPosition?>(null);
+            .Returns(() =>
+            {
+                return Task.FromResult(commandedPosition);
             })
-            .Returns(Task.FromResult<GenericPointPosition?>(actionedPosition))
             .Returns(() =>
             {
                 cancel.Cancel();
-                return new TaskCompletionSource<GenericPointPosition?>().Task;
+                return new TaskCompletionSource<GenericPointPosition>().Task;
             });
 
-        point = CreateDefaultPoint(mockConnection.Object);
-
         // Act
-        await point.StartAsync(CancellationToken.None);
+        await pointTask();
 
         // Assert
-        mockConnection.Verify(v => v.InitializeConnection(It.IsAny<GenericPointState>(), It.IsAny<CancellationToken>()));
-        Assert.Equal(assertedPosition, point.PointState.PointPosition);
-        Assert.Equal(assertedDegradedPosition, point.PointState.DegradedPointPosition);
+        connection.Verify(v => v.InitializeConnection(It.IsAny<GenericPointState>(), It.IsAny<CancellationToken>()));
+        Assert.Equal(expectedPosition, point.PointState.PointPosition);
+        Assert.Equal(expectedDegradedPosition, point.PointState.DegradedPointPosition);
     }
 
     [Theory]
-    [InlineData(PointDegradedPosition.NotDegraded, GenericDegradedPointPosition.NotDegraded)]
-    [InlineData(PointDegradedPosition.DegradedLeft, GenericDegradedPointPosition.DegradedLeft)]
-    [InlineData(PointDegradedPosition.DegradedRight, GenericDegradedPointPosition.DegradedRight)]
-    [InlineData(PointDegradedPosition.NotApplicable, GenericDegradedPointPosition.NotApplicable)]
-    public async Task Test_PutIntoUnintendedPosition(PointDegradedPosition simulatedDegradedPosition, GenericDegradedPointPosition assertedDegradedPosition)
+    [InlineData(false, GenericDegradedPointPosition.NotDegraded)]
+    [InlineData(true, GenericDegradedPointPosition.DegradedLeft)]
+    public async Task Test_PutIntoUnintendedPosition(bool simulatedDegradedPosition, GenericDegradedPointPosition expectedDegradedPosition)
     {
-        var cancel = new CancellationTokenSource();
         // Arrange
-        var point = CreateDefaultPoint();
-        var mockConnection = CreateDefaultMockConnection(new GenericPointState(null, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.NotApplicable, GenericAbilityToMove.AbleToMove));
+        var (point, pointTask, connection, cancel) = CreateDefaultPoint(false, new GenericPointState(GenericPointPosition.Left, GenericPointPosition.Left, GenericDegradedPointPosition.NotDegraded, GenericAbilityToMove.AbleToMove));
 
-        mockConnection
+        connection
             .SetupSequence(m => m.ReceiveMovePointCommand(It.IsAny<CancellationToken>()))
-            .Returns(async () => {
-                var message = new SimulatedPositionMessage
+            .Returns(async () =>
+            {
+                var message = new DegradedPositionMessage
                 {
-                    Position = PreventedPosition.PreventTrailed,
                     DegradedPosition = simulatedDegradedPosition
                 };
                 await point.PutIntoUnintendedPosition(message);
 
-                return null;
-            })
-            .Returns(() =>
-            {
                 cancel.Cancel();
-                return new TaskCompletionSource<GenericPointPosition?>().Task;
+                return await new TaskCompletionSource<GenericPointPosition>().Task;
             });
 
-        point = CreateDefaultPoint(mockConnection.Object);
-
         // Act
-        await point.StartAsync(CancellationToken.None);
+        await pointTask();
 
         // Assert
-        mockConnection.Verify(v => v.InitializeConnection(It.IsAny<GenericPointState>(), It.IsAny<CancellationToken>()));
+        connection.Verify(v => v.InitializeConnection(It.IsAny<GenericPointState>(), It.IsAny<CancellationToken>()));
         Assert.Equal(GenericPointPosition.UnintendedPosition, point.PointState.PointPosition);
-        Assert.Equal(assertedDegradedPosition, point.PointState.DegradedPointPosition);
+        Assert.Equal(expectedDegradedPosition, point.PointState.DegradedPointPosition);
     }
 
     [Fact]
     public async Task Test_PreventEndPosition_Multiple_Times()
     {
-        var cancel = new CancellationTokenSource();
         // Arrange
-        var point = CreateDefaultPoint();
-        var mockConnection = CreateDefaultMockConnection(new GenericPointState(null, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.NotApplicable, GenericAbilityToMove.AbleToMove));
+        var (point, pointTask, connection, cancel) = CreateDefaultPoint(false, new GenericPointState(null, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.NotApplicable, GenericAbilityToMove.AbleToMove));
 
-        mockConnection
+        var preventLeft = new PreventedPositionMessage
+        {
+            Position = PreventedPosition.SetNoEndPosition,
+            DegradedPosition = true
+        };
+        point.PreventLeftEndPosition(preventLeft);
+
+        var preventRight = new PreventedPositionMessage
+        {
+            Position = PreventedPosition.SetNoEndPosition,
+            DegradedPosition = true
+        };
+        point.PreventRightEndPosition(preventRight);
+
+        connection
             .SetupSequence(m => m.ReceiveMovePointCommand(It.IsAny<CancellationToken>()))
-            .Returns(() => {
-                var message = new SimulatedPositionMessage
-                {
-                    Position = PreventedPosition.PreventedLeft,
-                    DegradedPosition = PointDegradedPosition.DegradedLeft
-                };
-                point.PreventEndPosition(message);
-
-                return Task.FromResult<GenericPointPosition?>(null);
-            })
-            .Returns(Task.FromResult<GenericPointPosition?>(GenericPointPosition.Left))
-            .Returns(() => {
-                var message = new SimulatedPositionMessage
-                {
-                    Position = PreventedPosition.PreventedRight,
-                    DegradedPosition = PointDegradedPosition.DegradedRight
-                };
-                point.PreventEndPosition(message);
-
-                return Task.FromResult<GenericPointPosition?>(null);
-            })
-            .Returns(() => {
-                Assert.Equal(GenericPointPosition.NoEndPosition, point.PointState.PointPosition);
-                Assert.Equal(GenericDegradedPointPosition.DegradedLeft, point.PointState.DegradedPointPosition);
-
-                return Task.FromResult<GenericPointPosition?>(null);
-            })
-            .Returns(Task.FromResult<GenericPointPosition?>(GenericPointPosition.Right))
+            .Returns(() => Task.FromResult(GenericPointPosition.Left))
+            .Returns(() => Task.FromResult(GenericPointPosition.Right))
             .Returns(() =>
             {
                 cancel.Cancel();
-                return new TaskCompletionSource<GenericPointPosition?>().Task;
+                return new TaskCompletionSource<GenericPointPosition>().Task;
             });
 
-        point = CreateDefaultPoint(mockConnection.Object);
-
         // Act
-        await point.StartAsync(CancellationToken.None);
+        await pointTask();
 
         // Assert
-        mockConnection.Verify(v => v.InitializeConnection(It.IsAny<GenericPointState>(), It.IsAny<CancellationToken>()));
+        connection.Verify(v => v.InitializeConnection(It.IsAny<GenericPointState>(), It.IsAny<CancellationToken>()));
         Assert.Equal(GenericPointPosition.NoEndPosition, point.PointState.PointPosition);
         Assert.Equal(GenericDegradedPointPosition.DegradedRight, point.PointState.DegradedPointPosition);
     }

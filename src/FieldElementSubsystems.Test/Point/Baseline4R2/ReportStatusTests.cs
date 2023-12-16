@@ -36,7 +36,11 @@ public class ReportStatusTests
         var mockConnection = new Mock<IConnection>();
         mockConnection.SetupSequence(x => x.ReceiveAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(new PointPdiVersionCheckCommand("99W1", "100", 0x01).ToByteArray())
-            .ReturnsAsync(new PointInitialisationRequestCommand("99W1", "100").ToByteArray());
+            .ReturnsAsync(new PointInitialisationRequestCommand("99W1", "100").ToByteArray())
+            .Returns(() => {
+                cancel.Cancel();
+                return new TaskCompletionSource<byte[]>().Task;
+            });
 
         var receivedBytes = new List<byte[]>();
         mockConnection.Setup(x => x.SendAsync(Capture.In(receivedBytes)))

@@ -22,9 +22,15 @@ namespace EulynxLive.Point.Services
             return new Empty();
         }
 
-        public override Task<Empty> ScheduleTimeout(Empty request, ServerCallContext context)
+        public override Task<Empty> ScheduleTimeoutRight(Empty request, ServerCallContext context)
         {
-            _point.EnableTimeout();
+            _point.EnableTimeoutRight();
+            return Task.FromResult(new Empty());
+        }
+
+        public override Task<Empty> ScheduleTimeoutLeft(Empty request, ServerCallContext context)
+        {
+            _point.EnableTimeoutLeft();
             return Task.FromResult(new Empty());
         }
 
@@ -40,33 +46,33 @@ namespace EulynxLive.Point.Services
             return new Empty();
         }
 
-        public override Task<Empty> SchedulePreventEndPosition(SimulatedPositionMessage message, ServerCallContext context)
+        public override Task<Empty> SchedulePreventLeftEndPosition(PreventedPositionMessage request, ServerCallContext context)
         {
-            _point.PreventEndPosition(message);
+            _point.PreventLeftEndPosition(request);
             return Task.FromResult(new Empty());
         }
 
-        public override async Task<Empty> PutIntoUnintendedPosition(SimulatedPositionMessage message, ServerCallContext context)
+        override public Task<Empty> SchedulePreventRightEndPosition(PreventedPositionMessage request, ServerCallContext context)
         {
-            if (_point.Connection.Configuration.ConnectionProtocol != ConnectionProtocol.EulynxBaseline4R2)
-                throw new RpcException(new Status(StatusCode.InvalidArgument, "Only supported for EulynxBaseline4R2"));
-
-            await _point.PutIntoUnintendedPosition(message);
-            return new Empty();
+            _point.PreventRightEndPosition(request);
+            return Task.FromResult(new Empty());
         }
 
-        public override async Task<Empty> PutIntoTrailedPosition(SimulatedPositionMessage message, ServerCallContext context)
+        public override async Task<Empty> PutIntoTrailedPosition(DegradedPositionMessage request, ServerCallContext context)
         {
             if (_point.Connection.Configuration.ConnectionProtocol != ConnectionProtocol.EulynxBaseline4R1)
                 throw new RpcException(new Status(StatusCode.InvalidArgument, "Only supported for EulynxBaseline4R1"));
 
-            await _point.PutIntoUnintendedPosition(message);
+            await _point.PutIntoUnintendedPosition(request);
             return new Empty();
         }
 
-        public override async Task<Empty> ScheduleReachEndPosition(Empty request, ServerCallContext context)
+        public override async Task<Empty> PutIntoUnintendedPosition(DegradedPositionMessage request, ServerCallContext context)
         {
-            await _point.PutInEndPosition();
+            if (_point.Connection.Configuration.ConnectionProtocol != ConnectionProtocol.EulynxBaseline4R2)
+                throw new RpcException(new Status(StatusCode.InvalidArgument, "Only supported for EulynxBaseline4R2"));
+
+            await _point.PutIntoUnintendedPosition(request);
             return new Empty();
         }
 
