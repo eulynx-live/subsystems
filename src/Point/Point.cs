@@ -155,9 +155,7 @@ namespace EulynxLive.Point
         /// </summary>
         private void UpdatePointState(GenericPointPosition commandedPointPosition)
         {
-            GenericPointPosition newPointPosition = _pointState.PointPosition;
-            GenericDegradedPointPosition newDegradedPointPosition = _pointState.DegradedPointPosition;
-            (newPointPosition, newDegradedPointPosition) = HandlePreventedPointPosition(commandedPointPosition);
+            var (newPointPosition, newDegradedPointPosition) = HandlePreventedPointPosition(commandedPointPosition);
             (newPointPosition, newDegradedPointPosition) = HandleAbilityToMove(newPointPosition, newDegradedPointPosition);
             SetPointState(newPointPosition, RespectAllPointMachinesCrucial(newDegradedPointPosition));
         }
@@ -303,10 +301,9 @@ namespace EulynxLive.Point
         /// <param name="degradedPointPosition"></param>
         private (GenericPointPosition PointPosition, GenericDegradedPointPosition DegradedPointPosition) HandlePreventedPointPosition(GenericPointPosition commandedPosition)
         {
-            GenericPointPosition pointPosition = _pointState.PointPosition;
-            GenericDegradedPointPosition degradedPointPosition = _pointState.DegradedPointPosition;
+            var pointPosition = commandedPosition;
+            var degradedPointPosition = _pointState.DegradedPointPosition;
 
-            pointPosition = commandedPosition;
             switch (_simulatedPointState.PreventedPosition)
             {
                 case PreventedPosition.PreventedLeft:
