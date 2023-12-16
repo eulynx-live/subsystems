@@ -87,7 +87,7 @@ namespace EulynxLive.Point
             _webSockets.Remove(webSocket);
         }
 
-        public async Task SendGenericMessage(GenericSCIMessage message){
+        public async Task SendSCIMessage(GenericSCIMessage message){
             _logger.LogInformation("Sending generic message: {}", message.Message);
             await _connection.SendGenericMessage(message.Message.ToByteArray());
         }
@@ -107,12 +107,12 @@ namespace EulynxLive.Point
 
         /// <summary>
         /// Sets the ability to move for the next command.
-        /// </summary> 
+        /// </summary>
         public void SetAbilityToMove(AbilityToMoveMessage abilityToMoveMessage){
             _logger.LogInformation("Setting ability to move to {}.", abilityToMoveMessage.Ability);
             _simulatedPointState.AbilityToMove = abilityToMoveMessage.Ability;
         }
-        
+
         /// <summary>
         /// Puts the point into an unintended position immediately.
         /// </summary>
@@ -137,7 +137,7 @@ namespace EulynxLive.Point
             {
                 throw new InvalidOperationException($"Prevented position {simulatedPositionMessage.Position} and degraded position {simulatedPositionMessage.DegradedPosition} are not compatible.");
             }
-            
+
             _simulatedPointState.PreventedPosition = simulatedPositionMessage.Position;
             _simulatedPointState.DegradedPointPosition = simulatedPositionMessage.DegradedPosition.ConvertToDegradedPointPosition();
             _logger.LogInformation("Preventing end position {} with degraded point position {} on next command.", _simulatedPointState.PreventedPosition, _simulatedPointState.DegradedPointPosition);
@@ -157,10 +157,8 @@ namespace EulynxLive.Point
         {
             GenericPointPosition newPointPosition = _pointState.PointPosition;
             GenericDegradedPointPosition newDegradedPointPosition = _pointState.DegradedPointPosition;
-
-            HandlePreventedPointPosition(commandedPointPosition, ref newPointPosition, ref newDegradedPointPosition);
+            (newPointPosition, newDegradedPointPosition) = HandlePreventedPointPosition(commandedPointPosition);
             HandleAbilityToMove(ref newPointPosition, ref newDegradedPointPosition);
-
             SetPointState(newPointPosition, RespectAllPointMachinesCrucial(newDegradedPointPosition));
         }
 
@@ -202,14 +200,14 @@ namespace EulynxLive.Point
         /// </summary>
         /// <param name="degradedPointPosition"></param>
         /// <returns></returns>
-        private GenericDegradedPointPosition RespectAllPointMachinesCrucial(GenericDegradedPointPosition degradedPointPosition) 
+        private GenericDegradedPointPosition RespectAllPointMachinesCrucial(GenericDegradedPointPosition degradedPointPosition)
         {
             if (AllPointMachinesCrucial)
             {
-                if (degradedPointPosition != GenericDegradedPointPosition.NotDegraded && degradedPointPosition != GenericDegradedPointPosition.NotApplicable) 
-                    _logger.LogWarning("All point machines are crucial, ignoring degraded point position {}.", degradedPointPosition);
+                if (degradedPointPosition != GenericDegradedPointPosition.NotDegraded && degradedPointPosition != GenericDegradedPointPosition.NotApplicable)
+                    throw new InvalidCastException($"All point machines are crucial, ignoring degraded point position {degradedPointPosition}.");
                 return GenericDegradedPointPosition.NotApplicable;
-            } else 
+            } else
             {
                 return degradedPointPosition;
             }
@@ -303,8 +301,11 @@ namespace EulynxLive.Point
         /// <param name="commandedPosition"></param>
         /// <param name="pointPosition"></param>
         /// <param name="degradedPointPosition"></param>
-        private void HandlePreventedPointPosition(GenericPointPosition commandedPosition, ref GenericPointPosition pointPosition, ref GenericDegradedPointPosition degradedPointPosition)
+        private Tuple<GenericPointPosition, GenericDegradedPointPosition> HandlePreventedPointPosition(GenericPointPosition commandedPosition)
         {
+            GenericPointPosition pointPosition = _pointState.PointPosition;
+            GenericDegradedPointPosition degradedPointPosition = _pointState.DegradedPointPosition;
+
             pointPosition = commandedPosition;
             switch (_simulatedPointState.PreventedPosition)
             {
@@ -329,6 +330,7 @@ namespace EulynxLive.Point
             }
             _simulatedPointState.PreventedPosition = PreventedPosition.None;
             _simulatedPointState.DegradedPointPosition = GenericDegradedPointPosition.NotDegraded;
+            return new Tuple<GenericPointPosition, GenericDegradedPointPosition>(pointPosition, degradedPointPosition);
         }
 
         private void HandleAbilityToMove(ref GenericPointPosition pointPosition, ref GenericDegradedPointPosition degradedPointPosition)

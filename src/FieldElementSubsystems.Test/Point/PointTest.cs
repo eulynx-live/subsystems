@@ -140,7 +140,7 @@ public class PointTest
     }
 
     [Fact]
-    public async Task Test_Send_Generic_Message()
+    public async Task Test_Send_SCI_Message()
     {
         // Arrange
         var mockConnection = CreateDefaultMockConnection();
@@ -158,7 +158,7 @@ public class PointTest
             .Returns(Task.FromResult<GenericPointPosition?>(null))
             .Returns(async () =>
             {
-                await point.SendGenericMessage(genericMessage);
+                await point.SendSCIMessage(genericMessage);
                 return null;
             })
             .Returns(() =>
