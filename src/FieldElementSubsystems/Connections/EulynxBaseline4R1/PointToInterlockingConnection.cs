@@ -87,7 +87,7 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
         await SendMessage(response);
     }
 
-    public async Task<GenericPointPosition?> ReceivePointPosition(CancellationToken cancellationToken)
+    public async Task<GenericPointPosition?> ReceiveMovePointCommand(CancellationToken cancellationToken)
     {
         var message = await ReceiveMessage<PointMovePointCommand>(cancellationToken);
 

@@ -105,8 +105,8 @@ public class PointToInterlockingConnectionTest{
         // Act
         connection.Connect(mockConnection.Object);
         await connection.InitializeConnection(new GenericPointState(LastCommandedPointPosition: null, PointPosition:  GenericPointPosition.Left, DegradedPointPosition:  GenericDegradedPointPosition.NotDegraded, AbilityToMove: GenericAbilityToMove.AbleToMove), CancellationToken.None);
-        var position1 = await connection.ReceivePointPosition(CancellationToken.None);
-        var position2 = await connection.ReceivePointPosition(CancellationToken.None);
+        var position1 = await connection.ReceiveMovePointCommand(CancellationToken.None);
+        var position2 = await connection.ReceiveMovePointCommand(CancellationToken.None);
 
         // Assert
         mockConnection.Verify(v => v.ReceiveAsync(It.IsAny<CancellationToken>()), Times.Exactly(4));

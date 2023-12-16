@@ -1,17 +1,19 @@
+using EulynxLive.FieldElementSubsystems.Configuration;
 using EulynxLive.FieldElementSubsystems.Connections.EulynxBaseline4R2;
 using EulynxLive.FieldElementSubsystems.Interfaces;
 using EulynxLive.Messages.Baseline4R2;
+using EulynxLive.Point;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 using Moq;
 
-namespace FieldElementSubsystems.Test.Connection.Baseline4R2;
+namespace FieldElementSubsystems.Test.Point.Baseline4R2;
 
 public class ReportStatusTests
 {
-    private static (PointToInterlockingConnection connection, List<byte[]> receivedBytes) CreateMockedPointConnectionWithInitializationRequest(bool allPointMachinesCrucial)
+    private static (EulynxLive.Point.Point point, Task, List<byte[]> receivedBytes) CreateMockedPointConnectionWithInitializationRequest(bool allPointMachinesCrucial, GenericPointState initialPointState)
     {
         var settings = new Dictionary<string, string?> {
             {"PointSettings:LocalId", "99W1" },
@@ -19,11 +21,17 @@ public class ReportStatusTests
             {"PointSettings:RemoteId", "INTERLOCKING" },
             {"PointSettings:RemoteEndpoint", "http://localhost:50051" },
             {"PointSettings:AllPointMachinesCrucial", allPointMachinesCrucial.ToString() },
+            {"PointSettings:InitialLastCommandedPointPosition", initialPointState.LastCommandedPointPosition.ToString() },
+            {"PointSettings:InitialPointPosition", initialPointState.PointPosition.ToString() },
+            {"PointSettings:InitialDegradedPointPosition", initialPointState.DegradedPointPosition.ToString() },
+            {"PointSettings:InitialAbilityToMove", initialPointState.AbilityToMove.ToString() },
         };
 
         var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(settings)
             .Build();
+
+        var cancel = new CancellationTokenSource();
 
         var mockConnection = new Mock<IConnection>();
         mockConnection.SetupSequence(x => x.ReceiveAsync(It.IsAny<CancellationToken>()))
@@ -34,10 +42,26 @@ public class ReportStatusTests
         mockConnection.Setup(x => x.SendAsync(Capture.In(receivedBytes)))
             .Returns(Task.FromResult(0));
 
+        var connectionProvider = new Mock<IConnectionProvider>();
+        connectionProvider
+            .Setup(x => x.Connect(It.IsAny<PointConfiguration>(), It.IsAny<CancellationToken>()))
+            .Returns(mockConnection.Object);
+
         var connection = new PointToInterlockingConnection(Mock.Of<ILogger<PointToInterlockingConnection>>(), configuration, CancellationToken.None);
         connection.Connect(mockConnection.Object);
 
-        return (connection, receivedBytes);
+        var point = new EulynxLive.Point.Point(Mock.Of<ILogger<EulynxLive.Point.Point>>(), configuration, connection, connectionProvider.Object, () => Task.CompletedTask);
+
+        async Task SimulatePoint()
+        {
+            try
+            {
+                await point.StartAsync(cancel.Token);
+            }
+            catch (OperationCanceledException) { }
+        }
+
+        return (point, SimulatePoint(), receivedBytes);
     }
 
     /// <summary>
@@ -47,16 +71,16 @@ public class ReportStatusTests
     public async Task ReportStatusWithSinglePointMachine()
     {
         // Arrange
-        var (connection, receivedBytes) = CreateMockedPointConnectionWithInitializationRequest(true);
-
-        // Act
-        await connection.InitializeConnection(new GenericPointState
+        var (point, pointTask, receivedBytes) = CreateMockedPointConnectionWithInitializationRequest(true, new GenericPointState
         (
             LastCommandedPointPosition: null,
             PointPosition: GenericPointPosition.NoEndPosition,
             DegradedPointPosition: GenericDegradedPointPosition.NotApplicable,
             AbilityToMove: GenericAbilityToMove.AbleToMove
-        ), CancellationToken.None);
+        ));
+
+        // Act
+        await pointTask;
 
         // Assert
         var receivedMessages = receivedBytes.Select(x => Message.FromBytes(x)).ToList();
@@ -84,16 +108,16 @@ public class ReportStatusTests
     public async Task ReportPointPositionWithSinglePointMachine(GenericPointPosition? lastCommandedPointPosition, GenericPointPosition currentPosition, PointPointPositionMessageReportedPointPosition expectedReportedPointPosition)
     {
         // Arrange
-        var (connection, receivedBytes) = CreateMockedPointConnectionWithInitializationRequest(true);
-
-        // Act
-        await connection.InitializeConnection(new GenericPointState
+        var (point, pointTask, receivedBytes) = CreateMockedPointConnectionWithInitializationRequest(true, new GenericPointState
         (
             LastCommandedPointPosition: lastCommandedPointPosition,
             PointPosition: currentPosition,
             DegradedPointPosition: GenericDegradedPointPosition.NotApplicable,
             AbilityToMove: GenericAbilityToMove.AbleToMove
-        ), CancellationToken.None);
+        ));
+
+        // Act
+        await pointTask;
 
         // Assert
         var receivedMessages = receivedBytes.Select(x => Message.FromBytes(x)).ToList();
@@ -110,16 +134,16 @@ public class ReportStatusTests
     public async Task ReportAbilityToMoveWithSinglePointMachine(GenericAbilityToMove currentAbilityToMove, PointAbilityToMovePointMessageReportedAbilityToMovePointStatus expectedReportedAbilityToMove)
     {
         // Arrange
-        var (connection, receivedBytes) = CreateMockedPointConnectionWithInitializationRequest(true);
-
-        // Act
-        await connection.InitializeConnection(new GenericPointState
+        var (point, pointTask, receivedBytes) = CreateMockedPointConnectionWithInitializationRequest(true, new GenericPointState
         (
             LastCommandedPointPosition: null,
             PointPosition: GenericPointPosition.NoEndPosition,
             DegradedPointPosition: GenericDegradedPointPosition.NotApplicable,
             AbilityToMove: currentAbilityToMove
-        ), CancellationToken.None);
+        ));
+
+        // Act
+        await pointTask;
 
         // Assert
         var receivedMessages = receivedBytes.Select(x => Message.FromBytes(x)).ToList();
@@ -138,16 +162,16 @@ public class ReportStatusTests
     public async Task ReportPointPositionWithMultiplePointMachines(bool allPointMachinesCrucial, GenericDegradedPointPosition currentDegradedPosition, PointPointPositionMessageReportedDegradedPointPosition expectedReportedDegradedPosition)
     {
         // Arrange
-        var (connection, receivedBytes) = CreateMockedPointConnectionWithInitializationRequest(allPointMachinesCrucial);
-
-        // Act
-        await connection.InitializeConnection(new GenericPointState
+        var (point, pointTask, receivedBytes) = CreateMockedPointConnectionWithInitializationRequest(allPointMachinesCrucial, new GenericPointState
         (
             LastCommandedPointPosition: null,
             PointPosition: GenericPointPosition.NoEndPosition,
             DegradedPointPosition: currentDegradedPosition,
             AbilityToMove: GenericAbilityToMove.AbleToMove
-        ), CancellationToken.None);
+        ));
+
+        // Act
+        await pointTask;
 
         // Assert
         var receivedMessages = receivedBytes.Select(x => Message.FromBytes(x)).ToList();
@@ -167,16 +191,16 @@ public class ReportStatusTests
         // The only difference to the single point machine case is that we're passing 'false' for 'allPointMachinesCrucial'.
 
         // Arrange
-        var (connection, receivedBytes) = CreateMockedPointConnectionWithInitializationRequest(false);
-
-        // Act
-        await connection.InitializeConnection(new GenericPointState
+        var (point, pointTask, receivedBytes) = CreateMockedPointConnectionWithInitializationRequest(false, new GenericPointState
         (
             LastCommandedPointPosition: null,
             PointPosition: GenericPointPosition.NoEndPosition,
             DegradedPointPosition: GenericDegradedPointPosition.NotApplicable,
             AbilityToMove: currentAbilityToMove
-        ), CancellationToken.None);
+        ));
+
+        // Act
+        await pointTask;
 
         // Assert
         var receivedMessages = receivedBytes.Select(x => Message.FromBytes(x)).ToList();

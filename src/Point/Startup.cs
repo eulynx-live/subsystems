@@ -72,10 +72,7 @@ namespace EulynxLive.Point
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGrpcService<PointService>().EnableGrpcWeb();
-                if (env.IsDevelopment())
-                {
-                    endpoints.MapGrpcReflectionService();
-                }
+                endpoints.MapGrpcReflectionService();
             });
 
             app.UseSpa(spa =>

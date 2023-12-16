@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using EulynxLive.Point.Proto;
 using Google.Protobuf;
+using EulynxLive.Point;
 namespace FieldElementSubsystems.Test;
 
 public class PointTest
@@ -19,10 +20,10 @@ public class PointTest
                 config[key] = value;
             }
         }
-        return new EulynxLive.Point.Point(_logger, config, connection ?? Mock.Of<IPointToInterlockingConnection>(), () => Task.CompletedTask);
+        return new EulynxLive.Point.Point(_logger, config, connection ?? Mock.Of<IPointToInterlockingConnection>(), Mock.Of<IConnectionProvider>(), () => Task.CompletedTask);
     }
 
-    private static Mock<IPointToInterlockingConnection> CreateDefaultMockConnection() {
+    private static Mock<IPointToInterlockingConnection> CreateDefaultMockConnection(GenericPointState initialPointState) {
         var mockConnection = new Mock<IPointToInterlockingConnection>();
         mockConnection.Setup(x => x.Configuration).Returns(() => new PointConfiguration(
                 "99W1",
@@ -30,6 +31,10 @@ public class PointTest
                 "INTERLOCKING",
                 "http://localhost:50051",
                 true,
+                initialPointState.LastCommandedPointPosition,
+                initialPointState.PointPosition,
+                initialPointState.DegradedPointPosition,
+                initialPointState.AbilityToMove,
                 ConnectionProtocol.EulynxBaseline4R1
             ));
         mockConnection.Setup(x => x.TimeoutToken).Returns(() => CancellationToken.None);
@@ -75,12 +80,12 @@ public class PointTest
     public async Task Test_Timeout()
     {
         // Arrange
-        var mockConnection = CreateDefaultMockConnection();
+        var mockConnection = CreateDefaultMockConnection(new GenericPointState(null, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.NotApplicable, GenericAbilityToMove.AbleToMove));
         var cancel = new CancellationTokenSource();
 
         var point = CreateDefaultPoint(mockConnection.Object);
         mockConnection
-            .SetupSequence(m => m.ReceivePointPosition(It.IsAny<CancellationToken>()))
+            .SetupSequence(m => m.ReceiveMovePointCommand(It.IsAny<CancellationToken>()))
             .Returns(() =>
             {
                 point.EnableTimeout();
@@ -108,12 +113,12 @@ public class PointTest
     public async Task Test_AbilityToMove(AbilityToMove simulatedAbilityToMove, GenericPointPosition assertedPosition)
     {
         // Arrange
-        var mockConnection = CreateDefaultMockConnection();
+        var mockConnection = CreateDefaultMockConnection(new GenericPointState(null, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.NotApplicable, GenericAbilityToMove.AbleToMove));
         var cancel = new CancellationTokenSource();
 
         var point = CreateDefaultPoint(mockConnection.Object);
         mockConnection
-            .SetupSequence(m => m.ReceivePointPosition(It.IsAny<CancellationToken>()))
+            .SetupSequence(m => m.ReceiveMovePointCommand(It.IsAny<CancellationToken>()))
             .Returns(() =>
             {
                 var message = new AbilityToMoveMessage
@@ -141,7 +146,7 @@ public class PointTest
     public async Task Test_Send_SCI_Message()
     {
         // Arrange
-        var mockConnection = CreateDefaultMockConnection();
+        var mockConnection = CreateDefaultMockConnection(new GenericPointState(null, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.NotApplicable, GenericAbilityToMove.AbleToMove));
         var cancel = new CancellationTokenSource();
 
         var rawBytes = new byte[]{ 0x0d, 0x0e, 0x0a, 0x0d, 0x0b, 0x0e, 0x0e, 0x0f };
@@ -152,7 +157,7 @@ public class PointTest
 
         var point = CreateDefaultPoint(mockConnection.Object);
         mockConnection
-            .SetupSequence(m => m.ReceivePointPosition(It.IsAny<CancellationToken>()))
+            .SetupSequence(m => m.ReceiveMovePointCommand(It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult<GenericPointPosition?>(null))
             .Returns(async () =>
             {
@@ -187,11 +192,11 @@ public class PointTest
     public async Task Test_Turn_Left()
     {
         // Arrange
-        var mockConnection = CreateDefaultMockConnection();
+        var mockConnection = CreateDefaultMockConnection(new GenericPointState(null, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.NotApplicable, GenericAbilityToMove.AbleToMove));
         var cancel = new CancellationTokenSource();
 
         mockConnection
-            .SetupSequence(m => m.ReceivePointPosition(It.IsAny<CancellationToken>()))
+            .SetupSequence(m => m.ReceiveMovePointCommand(It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult<GenericPointPosition?>(GenericPointPosition.Left))
             .Returns(() =>
             {
@@ -213,11 +218,11 @@ public class PointTest
     public async Task Test_Turn_Right()
     {
         // Arrange
-        var mockConnection = CreateDefaultMockConnection();
+        var mockConnection = CreateDefaultMockConnection(new GenericPointState(null, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.NotApplicable, GenericAbilityToMove.AbleToMove));
         var cancel = new CancellationTokenSource();
 
         mockConnection
-            .SetupSequence(m => m.ReceivePointPosition(It.IsAny<CancellationToken>()))
+            .SetupSequence(m => m.ReceiveMovePointCommand(It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult<GenericPointPosition?>(GenericPointPosition.Right))
             .Returns(() =>
             {
@@ -239,11 +244,11 @@ public class PointTest
     public async Task Test_Turnover()
     {
         // Arrange
-        var mockConnection = CreateDefaultMockConnection();
+        var mockConnection = CreateDefaultMockConnection(new GenericPointState(null, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.NotApplicable, GenericAbilityToMove.AbleToMove));
         var cancel = new CancellationTokenSource();
 
         mockConnection
-            .SetupSequence(m => m.ReceivePointPosition(It.IsAny<CancellationToken>()))
+            .SetupSequence(m => m.ReceiveMovePointCommand(It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult<GenericPointPosition?>(GenericPointPosition.Right))
             .Returns(Task.FromResult<GenericPointPosition?>(null))
             .Returns(Task.FromResult<GenericPointPosition?>(GenericPointPosition.Left))
@@ -276,10 +281,10 @@ public class PointTest
         var cancel = new CancellationTokenSource();
         // Arrange
         var point = CreateDefaultPoint();
-        var mockConnection = CreateDefaultMockConnection();
+        var mockConnection = CreateDefaultMockConnection(new GenericPointState(null, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.NotApplicable, GenericAbilityToMove.AbleToMove));
 
         mockConnection
-            .SetupSequence(m => m.ReceivePointPosition(It.IsAny<CancellationToken>()))
+            .SetupSequence(m => m.ReceiveMovePointCommand(It.IsAny<CancellationToken>()))
             .Returns(() => {
                 var message = new SimulatedPositionMessage
                 {
@@ -318,10 +323,10 @@ public class PointTest
         var cancel = new CancellationTokenSource();
         // Arrange
         var point = CreateDefaultPoint();
-        var mockConnection = CreateDefaultMockConnection();
+        var mockConnection = CreateDefaultMockConnection(new GenericPointState(null, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.NotApplicable, GenericAbilityToMove.AbleToMove));
 
         mockConnection
-            .SetupSequence(m => m.ReceivePointPosition(It.IsAny<CancellationToken>()))
+            .SetupSequence(m => m.ReceiveMovePointCommand(It.IsAny<CancellationToken>()))
             .Returns(async () => {
                 var message = new SimulatedPositionMessage
                 {
@@ -355,10 +360,10 @@ public class PointTest
         var cancel = new CancellationTokenSource();
         // Arrange
         var point = CreateDefaultPoint();
-        var mockConnection = CreateDefaultMockConnection();
+        var mockConnection = CreateDefaultMockConnection(new GenericPointState(null, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.NotApplicable, GenericAbilityToMove.AbleToMove));
 
         mockConnection
-            .SetupSequence(m => m.ReceivePointPosition(It.IsAny<CancellationToken>()))
+            .SetupSequence(m => m.ReceiveMovePointCommand(It.IsAny<CancellationToken>()))
             .Returns(() => {
                 var message = new SimulatedPositionMessage
                 {

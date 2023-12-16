@@ -7,6 +7,7 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
 using Point.Services.Extensions;
+using System.Drawing;
 
 namespace EulynxLive.Point
 {
@@ -18,6 +19,20 @@ namespace EulynxLive.Point
         public AbilityToMove AbilityToMove { get; set; }
     }
 
+    public interface IConnectionProvider
+    {
+        IConnection Connect(PointConfiguration configuration, CancellationToken stoppingToken);
+    }
+
+    public class GrpcConnectionProvider : IConnectionProvider
+    {
+        public IConnection Connect(PointConfiguration configuration, CancellationToken stoppingToken)
+        {
+            var metadata = new Metadata { { "rasta-id", configuration.LocalRastaId.ToString() } };
+            return new GrpcConnection(metadata, configuration.RemoteEndpoint, stoppingToken);
+        }
+    }
+
     public class Point : BackgroundService
     {
         public bool AllPointMachinesCrucial { get; }
@@ -25,28 +40,29 @@ namespace EulynxLive.Point
         public IPointToInterlockingConnection Connection { get; }
 
         private readonly ILogger<Point> _logger;
+        private readonly IConnectionProvider _connectionProvider;
         private readonly Func<Task> _simulateTimeout;
+        private readonly PointConfiguration _config;
         private readonly List<WebSocket> _webSockets;
 
         private readonly Random _random;
         private bool _initialized;
         private readonly SimulatedPointState _simulatedPointState;
 
-        public Point(ILogger<Point> logger, IConfiguration configuration, IPointToInterlockingConnection connection, Func<Task> simulateTimeout)
+        public Point(ILogger<Point> logger, IConfiguration configuration, IPointToInterlockingConnection connection, IConnectionProvider connectionProvider, Func<Task> simulateTimeout)
         {
             _logger = logger;
             _simulateTimeout = simulateTimeout;
 
-            var config = configuration.GetSection("PointSettings").Get<PointConfiguration>() ?? throw new Exception("No configuration provided");
-            AllPointMachinesCrucial = config.AllPointMachinesCrucial;
+            _config = configuration.GetSection("PointSettings").Get<PointConfiguration>() ?? throw new Exception("No configuration provided");
 
             _webSockets = new List<WebSocket>();
             PointState = new GenericPointState
             (
-                LastCommandedPointPosition: null,
-                DegradedPointPosition: RespectAllPointMachinesCrucial(GenericDegradedPointPosition.NotDegraded),
-                PointPosition: GenericPointPosition.NoEndPosition,
-                AbilityToMove: GenericAbilityToMove.AbleToMove
+                LastCommandedPointPosition: _config.InitialLastCommandedPointPosition,
+                DegradedPointPosition: RespectAllPointMachinesCrucial(_config.InitialDegradedPointPosition),
+                PointPosition: _config.InitialPointPosition,
+                AbilityToMove: _config.InitialAbilityToMove
             );
             _simulatedPointState = new SimulatedPointState()
             {
@@ -57,6 +73,7 @@ namespace EulynxLive.Point
             };
             _random = new Random();
             Connection = connection;
+            _connectionProvider = connectionProvider;
         }
 
         public async Task HandleWebSocket(WebSocket webSocket)
@@ -216,9 +233,8 @@ namespace EulynxLive.Point
             while (true)
             {
                 _logger.LogTrace("Connecting...");
-                var metadata = new Metadata { { "rasta-id", Connection.Configuration.LocalRastaId.ToString() } };
-                using var grpc = new GrpcConnection(metadata, Connection.Configuration.RemoteEndpoint, stoppingToken);
-                Connection.Connect(grpc);
+                var conn = _connectionProvider.Connect(Connection.Configuration, stoppingToken);
+                Connection.Connect(conn);
                 await Reset();
                 try
                 {
@@ -231,7 +247,7 @@ namespace EulynxLive.Point
                     _initialized = true;
                     while (_initialized)
                     {
-                        var commandedPointPosition = await Connection.ReceivePointPosition(stoppingToken);
+                        var commandedPointPosition = await Connection.ReceiveMovePointCommand(stoppingToken);
                         if (commandedPointPosition == null)
                         {
                             break;
