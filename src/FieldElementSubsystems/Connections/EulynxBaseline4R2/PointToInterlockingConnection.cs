@@ -1,10 +1,9 @@
-using EulynxLive.Messages.Baseline4R2;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using EulynxLive.FieldElementSubsystems.Interfaces;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 using EulynxLive.FieldElementSubsystems.Configuration;
 using Grpc.Core;
-
+using EulynxLive.Messages.Baseline4R2;
 
 namespace EulynxLive.FieldElementSubsystems.Connections.EulynxBaseline4R2;
 
@@ -24,7 +23,8 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
     public PointToInterlockingConnection(
         ILogger<PointToInterlockingConnection> logger,
         IConfiguration configuration,
-        CancellationToken stoppingToken, int timeoutDuration = 10000)
+        CancellationToken stoppingToken,
+        int timeoutDuration = 10000)
     {
         _timeoutDuration = timeoutDuration;
         _stoppingToken = stoppingToken;
@@ -83,7 +83,6 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
 
     async public Task SendTimeoutMessage()
     {
-        // TODO: Double check if this is the right message
         var response = new PointMovementFailedMessage(_localId, _remoteId);
         await SendMessage(response);
     }
@@ -116,9 +115,10 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
     {
         if (CurrentConnection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
         ResetTimeout();
+
         try
         {
-            var message = Message.FromBytes(await CurrentConnection.ReceiveAsync(_timeout.Token));
+            var message = Message.FromBytes(await CurrentConnection.ReceiveAsync(CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _timeout.Token).Token));
             if (message is not T)
             {
                 _logger.LogError("Unexpected message: {}", message);
@@ -126,14 +126,11 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
             }
             return message as T;
         }
-        catch (RpcException)
+        catch (RpcException e) when (e.StatusCode == StatusCode.Cancelled)
         {
-            if (_timeout.IsCancellationRequested)
-            {
-                _logger.LogError("Timeout");
-            }
             return null;
-        } catch (TaskCanceledException)
+        }
+        catch (OperationCanceledException)
         {
             return null;
         }
