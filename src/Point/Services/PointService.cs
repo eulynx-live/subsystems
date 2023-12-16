@@ -16,10 +16,11 @@ namespace EulynxLive.Point.Services
             _point = point;
         }
 
-        public override async Task<Empty> Reset(Empty request, ServerCallContext context)
+        public override Task<Empty> Reset(Empty request, ServerCallContext context)
         {
-            await _point.Reset();
-            return new Empty();
+            // TODO: We have to disconnect here!
+            _point.Reset();
+            return Task.FromResult(new Empty());
         }
 
         public override Task<Empty> ScheduleTimeoutRight(Empty request, ServerCallContext context)

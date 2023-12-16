@@ -1,17 +1,15 @@
 ﻿using EulynxLive.FieldElementSubsystems.Configuration;
 using EulynxLive.FieldElementSubsystems.Interfaces;
+using EulynxLive.Point.Hubs;
 using EulynxLive.Point.Proto;
-
 using Grpc.Core;
-
+using Microsoft.AspNetCore.SignalR;
 using PropertyChanged.SourceGenerator;
-
+using System.ComponentModel;
 using System.Net.WebSockets;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Text.Json;
 
 namespace EulynxLive.Point
 {
@@ -35,7 +33,7 @@ namespace EulynxLive.Point
         private readonly Func<Task> _simulateTimeout;
         private readonly PointConfiguration _config;
 
-        public Point(ILogger<Point> logger, IConfiguration configuration, IPointToInterlockingConnection connection, IConnectionProvider connectionProvider, Func<Task> simulateTimeout)
+        public Point(ILogger<Point> logger, IConfiguration configuration, IPointToInterlockingConnection connection, IConnectionProvider connectionProvider, Func<Task> simulateTimeout, IHubContext<StatusHub> statusHub)
         {
             Connection = connection;
             _connectionProvider = connectionProvider;
@@ -84,6 +82,11 @@ namespace EulynxLive.Point
                 SimulateTimeoutLeft: false,
                 SimulateTimeoutRight: false
             );
+
+            Observable.FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(h => PropertyChanged += h, h => PropertyChanged -= h)
+                .Select(x => Unit.Default)
+                .Merge(Observable.Interval(TimeSpan.FromSeconds(1)).Select(x => Unit.Default))
+                .Subscribe(x => statusHub.Clients.All.SendAsync("ReceiveStatus", _initialized, PointState, SimulatedPointState, new { AllPointMachinesCrucial, ObserveAbilityToMove, _config.ConnectionProtocol }));
         }
 
         public async Task SendSciMessage(SciMessage message)
@@ -241,7 +244,7 @@ namespace EulynxLive.Point
                 _logger.LogTrace("Connecting...");
                 var conn = _connectionProvider.Connect(Connection.Configuration, stoppingToken);
                 Connection.Connect(conn);
-                await Reset();
+                Reset();
                 try
                 {
                     var success = await Connection.InitializeConnection(PointState, _config.ObserveAbilityToMove, stoppingToken);
@@ -261,18 +264,18 @@ namespace EulynxLive.Point
                 {
                     // TODO: Since this is gRPC-specific, catch and re-throw this in the GrpcConnectionProvider
                     _logger.LogWarning("Could not communicate with remote endpoint.");
-                    await Reset();
+                    Reset();
                     await Task.Delay(1000, stoppingToken);
                 }
                 catch (OperationCanceledException)
                 {
-                    await Reset();
+                    Reset();
                     return;
                 }
                 catch (Exception ex)
                 {
                     _logger.LogWarning(ex, "Exception during simulation.");
-                    await Reset();
+                    Reset();
                     await Task.Delay(1000, stoppingToken);
                 }
             }
@@ -291,6 +294,8 @@ namespace EulynxLive.Point
         {
             // Make a copy of the current state, so that it is not modified while the point is moving.
             var simulatedState = _simulatedPointState;
+
+            PointState = PointState with { LastCommandedPointPosition = commandedPointPosition };
 
             if (_config.ObserveAbilityToMove && PointState.AbilityToMove == GenericAbilityToMove.UnableToMove)
             {
@@ -404,7 +409,7 @@ namespace EulynxLive.Point
             throw new ArgumentException("Invalid commanded position", nameof(commandedPosition));
         }
 
-        public async Task Reset()
+        public void Reset()
         {
             _logger.LogInformation("Resetting point.");
             _initialized = false;

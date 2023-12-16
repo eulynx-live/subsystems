@@ -7,6 +7,8 @@ using Moq;
 using EulynxLive.Point.Proto;
 using Google.Protobuf;
 using EulynxLive.Point;
+using EulynxLive.Point.Hubs;
+using Microsoft.AspNetCore.SignalR;
 
 namespace FieldElementSubsystems.Test;
 
@@ -36,7 +38,7 @@ public class PointTest
         var config = configuration.GetSection("PointSettings").Get<PointConfiguration>()!;
         var mockConnection = CreateDefaultMockConnection(config);
 
-        var point = new EulynxLive.Point.Point(Mock.Of<ILogger<EulynxLive.Point.Point>>(), configuration, mockConnection.Object, Mock.Of<IConnectionProvider>(), () => Task.CompletedTask);
+        var point = new EulynxLive.Point.Point(Mock.Of<ILogger<EulynxLive.Point.Point>>(), configuration, mockConnection.Object, Mock.Of<IConnectionProvider>(), () => Task.CompletedTask, Mock.Of<IHubContext<StatusHub>>());
 
         async Task SimulatePoint()
         {
@@ -334,7 +336,7 @@ public class PointTest
                 {
                     DegradedPosition = simulatedDegradedPosition
                 };
-                await point.PutIntoUnintendedPosition(message);
+                point.PutIntoUnintendedPosition(message);
 
                 cancel.Cancel();
                 return await new TaskCompletionSource<GenericPointPosition>().Task;

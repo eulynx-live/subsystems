@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using EulynxLive.Point.Services;
 using EulynxLive.Point.Connections;
+using EulynxLive.Point.Hubs;
+using System.Text.Json.Serialization;
 
 namespace EulynxLive.Point
 {
@@ -17,6 +19,8 @@ namespace EulynxLive.Point
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            services.AddSignalR()
+                .AddJsonProtocol(options => options.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
             services.AddGrpc();
             services.AddGrpcReflection();
 
@@ -65,10 +69,13 @@ namespace EulynxLive.Point
             app.UseRouting();
             app.UseGrpcWeb();
 
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGrpcService<PointService>().EnableGrpcWeb();
                 endpoints.MapGrpcReflectionService();
+
+                endpoints.MapHub<StatusHub>("/status");
             });
 
             app.UseSpa(spa =>

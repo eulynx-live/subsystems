@@ -3,7 +3,9 @@ using EulynxLive.FieldElementSubsystems.Connections.EulynxBaseline4R2;
 using EulynxLive.FieldElementSubsystems.Interfaces;
 using EulynxLive.Messages.Baseline4R2;
 using EulynxLive.Point;
+using EulynxLive.Point.Hubs;
 
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -57,7 +59,7 @@ public class ReportStatusTests
         var connection = new PointToInterlockingConnection(Mock.Of<ILogger<PointToInterlockingConnection>>(), configuration, CancellationToken.None);
         connection.Connect(mockConnection.Object);
 
-        var point = new EulynxLive.Point.Point(Mock.Of<ILogger<EulynxLive.Point.Point>>(), configuration, connection, connectionProvider.Object, () => Task.CompletedTask);
+        var point = new EulynxLive.Point.Point(Mock.Of<ILogger<EulynxLive.Point.Point>>(), configuration, connection, connectionProvider.Object, () => Task.CompletedTask, Mock.Of<IHubContext<StatusHub>>());
 
         async Task SimulatePoint()
         {
