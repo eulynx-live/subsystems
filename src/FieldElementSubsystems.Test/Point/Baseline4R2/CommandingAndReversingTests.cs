@@ -13,7 +13,7 @@ namespace FieldElementSubsystems.Test.Point.Baseline4R2;
 
 public class CommandingAndReversingTests
 {
-    private static (EulynxLive.Point.Point point, Task pointTask, List<byte[]> receivedBytes) CreateMockedPointConnectionWithInitializationRequestAndMovePointCommand(bool allPointMachinesCrucial, GenericPointState initialPointState, PointMovePointCommandCommandedPointPosition commandedPointPosition)
+    private static (EulynxLive.Point.Point point, Task pointTask, List<byte[]> receivedBytes) CreateMockedPointConnectionWithInitializationRequestAndMovePointCommand(bool allPointMachinesCrucial, GenericPointState initialPointState, params PointMovePointCommandCommandedPointPosition[] commandedPointPositions)
     {
         var settings = new Dictionary<string, string?> {
             {"PointSettings:LocalId", "99W1" },
@@ -34,13 +34,18 @@ public class CommandingAndReversingTests
         var cancel = new CancellationTokenSource();
 
         var mockConnection = new Mock<IConnection>();
-        mockConnection.SetupSequence(x => x.ReceiveAsync(It.IsAny<CancellationToken>()))
+        var sequenceSetup = mockConnection.SetupSequence(x => x.ReceiveAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(new PointPdiVersionCheckCommand("99W1", "100", 0x01).ToByteArray())
-            .ReturnsAsync(new PointInitialisationRequestCommand("99W1", "100").ToByteArray())
-            .ReturnsAsync(() => {
-                cancel.Cancel();
-                return new PointMovePointCommand("99W1", "100", commandedPointPosition).ToByteArray();
-            });
+            .ReturnsAsync(new PointInitialisationRequestCommand("99W1", "100").ToByteArray());
+
+        foreach (var commandedPointPosition in commandedPointPositions.SkipLast(1)) {
+            sequenceSetup = sequenceSetup.ReturnsAsync(new PointMovePointCommand("99W1", "100", commandedPointPosition).ToByteArray());
+        }
+
+        sequenceSetup.ReturnsAsync(() => {
+            cancel.Cancel();
+            return new PointMovePointCommand("99W1", "100", commandedPointPositions.Last()).ToByteArray();
+        });
 
         var receivedBytes = new List<byte[]>();
         mockConnection.Setup(x => x.SendAsync(Capture.In(receivedBytes)))
@@ -100,6 +105,62 @@ public class CommandingAndReversingTests
             .SkipWhile(x => x is not PointInitialisationCompletedMessage).Skip(1)
             .ToList();
         var expectedReportedPointPosition = commandedPointPosition switch
+        {
+            PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsALeftHandPointMoving => PointPointPositionMessageReportedPointPosition.PointIsInALeftHandPositionDefinedEndPosition,
+            PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsARightHandPointMoving => PointPointPositionMessageReportedPointPosition.PointIsInARightHandPositionDefinedEndPosition,
+            _ => throw new NotImplementedException()
+        };
+
+        // If the point actually has to move, it should report 'no end position' first
+        if (commandedPointPosition == PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsALeftHandPointMoving && currentPointPosition == GenericPointPosition.Right
+            || currentPointPosition == GenericPointPosition.UnintendedPosition) {
+            Assert.Equal(PointPointPositionMessageReportedPointPosition.PointIsInNoEndPosition, receivedMessages.OfType<PointPointPositionMessage>().First().ReportedPointPosition);
+            Assert.Equal(expectedReportedPointPosition, receivedMessages.OfType<PointPointPositionMessage>().Skip(1).Single().ReportedPointPosition);
+        } else {
+            // Point was in 'no end position' already
+            Assert.Equal(expectedReportedPointPosition, receivedMessages.OfType<PointPointPositionMessage>().Single().ReportedPointPosition);
+        }
+    }
+
+    /// <summary>
+    /// Eu.P.6713 - Commanding and reversing
+    /// </summary>
+    [Theory]
+    [InlineData(PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsALeftHandPointMoving, GenericPointPosition.Right)]
+    [InlineData(PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsALeftHandPointMoving, GenericPointPosition.NoEndPosition)]
+    [InlineData(PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsALeftHandPointMoving, GenericPointPosition.UnintendedPosition)]
+
+    [InlineData(PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsARightHandPointMoving, GenericPointPosition.Left)]
+    [InlineData(PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsARightHandPointMoving, GenericPointPosition.NoEndPosition)]
+    [InlineData(PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsARightHandPointMoving, GenericPointPosition.UnintendedPosition)]
+    public async Task ReversingPoint(PointMovePointCommandCommandedPointPosition commandedPointPosition, GenericPointPosition currentPointPosition)
+    {
+        // Arrange
+        var oppositeCommandedPointPosition = commandedPointPosition switch {
+            PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsALeftHandPointMoving => PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsARightHandPointMoving,
+            PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsARightHandPointMoving => PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsALeftHandPointMoving,
+            _ => throw new NotImplementedException()
+        };
+
+        var (point, pointTask, receivedBytes) = CreateMockedPointConnectionWithInitializationRequestAndMovePointCommand(
+            true,
+            new GenericPointState
+            (
+                LastCommandedPointPosition: currentPointPosition,
+                PointPosition: currentPointPosition,
+                DegradedPointPosition: GenericDegradedPointPosition.NotApplicable,
+                AbilityToMove: GenericAbilityToMove.AbleToMove
+            ),
+            commandedPointPosition, oppositeCommandedPointPosition);
+
+        // Act
+        await pointTask;
+
+        // Assert
+        var receivedMessages = receivedBytes.Select(x => Message.FromBytes(x))
+            .SkipWhile(x => x is not PointInitialisationCompletedMessage).Skip(1)
+            .ToList();
+        var expectedReportedPointPosition = oppositeCommandedPointPosition switch
         {
             PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsALeftHandPointMoving => PointPointPositionMessageReportedPointPosition.PointIsInALeftHandPositionDefinedEndPosition,
             PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsARightHandPointMoving => PointPointPositionMessageReportedPointPosition.PointIsInARightHandPositionDefinedEndPosition,

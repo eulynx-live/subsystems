@@ -6,15 +6,9 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
 using Point.Services.Extensions;
-using System.Drawing;
 
 namespace EulynxLive.Point
 {
-    public record SimulatedPointState(
-        PreventedPosition PreventedPosition,
-        GenericDegradedPointPosition DegradedPointPosition,
-        bool SimulateTimeout
-    );
 
     public class Point : BackgroundService
     {
