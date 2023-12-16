@@ -20,6 +20,8 @@ namespace EulynxLive.Point
             services.AddGrpc();
             services.AddGrpcReflection();
 
+            services.AddTransient<IConnectionProvider, GrpcConnectionProvider>();
+            services.AddTransient<ConnectionFactory>();
             services.AddSingleton(x => x.GetRequiredService<ConnectionFactory>().CreateConnection(x));
 
             // In production, the React files will be served from this directory
@@ -61,12 +63,6 @@ namespace EulynxLive.Point
             app.UseSpaStaticFiles();
 
             app.UseRouting();
-
-            // For live updating the Signal UI.
-            app.UseWebSockets();
-            // Sends the websockets to the Simulator.
-            app.UseMiddleware<WebsocketDispatcherMiddleware>();
-
             app.UseGrpcWeb();
 
             app.UseEndpoints(endpoints =>

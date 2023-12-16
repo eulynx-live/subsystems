@@ -63,22 +63,22 @@ namespace EulynxLive.Point.Services
             return Task.FromResult(new Empty());
         }
 
-        public override async Task<Empty> PutIntoTrailedPosition(DegradedPositionMessage request, ServerCallContext context)
+        public override Task<Empty> PutIntoTrailedPosition(DegradedPositionMessage request, ServerCallContext context)
         {
             if (_point.Connection.Configuration.ConnectionProtocol != ConnectionProtocol.EulynxBaseline4R1)
                 throw new RpcException(new Status(StatusCode.InvalidArgument, "Only supported for EulynxBaseline4R1"));
 
-            await _point.PutIntoUnintendedPosition(request);
-            return new Empty();
+            _point.PutIntoUnintendedPosition(request);
+            return Task.FromResult(new Empty());
         }
 
-        public override async Task<Empty> PutIntoUnintendedPosition(DegradedPositionMessage request, ServerCallContext context)
+        public override Task<Empty> PutIntoUnintendedPosition(DegradedPositionMessage request, ServerCallContext context)
         {
             if (_point.Connection.Configuration.ConnectionProtocol != ConnectionProtocol.EulynxBaseline4R2)
                 throw new RpcException(new Status(StatusCode.InvalidArgument, "Only supported for EulynxBaseline4R2"));
 
-            await _point.PutIntoUnintendedPosition(request);
-            return new Empty();
+            _point.PutIntoUnintendedPosition(request);
+            return Task.FromResult(new Empty());
         }
 
         public override Task<PointDegradedPositionMessage> GetDegradedPointPosition(Empty request, ServerCallContext context)
