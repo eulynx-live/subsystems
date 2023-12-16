@@ -113,6 +113,7 @@ public class CommandingAndReversingTests
 
         // If the point actually has to move, it should report 'no end position' first
         if (commandedPointPosition == PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsALeftHandPointMoving && currentPointPosition == GenericPointPosition.Right
+            || commandedPointPosition == PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsARightHandPointMoving && currentPointPosition == GenericPointPosition.Left
             || currentPointPosition == GenericPointPosition.UnintendedPosition) {
             Assert.Equal(PointPointPositionMessageReportedPointPosition.PointIsInNoEndPosition, receivedMessages.OfType<PointPointPositionMessage>().First().ReportedPointPosition);
             Assert.Equal(expectedReportedPointPosition, receivedMessages.OfType<PointPointPositionMessage>().Skip(1).Single().ReportedPointPosition);

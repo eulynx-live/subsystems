@@ -68,6 +68,10 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
         var initialPosition = new PointPointPositionMessage(_localId, _remoteId, pointState.PointPosition, pointState.DegradedPointPosition);
         await SendMessage(initialPosition);
 
+        var abilityToMove = new AbilityToMove(state);
+        var initialAbilityToMove = new PointAbilityToMovePointMessage(_localId, _remoteId, abilityToMove.AbilityToMove);
+        await SendMessage(initialAbilityToMove);
+
         var completeInitialization = new PointInitialisationCompletedMessage(_localId, _remoteId);
         await SendMessage(completeInitialization);
         return true;

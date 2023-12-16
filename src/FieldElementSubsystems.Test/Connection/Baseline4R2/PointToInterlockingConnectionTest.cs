@@ -1,14 +1,18 @@
 using EulynxLive.FieldElementSubsystems.Connections.EulynxBaseline4R2;
 using EulynxLive.FieldElementSubsystems.Interfaces;
 using EulynxLive.Messages.Baseline4R2;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+
 using Moq;
+
 using PointMovePointCommand = EulynxLive.Messages.Baseline4R2.PointMovePointCommand;
 
 namespace FieldElementSubsystems.Test.Connection.Baseline4R2;
 
-public class PointToInterlockingConnectionTest{
+public class PointToInterlockingConnectionTest
+{
 
     private static readonly IDictionary<string, string?> TestSettings = new Dictionary<string, string?> {
         {"PointSettings:LocalId", "99W1" },
@@ -23,7 +27,8 @@ public class PointToInterlockingConnectionTest{
         .Build();
 
     [Fact]
-    public void Test_Connect(){
+    public void Test_Connect()
+    {
         // Arrange
         var mockConnection = new Mock<IConnection>();
         var connection = new PointToInterlockingConnection(Mock.Of<ILogger<PointToInterlockingConnection>>(), _configuration, CancellationToken.None);
@@ -36,12 +41,13 @@ public class PointToInterlockingConnectionTest{
     }
 
     [Fact]
-    public async Task Test_Initialization(){
+    public async Task Test_Initialization()
+    {
         // Arrange
         var mockConnection = new Mock<IConnection>();
         mockConnection.SetupSequence(x => x.ReceiveAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new PointPdiVersionCheckCommand("99W1","100", 0x01).ToByteArray())
-            .ReturnsAsync(new PointInitialisationRequestCommand("99W1","100").ToByteArray());
+            .ReturnsAsync(new PointPdiVersionCheckCommand("99W1", "100", 0x01).ToByteArray())
+            .ReturnsAsync(new PointInitialisationRequestCommand("99W1", "100").ToByteArray());
         var receivedMessages = new List<byte[]>();
         mockConnection.Setup(x => x.SendAsync(Capture.In(receivedMessages)))
             .Returns(Task.FromResult(0));
@@ -54,20 +60,22 @@ public class PointToInterlockingConnectionTest{
 
         // Assert
         mockConnection.Verify(v => v.ReceiveAsync(It.IsAny<CancellationToken>()), Times.Exactly(2));
-        mockConnection.Verify(v => v.SendAsync(It.IsAny<byte[]>()), Times.Exactly(4));
-        Assert.Equal(new PointPdiVersionCheckMessage("99W1________________", "INTERLOCKING________", PointPdiVersionCheckMessageResultPdiVersionCheck.PDIVersionsFromReceiverAndSenderDoMatch, /* TODO */ 0, 0, new byte[] { }).ToByteArray(), receivedMessages[0]);
+        mockConnection.Verify(v => v.SendAsync(It.IsAny<byte[]>()), Times.Exactly(5));
+        Assert.Equal(new PointPdiVersionCheckMessage("99W1________________", "INTERLOCKING________", PointPdiVersionCheckMessageResultPdiVersionCheck.PDIVersionsFromReceiverAndSenderDoMatch, /* TODO */ 0, 0, Array.Empty<byte>()).ToByteArray(), receivedMessages[0]);
         Assert.Equal(new PointStartInitialisationMessage("99W1________________", "INTERLOCKING________").ToByteArray(), receivedMessages[1]);
         Assert.Equal(new PointPointPositionMessage("99W1________________", "INTERLOCKING________", PointPointPositionMessageReportedPointPosition.PointIsInALeftHandPositionDefinedEndPosition, PointPointPositionMessageReportedDegradedPointPosition.PointIsNotInADegradedPosition).ToByteArray(), receivedMessages[2]);
-        Assert.Equal(new PointInitialisationCompletedMessage("99W1________________", "INTERLOCKING________").ToByteArray(), receivedMessages[3]);
+        Assert.Equal(new PointAbilityToMovePointMessage("99W1________________", "INTERLOCKING________", PointAbilityToMovePointMessageReportedAbilityToMovePointStatus.PointIsAbleToMove).ToByteArray(), receivedMessages[3]);
+        Assert.Equal(new PointInitialisationCompletedMessage("99W1________________", "INTERLOCKING________").ToByteArray(), receivedMessages[4]);
     }
 
     [Fact]
-    public async Task Test_Send_Position(){
+    public async Task Test_Send_Position()
+    {
         // Arrange
         var mockConnection = new Mock<IConnection>();
         mockConnection.SetupSequence(x => x.ReceiveAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new PointPdiVersionCheckCommand("99W1","100", 0x01).ToByteArray())
-            .ReturnsAsync(new PointInitialisationRequestCommand("99W1","100").ToByteArray());
+            .ReturnsAsync(new PointPdiVersionCheckCommand("99W1", "100", 0x01).ToByteArray())
+            .ReturnsAsync(new PointInitialisationRequestCommand("99W1", "100").ToByteArray());
         var args = new List<byte[]>();
         mockConnection.Setup(x => x.SendAsync(Capture.In(args)))
             .Returns(Task.FromResult(0));
@@ -83,20 +91,21 @@ public class PointToInterlockingConnectionTest{
         await connection.SendPointPosition(new GenericPointState(LastCommandedPointPosition: null, PointPosition: GenericPointPosition.NoEndPosition, DegradedPointPosition: GenericDegradedPointPosition.NotDegraded, AbilityToMove: GenericAbilityToMove.AbleToMove));
 
         // Assert
-        mockConnection.Verify(v => v.SendAsync(It.IsAny<byte[]>()), Times.Exactly(8));
-        Assert.Equal(new PointPointPositionMessage("99W1________________", "INTERLOCKING________", PointPointPositionMessageReportedPointPosition.PointIsInARightHandPositionDefinedEndPosition, PointPointPositionMessageReportedDegradedPointPosition.PointIsNotInADegradedPosition).ToByteArray(), args[4]);
-        Assert.Equal(new PointPointPositionMessage("99W1________________", "INTERLOCKING________", PointPointPositionMessageReportedPointPosition.PointIsInALeftHandPositionDefinedEndPosition, PointPointPositionMessageReportedDegradedPointPosition.PointIsNotInADegradedPosition).ToByteArray(), args[5]);
-        Assert.Equal(new PointPointPositionMessage("99W1________________", "INTERLOCKING________", PointPointPositionMessageReportedPointPosition.PointIsInUnintendedPosition, PointPointPositionMessageReportedDegradedPointPosition.PointIsNotInADegradedPosition).ToByteArray(), args[6]);
-        Assert.Equal(new PointPointPositionMessage("99W1________________", "INTERLOCKING________", PointPointPositionMessageReportedPointPosition.PointIsInNoEndPosition, PointPointPositionMessageReportedDegradedPointPosition.PointIsNotInADegradedPosition).ToByteArray(), args[7]);
+        mockConnection.Verify(v => v.SendAsync(It.IsAny<byte[]>()), Times.Exactly(9));
+        Assert.Equal(new PointPointPositionMessage("99W1________________", "INTERLOCKING________", PointPointPositionMessageReportedPointPosition.PointIsInARightHandPositionDefinedEndPosition, PointPointPositionMessageReportedDegradedPointPosition.PointIsNotInADegradedPosition).ToByteArray(), args[5]);
+        Assert.Equal(new PointPointPositionMessage("99W1________________", "INTERLOCKING________", PointPointPositionMessageReportedPointPosition.PointIsInALeftHandPositionDefinedEndPosition, PointPointPositionMessageReportedDegradedPointPosition.PointIsNotInADegradedPosition).ToByteArray(), args[6]);
+        Assert.Equal(new PointPointPositionMessage("99W1________________", "INTERLOCKING________", PointPointPositionMessageReportedPointPosition.PointIsInUnintendedPosition, PointPointPositionMessageReportedDegradedPointPosition.PointIsNotInADegradedPosition).ToByteArray(), args[7]);
+        Assert.Equal(new PointPointPositionMessage("99W1________________", "INTERLOCKING________", PointPointPositionMessageReportedPointPosition.PointIsInNoEndPosition, PointPointPositionMessageReportedDegradedPointPosition.PointIsNotInADegradedPosition).ToByteArray(), args[8]);
     }
 
     [Fact]
-    public async Task Test_Receive_Position(){
+    public async Task Test_Receive_Position()
+    {
         // Arrange
         var mockConnection = new Mock<IConnection>();
         mockConnection.SetupSequence(x => x.ReceiveAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new PointPdiVersionCheckCommand("99W1","100", 0x01).ToByteArray())
-            .ReturnsAsync(new PointInitialisationRequestCommand("99W1","100").ToByteArray())
+            .ReturnsAsync(new PointPdiVersionCheckCommand("99W1", "100", 0x01).ToByteArray())
+            .ReturnsAsync(new PointInitialisationRequestCommand("99W1", "100").ToByteArray())
             .ReturnsAsync(new PointMovePointCommand("99W1", "100", PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsALeftHandPointMoving).ToByteArray())
             .ReturnsAsync(new PointMovePointCommand("99W1", "100", PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsARightHandPointMoving).ToByteArray());
 
@@ -104,7 +113,7 @@ public class PointToInterlockingConnectionTest{
 
         // Act
         connection.Connect(mockConnection.Object);
-        await connection.InitializeConnection(new GenericPointState(LastCommandedPointPosition: null, PointPosition:  GenericPointPosition.Left, DegradedPointPosition:  GenericDegradedPointPosition.NotDegraded, AbilityToMove: GenericAbilityToMove.AbleToMove), CancellationToken.None);
+        await connection.InitializeConnection(new GenericPointState(LastCommandedPointPosition: null, PointPosition: GenericPointPosition.Left, DegradedPointPosition: GenericDegradedPointPosition.NotDegraded, AbilityToMove: GenericAbilityToMove.AbleToMove), CancellationToken.None);
         var position1 = await connection.ReceiveMovePointCommand(CancellationToken.None);
         var position2 = await connection.ReceiveMovePointCommand(CancellationToken.None);
 
@@ -115,12 +124,13 @@ public class PointToInterlockingConnectionTest{
     }
 
     [Fact]
-    public async Task Test_TimeoutMessage(){
+    public async Task Test_TimeoutMessage()
+    {
         // Arrange
         var mockConnection = new Mock<IConnection>();
         mockConnection.SetupSequence(x => x.ReceiveAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new PointPdiVersionCheckCommand("99W1","100", 0x01).ToByteArray())
-            .ReturnsAsync(new PointInitialisationRequestCommand("99W1","100").ToByteArray());
+            .ReturnsAsync(new PointPdiVersionCheckCommand("99W1", "100", 0x01).ToByteArray())
+            .ReturnsAsync(new PointInitialisationRequestCommand("99W1", "100").ToByteArray());
         var args = new List<byte[]>();
         mockConnection.Setup(x => x.SendAsync(Capture.In(args)))
             .Returns(Task.FromResult(0));
@@ -133,7 +143,7 @@ public class PointToInterlockingConnectionTest{
         await connection.SendTimeoutMessage();
 
         // Assert
-        mockConnection.Verify(v => v.SendAsync(It.IsAny<byte[]>()), Times.Exactly(5));
-        Assert.Equal(new PointMovementFailedMessage("99W1________________", "INTERLOCKING________").ToByteArray(), args[4]);
+        mockConnection.Verify(v => v.SendAsync(It.IsAny<byte[]>()), Times.Exactly(6));
+        Assert.Equal(new PointMovementFailedMessage("99W1________________", "INTERLOCKING________").ToByteArray(), args[5]);
     }
 }

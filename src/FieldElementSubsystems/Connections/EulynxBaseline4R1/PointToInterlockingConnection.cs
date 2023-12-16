@@ -53,7 +53,7 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
             return false;
         }
 
-        var versionCheckResponse = new PointPdiVersionCheckMessage(_localId, _remoteId, PointPdiVersionCheckMessageResultPdiVersionCheck.PDIVersionsFromReceiverAndSenderDoMatch, /* TODO */ 0, 0, new byte[] { });
+        var versionCheckResponse = new PointPdiVersionCheckMessage(_localId, _remoteId, PointPdiVersionCheckMessageResultPdiVersionCheck.PDIVersionsFromReceiverAndSenderDoMatch, /* TODO */ 0, 0, Array.Empty<byte>());
         await SendMessage(versionCheckResponse);
 
         if (await ReceiveMessage<PointInitialisationRequestCommand>(cancellationToken) == null)
@@ -68,6 +68,10 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
         var pointState = new PointState(state);
         var initialPosition = new PointPointPositionMessage(_localId, _remoteId, pointState.PointPosition, pointState.DegradedPointPosition);
         await SendMessage(initialPosition);
+
+        var abilityToMove = new AbilityToMove(state);
+        var initialAbilityToMove = new PointAbilityToMovePointMessage(_localId, _remoteId, abilityToMove.AbilityToMove);
+        await SendMessage(initialAbilityToMove);
 
         var completeInitialization = new PointInitialisationCompletedMessage(_localId, _remoteId);
         await SendMessage(completeInitialization);

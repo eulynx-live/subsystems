@@ -20,8 +20,6 @@ namespace EulynxLive.Point
         private readonly Func<Task> _simulateTimeout;
         private readonly PointConfiguration _config;
         private readonly List<WebSocket> _webSockets;
-
-        private readonly Random _random;
         private bool _initialized;
         private SimulatedPointState _simulatedPointState;
 
@@ -33,12 +31,30 @@ namespace EulynxLive.Point
             _config = configuration.GetSection("PointSettings").Get<PointConfiguration>() ?? throw new Exception("No configuration provided");
             AllPointMachinesCrucial = _config.AllPointMachinesCrucial;
 
+            // Validate the configuration.
+            if (_config.InitialLastCommandedPointPosition == null && _config.InitialPointPosition != GenericPointPosition.NoEndPosition)
+            {
+                throw new InvalidOperationException("If the last commanded point position is unknown, the position reported by the point machine must be NoEndPosition.");
+            }
+
+            if (_config.AllPointMachinesCrucial && _config.InitialDegradedPointPosition != GenericDegradedPointPosition.NotApplicable)
+            {
+                throw new InvalidOperationException("If all point machines are crucial, the degraded point position must be NotApplicable.");
+            }
+
             _webSockets = new List<WebSocket>();
+
+            var initialPointPosition = (
+                _config.InitialLastCommandedPointPosition == GenericPointPosition.Left && _config.InitialPointPosition == GenericPointPosition.Right
+                || _config.InitialLastCommandedPointPosition == GenericPointPosition.Right && _config.InitialPointPosition == GenericPointPosition.Left)
+                    ? GenericPointPosition.UnintendedPosition
+                    : _config.InitialPointPosition;
+
             PointState = new GenericPointState
             (
                 LastCommandedPointPosition: _config.InitialLastCommandedPointPosition,
                 DegradedPointPosition: RespectAllPointMachinesCrucial(_config.InitialDegradedPointPosition),
-                PointPosition: _config.InitialPointPosition,
+                PointPosition: initialPointPosition,
                 AbilityToMove: _config.InitialAbilityToMove
             );
 
@@ -50,19 +66,8 @@ namespace EulynxLive.Point
                 SimulateTimeoutLeft: false,
                 SimulateTimeoutRight: false
             );
-            _random = new Random();
             Connection = connection;
             _connectionProvider = connectionProvider;
-
-            if (PointState.LastCommandedPointPosition == null && PointState.PointPosition != GenericPointPosition.NoEndPosition)
-            {
-                throw new InvalidOperationException("If the last commanded point position is unknown, the position reported by the point machine must be NoEndPosition.");
-            }
-
-            if (_config.AllPointMachinesCrucial && PointState.DegradedPointPosition != GenericDegradedPointPosition.NotApplicable)
-            {
-                throw new InvalidOperationException("If all point machines are crucial, the degraded point position must be NotApplicable.");
-            }
         }
 
         public async Task HandleWebSocket(WebSocket webSocket)
@@ -138,7 +143,6 @@ namespace EulynxLive.Point
                 {
                     AbilityToMove.AbleToMove => GenericAbilityToMove.AbleToMove,
                     AbilityToMove.UnableToMove => GenericAbilityToMove.UnableToMove,
-                    AbilityToMove.Undefined => GenericAbilityToMove.Unknown,
                     _ => throw new InvalidOperationException($"Unknown ability to move {abilityToMoveMessage.Ability}.")
                 }
             };
@@ -262,44 +266,7 @@ namespace EulynxLive.Point
                     while (_initialized)
                     {
                         var commandedPointPosition = await Connection.ReceiveMovePointCommand(stoppingToken);
-                        if (commandedPointPosition == null)
-                        {
-                            break;
-                        }
-
-                        if ((commandedPointPosition == GenericPointPosition.Left && PointState.PointPosition == GenericPointPosition.Left)
-                            || (commandedPointPosition == GenericPointPosition.Right && PointState.PointPosition == GenericPointPosition.Right))
-                        {
-                            _logger.LogInformation("Point is already in position {}.", commandedPointPosition);
-                            await Connection.SendPointPosition(PointState);
-                            continue;
-                        }
-
-                        SetPointState(GenericPointPosition.NoEndPosition, RespectAllPointMachinesCrucial(PointState.DegradedPointPosition));
-
-                        await UpdateConnectedWebClients();
-
-                        // Simulate point movement
-                        var transitioningTime = _random.Next(1, 5);
-                        var transitioningTask = Task.Delay(transitioningTime * 1000, CancellationToken.None);
-
-                        if (_simulatedPointState.SimulateTimeoutLeft && commandedPointPosition == GenericPointPosition.Left
-                            || _simulatedPointState.SimulateTimeoutRight && commandedPointPosition == GenericPointPosition.Right)
-                        {
-                            // timeout
-                            await SendTimeoutMessage();
-                            await _simulateTimeout();
-                        }
-                        else
-                        {
-                            UpdatePointState(commandedPointPosition);
-                            _logger.LogDebug("Moving to {}.", PointState.PointPosition);
-
-                            await UpdateConnectedWebClients();
-
-                            _logger.LogInformation("End position reached.");
-                            await Connection.SendPointPosition(PointState);
-                        }
+                        await HandleCommandedPointPosition(commandedPointPosition);
                     }
                 }
                 catch (RpcException)
@@ -320,6 +287,59 @@ namespace EulynxLive.Point
                     await Task.Delay(1000, stoppingToken);
                 }
             }
+        }
+
+        private async Task HandleCommandedPointPosition(GenericPointPosition commandedPointPosition)
+        {
+            if ((commandedPointPosition == GenericPointPosition.Left && PointState.PointPosition == GenericPointPosition.Left)
+                            || (commandedPointPosition == GenericPointPosition.Right && PointState.PointPosition == GenericPointPosition.Right))
+            {
+                _logger.LogInformation("Point is already in position {}.", commandedPointPosition);
+                await Connection.SendPointPosition(PointState);
+                return;
+            }
+
+            _logger.LogDebug("Moving to {}.", commandedPointPosition);
+
+            if (PointState.PointPosition != GenericPointPosition.NoEndPosition)
+            {
+                SetPointState(GenericPointPosition.NoEndPosition, RespectAllPointMachinesCrucial(PointState.DegradedPointPosition));
+                await Connection.SendPointPosition(PointState);
+                await UpdateConnectedWebClients();
+            }
+
+            // Simulate point movement
+            // var transitioningTimeSeconds = 2;
+            // await Task.Delay(transitioningTimeSeconds * 1000, CancellationToken.None);
+
+            if (ShouldSimulateTimeout(commandedPointPosition))
+            {
+                await SendTimeoutMessage();
+                await _simulateTimeout();
+            }
+            else
+            {
+                UpdatePointState(commandedPointPosition);
+
+                await UpdateConnectedWebClients();
+
+                _logger.LogInformation("End position reached.");
+                await Connection.SendPointPosition(PointState);
+            }
+        }
+
+        private bool ShouldSimulateTimeout(GenericPointPosition commandedPointPosition)
+        {
+            if (commandedPointPosition == GenericPointPosition.Left)
+            {
+                return _simulatedPointState.SimulateTimeoutLeft;
+            }
+            else if (commandedPointPosition == GenericPointPosition.Right)
+            {
+                return _simulatedPointState.SimulateTimeoutRight;
+            }
+
+            throw new ArgumentException("Invalid commanded position", nameof(commandedPointPosition));
         }
 
         /// <summary>
@@ -379,7 +399,6 @@ namespace EulynxLive.Point
                 case GenericAbilityToMove.AbleToMove:
                     return (pointPosition, degradedPointPosition);
                 case GenericAbilityToMove.UnableToMove:
-                case GenericAbilityToMove.Unknown:
                     _logger.LogWarning("Point is unable to move.");
                     return (PointState.PointPosition, RespectAllPointMachinesCrucial(PointState.DegradedPointPosition));
             }

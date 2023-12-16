@@ -151,7 +151,6 @@ public class PointTest
     [Theory]
     [InlineData(AbilityToMove.AbleToMove, GenericPointPosition.Left)]
     [InlineData(AbilityToMove.UnableToMove, GenericPointPosition.NoEndPosition)]
-    [InlineData(AbilityToMove.Undefined, GenericPointPosition.NoEndPosition)]
     public async Task Test_AbilityToMove(AbilityToMove simulatedAbilityToMove, GenericPointPosition assertedPosition)
     {
         // Arrange

@@ -45,9 +45,8 @@ service Point {
 }
 
 enum AbilityToMove {
-    UNDEFINED = 0;
-    ABLE_TO_MOVE = 1;
-    UNABLE_TO_MOVE = 2;
+    ABLE_TO_MOVE = 0;
+    UNABLE_TO_MOVE = 1;
 }
 
 message AbilityToMoveMessage{

@@ -57,7 +57,6 @@ namespace Point.Services.Extensions
         {
             ProtoAbilityToMove.AbleToMove => GenericAbilityToMove.AbleToMove,
             ProtoAbilityToMove.UnableToMove => GenericAbilityToMove.UnableToMove,
-            ProtoAbilityToMove.Undefined => GenericAbilityToMove.Unknown,
             _ => throw new InvalidCastException($"Unable to convert proto ability to move {protoAbilityToMove} to reported point position.")
         };
     }
