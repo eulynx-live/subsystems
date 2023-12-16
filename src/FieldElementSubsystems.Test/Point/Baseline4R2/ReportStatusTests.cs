@@ -22,6 +22,7 @@ public class ReportStatusTests
             {"PointSettings:RemoteEndpoint", "http://localhost:50051" },
             {"PointSettings:SimulatedTransitioningTimeSeconds", "0" },
             {"PointSettings:AllPointMachinesCrucial", allPointMachinesCrucial.ToString() },
+            {"PointSettings:ObserveAbilityToMove", "true" },
             {"PointSettings:InitialLastCommandedPointPosition", initialPointState.LastCommandedPointPosition.ToString() },
             {"PointSettings:InitialPointPosition", initialPointState.PointPosition.ToString() },
             {"PointSettings:InitialDegradedPointPosition", initialPointState.DegradedPointPosition.ToString() },

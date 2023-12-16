@@ -13,7 +13,7 @@ namespace FieldElementSubsystems.Test.Point.Baseline4R2;
 
 public class CommandingAndReversingTests
 {
-    private static (EulynxLive.Point.Point point, Task pointTask, List<byte[]> receivedBytes) CreateMockedPointConnectionWithInitializationRequestAndMovePointCommand(bool allPointMachinesCrucial, GenericPointState initialPointState, decimal pointMovementSeconds, params (PointMovePointCommandCommandedPointPosition, int)[] commandedPointPositions)
+    private static (EulynxLive.Point.Point point, Task pointTask, List<byte[]> receivedBytes) CreateMockedPointConnectionWithInitializationRequestAndMovePointCommand(bool allPointMachinesCrucial, bool simulateTimeouts, GenericPointState initialPointState, decimal pointMovementSeconds, params (PointMovePointCommandCommandedPointPosition, int)[] commandedPointPositions)
     {
         var settings = new Dictionary<string, string?> {
             {"PointSettings:LocalId", "99W1" },
@@ -22,6 +22,7 @@ public class CommandingAndReversingTests
             {"PointSettings:RemoteEndpoint", "http://localhost:50051" },
             {"PointSettings:SimulatedTransitioningTimeSeconds", pointMovementSeconds.ToString() },
             {"PointSettings:AllPointMachinesCrucial", allPointMachinesCrucial.ToString() },
+            {"PointSettings:ObserveAbilityToMove", "true" },
             {"PointSettings:InitialLastCommandedPointPosition", initialPointState.LastCommandedPointPosition.ToString() },
             {"PointSettings:InitialPointPosition", initialPointState.PointPosition.ToString() },
             {"PointSettings:InitialDegradedPointPosition", initialPointState.DegradedPointPosition.ToString() },
@@ -70,6 +71,10 @@ public class CommandingAndReversingTests
         var connection = new PointToInterlockingConnection(Mock.Of<ILogger<PointToInterlockingConnection>>(), configuration, CancellationToken.None);
 
         var point = new EulynxLive.Point.Point(Mock.Of<ILogger<EulynxLive.Point.Point>>(), configuration, connection, connectionProvider.Object, () => Task.CompletedTask);
+        if (simulateTimeouts) {
+            point.EnableTimeoutLeft();
+            point.EnableTimeoutRight();
+        }
 
         async Task SimulatePoint()
         {
@@ -99,7 +104,7 @@ public class CommandingAndReversingTests
     {
         // Arrange
         var (point, pointTask, receivedBytes) = CreateMockedPointConnectionWithInitializationRequestAndMovePointCommand(
-            true,
+            true, false,
             new GenericPointState
             (
                 LastCommandedPointPosition: currentPointPosition,
@@ -161,7 +166,7 @@ public class CommandingAndReversingTests
         };
 
         var (point, pointTask, receivedBytes) = CreateMockedPointConnectionWithInitializationRequestAndMovePointCommand(
-            true,
+            true, false,
             new GenericPointState
             (
                 LastCommandedPointPosition: currentPointPosition,
@@ -200,4 +205,62 @@ public class CommandingAndReversingTests
             Assert.Equal(expectedReportedPointPosition, receivedMessages.OfType<PointPointPositionMessage>().Single().ReportedPointPosition);
         }
     }
+
+    /// <summary>
+    /// Eu.P.1284 - Irregularities
+    /// </summary>
+    [Theory]
+    [InlineData(PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsALeftHandPointMoving, GenericPointPosition.Right)]
+    [InlineData(PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsALeftHandPointMoving, GenericPointPosition.NoEndPosition)]
+    [InlineData(PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsALeftHandPointMoving, GenericPointPosition.UnintendedPosition)]
+
+    [InlineData(PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsARightHandPointMoving, GenericPointPosition.Left)]
+    [InlineData(PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsARightHandPointMoving, GenericPointPosition.NoEndPosition)]
+    [InlineData(PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsARightHandPointMoving, GenericPointPosition.UnintendedPosition)]
+    public async Task HandleAndReportPointOperationTimeout(PointMovePointCommandCommandedPointPosition commandedPointPosition, GenericPointPosition currentPointPosition)
+    {
+        // Arrange
+        var oppositeCommandedPointPosition = commandedPointPosition switch
+        {
+            PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsALeftHandPointMoving => PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsARightHandPointMoving,
+            PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsARightHandPointMoving => PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsALeftHandPointMoving,
+            _ => throw new NotImplementedException()
+        };
+
+        var (point, pointTask, receivedBytes) = CreateMockedPointConnectionWithInitializationRequestAndMovePointCommand(
+            true, simulateTimeouts: true,
+            new GenericPointState
+            (
+                LastCommandedPointPosition: currentPointPosition,
+                PointPosition: currentPointPosition,
+                DegradedPointPosition: GenericDegradedPointPosition.NotApplicable,
+                AbilityToMove: GenericAbilityToMove.AbleToMove
+            ),
+            0.1m,
+            (commandedPointPosition, 0));
+
+        // Act
+        await pointTask;
+
+        // Assert
+        var receivedMessages = receivedBytes.Select(x => Message.FromBytes(x))
+            .SkipWhile(x => x is not PointInitialisationCompletedMessage).Skip(1)
+            .ToList();
+
+        Assert.IsType<PointMovementFailedMessage>(receivedMessages.Last());
+    }
+
+    // Interesting sequences.
+    // 6708 Sending a move command to the same direction the point is already currently moving towards should be ignored
+    // 6717 - Configured as redrive point, out of scope for now
+    // 6719 - Internal failure. Externally not distinguishable from timeout.
+    // 1474 - Go to and remain in no end position from end position or unintended position
+    // 1273 - Go to and remain in unintended position from end position or no end position
+    // 3207 - Go to and remain in end position from unintended position or no end position
+    // 4761 - Go to and remain in end position from opposite end position
+    // 5373 - Iff configure to observe ability to move, upon detecting unability to move the point should report this
+    // 5797 - Iff configure to observe ability to move, upon detecting ability to move the point should report this
+    // 6716 - Irregularities as redrive point, out of scope for now
+    // 5801 - Degraded point positions
+    // 5806 - Transitioning out of a degraded position
 }

@@ -46,6 +46,11 @@ namespace EulynxLive.Point
                 throw new InvalidOperationException("If all point machines are crucial, the degraded point position must be NotApplicable.");
             }
 
+            if (_config.ObserveAbilityToMove && _config.InitialAbilityToMove == null)
+            {
+                throw new InvalidOperationException("If the ability to move is observed, the initial ability to move must be set.");
+            }
+
             _webSockets = new List<WebSocket>();
 
             var initialPointPosition = (
@@ -138,8 +143,13 @@ namespace EulynxLive.Point
         /// <summary>
         /// Sets the ability to move for the next command.
         /// </summary>
-        public void SetAbilityToMove(AbilityToMoveMessage abilityToMoveMessage)
+        public async Task SetAbilityToMove(AbilityToMoveMessage abilityToMoveMessage)
         {
+            if (_config.ObserveAbilityToMove == false)
+            {
+                throw new InvalidOperationException("Ability to move is not observed, cannot set ability to move.");
+            }
+
             _logger.LogInformation("Setting ability to move to {}.", abilityToMoveMessage.Ability);
             PointState = PointState with
             {
@@ -150,6 +160,8 @@ namespace EulynxLive.Point
                     _ => throw new InvalidOperationException($"Unknown ability to move {abilityToMoveMessage.Ability}.")
                 }
             };
+
+            await Connection.SendAbilityToMove(PointState);
         }
 
         /// <summary>
@@ -222,17 +234,6 @@ namespace EulynxLive.Point
         }
 
         /// <summary>
-        /// Updates the point state based on the commanded position and the currently prevented position.
-        /// <param name="commandedPointPosition"></param>
-        /// </summary>
-        private void UpdatePointState(GenericPointPosition commandedPointPosition)
-        {
-            var (newPointPosition, newDegradedPointPosition) = HandlePreventedPointPosition(commandedPointPosition);
-            (newPointPosition, newDegradedPointPosition) = HandleAbilityToMove(newPointPosition, newDegradedPointPosition);
-            SetPointState(newPointPosition, RespectAllPointMachinesCrucial(newDegradedPointPosition));
-        }
-
-        /// <summary>
         /// Checks if AllPointMachinesCrucial is set and returns NotApplicable if it is.
         /// </summary>
         /// <param name="degradedPointPosition"></param>
@@ -262,7 +263,7 @@ namespace EulynxLive.Point
                 await Reset();
                 try
                 {
-                    var success = await Connection.InitializeConnection(PointState, stoppingToken);
+                    var success = await Connection.InitializeConnection(PointState, _config.ObserveAbilityToMove, stoppingToken);
                     if (!success)
                     {
                         throw new Exception("Unable to initialize connection");
@@ -308,11 +309,21 @@ namespace EulynxLive.Point
 
         private async Task HandleCommandedPointPosition(GenericPointPosition commandedPointPosition, CancellationToken cancellationToken)
         {
+            // Make a copy of the current state, so that it is not modified while the point is moving.
+            var simulatedState = _simulatedPointState;
+
+            if (_config.ObserveAbilityToMove && PointState.AbilityToMove == GenericAbilityToMove.UnableToMove)
+            {
+                _logger.LogInformation("Point is unable to move.");
+                // Do not send a message, according to Eu.P.5371
+                return;
+            }
+
             if ((commandedPointPosition == GenericPointPosition.Left && PointState.PointPosition == GenericPointPosition.Left)
-                            || (commandedPointPosition == GenericPointPosition.Right && PointState.PointPosition == GenericPointPosition.Right))
+                || (commandedPointPosition == GenericPointPosition.Right && PointState.PointPosition == GenericPointPosition.Right))
             {
                 _logger.LogInformation("Point is already in position {}.", commandedPointPosition);
-                await Connection.SendPointPosition(PointState);
+                // Do not send a message, according to Eu.P.1469
                 return;
             }
 
@@ -335,14 +346,15 @@ namespace EulynxLive.Point
                 return;
             }
 
-            if (ShouldSimulateTimeout(commandedPointPosition))
+            if (ShouldSimulateTimeout(commandedPointPosition, simulatedState))
             {
                 await SendTimeoutMessage();
                 await _simulateTimeout();
             }
             else
             {
-                UpdatePointState(commandedPointPosition);
+                var (newPointPosition, newDegradedPointPosition) = HandlePreventedPointPosition(commandedPointPosition, simulatedState);
+                SetPointState(newPointPosition, RespectAllPointMachinesCrucial(newDegradedPointPosition));
 
                 await UpdateConnectedWebClients();
 
@@ -351,15 +363,15 @@ namespace EulynxLive.Point
             }
         }
 
-        private bool ShouldSimulateTimeout(GenericPointPosition commandedPointPosition)
+        private bool ShouldSimulateTimeout(GenericPointPosition commandedPointPosition, SimulatedPointState simulatedState)
         {
             if (commandedPointPosition == GenericPointPosition.Left)
             {
-                return _simulatedPointState.SimulateTimeoutLeft;
+                return simulatedState.SimulateTimeoutLeft;
             }
             else if (commandedPointPosition == GenericPointPosition.Right)
             {
-                return _simulatedPointState.SimulateTimeoutRight;
+                return simulatedState.SimulateTimeoutRight;
             }
 
             throw new ArgumentException("Invalid commanded position", nameof(commandedPointPosition));
@@ -371,62 +383,48 @@ namespace EulynxLive.Point
         /// <param name="commandedPosition"></param>
         /// <param name="pointPosition"></param>
         /// <param name="degradedPointPosition"></param>
-        private (GenericPointPosition PointPosition, GenericDegradedPointPosition DegradedPointPosition) HandlePreventedPointPosition(GenericPointPosition commandedPosition)
+        private (GenericPointPosition PointPosition, GenericDegradedPointPosition DegradedPointPosition) HandlePreventedPointPosition(GenericPointPosition commandedPosition, SimulatedPointState simulatedState)
         {
             var notDegradedPosition = AllPointMachinesCrucial ? GenericDegradedPointPosition.NotApplicable : GenericDegradedPointPosition.NotDegraded;
 
             if (commandedPosition == GenericPointPosition.Left)
             {
-                if (_simulatedPointState.PreventedPositionLeft == PreventedPosition.DoNotPrevent)
+                if (simulatedState.PreventedPositionLeft == PreventedPosition.DoNotPrevent)
                 {
                     return (commandedPosition, notDegradedPosition);
                 }
                 else
                 {
-                    if (_simulatedPointState.PreventedPositionLeft == PreventedPosition.SetUnintendedOrTrailed)
+                    if (simulatedState.PreventedPositionLeft == PreventedPosition.SetUnintendedOrTrailed)
                     {
-                        return (GenericPointPosition.UnintendedPosition, _simulatedPointState.DegradedPositionLeft ? GenericDegradedPointPosition.DegradedLeft : notDegradedPosition);
+                        return (GenericPointPosition.UnintendedPosition, simulatedState.DegradedPositionLeft ? GenericDegradedPointPosition.DegradedLeft : notDegradedPosition);
                     }
-                    else if (_simulatedPointState.PreventedPositionLeft == PreventedPosition.SetNoEndPosition)
+                    else if (simulatedState.PreventedPositionLeft == PreventedPosition.SetNoEndPosition)
                     {
-                        return (GenericPointPosition.NoEndPosition, _simulatedPointState.DegradedPositionLeft ? GenericDegradedPointPosition.DegradedLeft : notDegradedPosition);
+                        return (GenericPointPosition.NoEndPosition, simulatedState.DegradedPositionLeft ? GenericDegradedPointPosition.DegradedLeft : notDegradedPosition);
                     }
                 }
             }
             else if (commandedPosition == GenericPointPosition.Right)
             {
-                if (_simulatedPointState.PreventedPositionRight == PreventedPosition.DoNotPrevent)
+                if (simulatedState.PreventedPositionRight == PreventedPosition.DoNotPrevent)
                 {
                     return (commandedPosition, notDegradedPosition);
                 }
                 else
                 {
-                    if (_simulatedPointState.PreventedPositionRight == PreventedPosition.SetUnintendedOrTrailed)
+                    if (simulatedState.PreventedPositionRight == PreventedPosition.SetUnintendedOrTrailed)
                     {
-                        return (GenericPointPosition.UnintendedPosition, _simulatedPointState.DegradedPositionRight ? GenericDegradedPointPosition.DegradedRight : notDegradedPosition);
+                        return (GenericPointPosition.UnintendedPosition, simulatedState.DegradedPositionRight ? GenericDegradedPointPosition.DegradedRight : notDegradedPosition);
                     }
-                    else if (_simulatedPointState.PreventedPositionRight == PreventedPosition.SetNoEndPosition)
+                    else if (simulatedState.PreventedPositionRight == PreventedPosition.SetNoEndPosition)
                     {
-                        return (GenericPointPosition.NoEndPosition, _simulatedPointState.DegradedPositionRight ? GenericDegradedPointPosition.DegradedRight : notDegradedPosition);
+                        return (GenericPointPosition.NoEndPosition, simulatedState.DegradedPositionRight ? GenericDegradedPointPosition.DegradedRight : notDegradedPosition);
                     }
                 }
             }
 
             throw new ArgumentException("Invalid commanded position", nameof(commandedPosition));
-        }
-
-        private (GenericPointPosition PointPosition, GenericDegradedPointPosition DegradedPointPosition) HandleAbilityToMove(GenericPointPosition pointPosition, GenericDegradedPointPosition degradedPointPosition)
-        {
-            switch (PointState.AbilityToMove)
-            {
-                case GenericAbilityToMove.AbleToMove:
-                    return (pointPosition, degradedPointPosition);
-                case GenericAbilityToMove.UnableToMove:
-                    _logger.LogWarning("Point is unable to move.");
-                    return (PointState.PointPosition, RespectAllPointMachinesCrucial(PointState.DegradedPointPosition));
-            }
-
-            throw new InvalidOperationException($"Unknown ability to move {PointState.AbilityToMove}.");
         }
 
         public async Task Reset()

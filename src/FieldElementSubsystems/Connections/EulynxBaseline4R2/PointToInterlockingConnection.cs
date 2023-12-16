@@ -44,7 +44,7 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
         CurrentConnection = connection;
     }
 
-    public async Task<bool> InitializeConnection(GenericPointState state, CancellationToken cancellationToken)
+    public async Task<bool> InitializeConnection(GenericPointState state, bool observeAbilityToMove, CancellationToken cancellationToken)
     {
         if (await ReceiveMessage<PointPdiVersionCheckCommand>(cancellationToken) == null)
         {
@@ -68,9 +68,12 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
         var initialPosition = new PointPointPositionMessage(_localId, _remoteId, pointState.PointPosition, pointState.DegradedPointPosition);
         await SendMessage(initialPosition);
 
-        var abilityToMove = new AbilityToMove(state);
-        var initialAbilityToMove = new PointAbilityToMovePointMessage(_localId, _remoteId, abilityToMove.AbilityToMove);
-        await SendMessage(initialAbilityToMove);
+        if (observeAbilityToMove)
+        {
+            var abilityToMove = new AbilityToMove(state);
+            var initialAbilityToMove = new PointAbilityToMovePointMessage(_localId, _remoteId, abilityToMove.AbilityToMove);
+            await SendMessage(initialAbilityToMove);
+        }
 
         var completeInitialization = new PointInitialisationCompletedMessage(_localId, _remoteId);
         await SendMessage(completeInitialization);
@@ -136,5 +139,12 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
     {
         if (CurrentConnection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
         await SendMessage(message);
+    }
+
+    public async Task SendAbilityToMove(GenericPointState pointState)
+    {
+        var abilityToMove = new AbilityToMove(pointState);
+        var abilityToMoveMessage = new PointAbilityToMovePointMessage(_localId, _remoteId, abilityToMove.AbilityToMove);
+        await SendMessage(abilityToMoveMessage);
     }
 }

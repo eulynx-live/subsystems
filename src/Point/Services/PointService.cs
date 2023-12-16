@@ -34,10 +34,10 @@ namespace EulynxLive.Point.Services
             return Task.FromResult(new Empty());
         }
 
-        public override Task<Empty> SetAbilityToMove(AbilityToMoveMessage request, ServerCallContext context)
+        public override async Task<Empty> SetAbilityToMove(AbilityToMoveMessage request, ServerCallContext context)
         {
-            _point.SetAbilityToMove(request);
-            return Task.FromResult(new Empty());
+            await _point.SetAbilityToMove(request);
+            return new Empty();
         }
 
         public override async Task<Empty> SendSciMessage(SciMessage request, ServerCallContext context)

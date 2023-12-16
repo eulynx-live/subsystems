@@ -11,6 +11,7 @@ public interface IPointToInterlockingConnection {
     Task SendPointPosition(GenericPointState state);
     Task SendSciMessage(byte[] state);
     Task SendTimeoutMessage();
-    Task<bool> InitializeConnection(GenericPointState state, CancellationToken cancellationToken);
+    Task<bool> InitializeConnection(GenericPointState state, bool observeAbilityToMove, CancellationToken cancellationToken);
     Task<GenericPointPosition> ReceiveMovePointCommand(CancellationToken stoppingToken);
+    Task SendAbilityToMove(GenericPointState pointState);
 }

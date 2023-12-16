@@ -4,5 +4,5 @@ public record GenericPointState(
     GenericPointPosition? LastCommandedPointPosition,
     GenericPointPosition PointPosition,
     GenericDegradedPointPosition DegradedPointPosition,
-    GenericAbilityToMove AbilityToMove
+    GenericAbilityToMove? AbilityToMove
 );

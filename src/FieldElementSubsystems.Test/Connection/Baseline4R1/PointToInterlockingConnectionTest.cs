@@ -30,6 +30,7 @@ public class PointToInterlockingConnectionTest
         {"PointSettings:RemoteEndpoint", "http://localhost:50051" },
         {"PointSettings:SimulatedTransitioningTimeSeconds", "0" },
         {"PointSettings:AllPointMachinesCrucial", "false" },
+        {"PointSettings:ObserveAbilityToMove", "true" },
     };
 
     private readonly IConfiguration _configuration = new ConfigurationBuilder()
@@ -63,12 +64,12 @@ public class PointToInterlockingConnectionTest
 
         // Act
         connection.Connect(mockConnection.Object);
-        await connection.InitializeConnection(new GenericPointState(LastCommandedPointPosition: null, PointPosition: GenericPointPosition.Left, DegradedPointPosition: GenericDegradedPointPosition.NotDegraded, AbilityToMove: GenericAbilityToMove.AbleToMove), CancellationToken.None);
+        await connection.InitializeConnection(new GenericPointState(LastCommandedPointPosition: null, PointPosition: GenericPointPosition.Left, DegradedPointPosition: GenericDegradedPointPosition.NotDegraded, AbilityToMove: GenericAbilityToMove.AbleToMove), true, CancellationToken.None);
 
         // Assert
         mockConnection.Verify(v => v.ReceiveAsync(It.IsAny<CancellationToken>()), Times.Exactly(2));
         mockConnection.Verify(v => v.SendAsync(It.IsAny<byte[]>()), Times.Exactly(5));
-        Assert.Equal(new PointPdiVersionCheckMessage("99W1________________", "INTERLOCKING________", PointPdiVersionCheckMessageResultPdiVersionCheck.PDIVersionsFromReceiverAndSenderDoMatch, /* TODO */ 0, 0, new byte[] { }).ToByteArray(), receivedMessages[0]);
+        Assert.Equal(new PointPdiVersionCheckMessage("99W1________________", "INTERLOCKING________", PointPdiVersionCheckMessageResultPdiVersionCheck.PDIVersionsFromReceiverAndSenderDoMatch, /* TODO */ 0, 0, Array.Empty<byte>()).ToByteArray(), receivedMessages[0]);
         Assert.Equal(new PointStartInitialisationMessage("99W1________________", "INTERLOCKING________").ToByteArray(), receivedMessages[1]);
         Assert.Equal(new PointPointPositionMessage("99W1________________", "INTERLOCKING________", PointPointPositionMessageReportedPointPosition.PointIsInALeftHandPositionDefinedEndPosition, PointPointPositionMessageReportedDegradedPointPosition.PointIsNotInADegradedPosition).ToByteArray(), receivedMessages[2]);
         Assert.Equal(new PointAbilityToMovePointMessage("99W1________________", "INTERLOCKING________", PointAbilityToMovePointMessageReportedAbilityToMovePointStatus.PointIsAbleToMove).ToByteArray(), receivedMessages[3]);
@@ -88,7 +89,7 @@ public class PointToInterlockingConnectionTest
 
         // Act
         connection.Connect(mockConnection.Object);
-        await connection.InitializeConnection(new GenericPointState(LastCommandedPointPosition: null, PointPosition: GenericPointPosition.Left, DegradedPointPosition: GenericDegradedPointPosition.NotDegraded, AbilityToMove: GenericAbilityToMove.AbleToMove), CancellationToken.None);
+        await connection.InitializeConnection(new GenericPointState(LastCommandedPointPosition: null, PointPosition: GenericPointPosition.Left, DegradedPointPosition: GenericDegradedPointPosition.NotDegraded, AbilityToMove: GenericAbilityToMove.AbleToMove), true, CancellationToken.None);
         foreach (var position in new List<GenericPointPosition>() { GenericPointPosition.Left, GenericPointPosition.Right, GenericPointPosition.UnintendedPosition, GenericPointPosition.NoEndPosition })
         {
             await connection.SendPointPosition(new GenericPointState(LastCommandedPointPosition: null, PointPosition: position, DegradedPointPosition: GenericDegradedPointPosition.NotDegraded, AbilityToMove: GenericAbilityToMove.AbleToMove));
@@ -117,7 +118,7 @@ public class PointToInterlockingConnectionTest
 
         // Act
         connection.Connect(mockConnection.Object);
-        await connection.InitializeConnection(new GenericPointState(LastCommandedPointPosition: null, PointPosition: GenericPointPosition.Left, DegradedPointPosition: GenericDegradedPointPosition.NotDegraded, AbilityToMove: GenericAbilityToMove.AbleToMove), CancellationToken.None);
+        await connection.InitializeConnection(new GenericPointState(LastCommandedPointPosition: null, PointPosition: GenericPointPosition.Left, DegradedPointPosition: GenericDegradedPointPosition.NotDegraded, AbilityToMove: GenericAbilityToMove.AbleToMove), true, CancellationToken.None);
         var position1 = await connection.ReceiveMovePointCommand(CancellationToken.None);
         var position2 = await connection.ReceiveMovePointCommand(CancellationToken.None);
 
@@ -140,7 +141,7 @@ public class PointToInterlockingConnectionTest
 
         // Act
         connection.Connect(mockConnection.Object);
-        await connection.InitializeConnection(new GenericPointState(LastCommandedPointPosition: null, PointPosition: GenericPointPosition.Left, DegradedPointPosition: GenericDegradedPointPosition.NotDegraded, AbilityToMove: GenericAbilityToMove.AbleToMove), CancellationToken.None);
+        await connection.InitializeConnection(new GenericPointState(LastCommandedPointPosition: null, PointPosition: GenericPointPosition.Left, DegradedPointPosition: GenericDegradedPointPosition.NotDegraded, AbilityToMove: GenericAbilityToMove.AbleToMove), true, CancellationToken.None);
         await connection.SendTimeoutMessage();
 
         // Assert

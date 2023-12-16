@@ -13,9 +13,10 @@ public record PointConfiguration(
     // - Point has multiple point machines, but they are all crucial or
     // - Point does not support reporting degraded point positions
     bool AllPointMachinesCrucial = true,
+    bool ObserveAbilityToMove = false,
     GenericPointPosition? InitialLastCommandedPointPosition = GenericPointPosition.NoEndPosition,
     GenericPointPosition InitialPointPosition = GenericPointPosition.NoEndPosition,
     GenericDegradedPointPosition InitialDegradedPointPosition = GenericDegradedPointPosition.NotApplicable,
-    GenericAbilityToMove InitialAbilityToMove = GenericAbilityToMove.AbleToMove,
+    GenericAbilityToMove? InitialAbilityToMove = GenericAbilityToMove.AbleToMove,
     ConnectionProtocol? ConnectionProtocol = null
 );
