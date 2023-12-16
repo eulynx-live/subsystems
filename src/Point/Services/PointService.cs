@@ -3,6 +3,7 @@ using static EulynxLive.Point.Proto.Point;
 using EulynxLive.Point.Proto;
 using Point.Services.Extensions;
 using Google.Protobuf.WellKnownTypes;
+using EulynxLive.FieldElementSubsystems.Configuration;
 
 namespace EulynxLive.Point.Services
 {
@@ -47,6 +48,18 @@ namespace EulynxLive.Point.Services
 
         public override async Task<Empty> PutIntoUnintendedPosition(SimulatedPositionMessage message, ServerCallContext context)
         {
+            if (_point.Connection.Configuration.ConnectionProtocol != ConnectionProtocol.EulynxBaseline4R2)
+                throw new RpcException(new Status(StatusCode.InvalidArgument, "Only supported for EulynxBaseline4R2"));
+
+            await _point.PutIntoUnintendedPosition(message);
+            return new Empty();
+        }
+
+        public override async Task<Empty> PutIntoTrailedPosition(SimulatedPositionMessage message, ServerCallContext context)
+        {
+            if (_point.Connection.Configuration.ConnectionProtocol != ConnectionProtocol.EulynxBaseline4R1)
+                throw new RpcException(new Status(StatusCode.InvalidArgument, "Only supported for EulynxBaseline4R1"));
+
             await _point.PutIntoUnintendedPosition(message);
             return new Empty();
         }

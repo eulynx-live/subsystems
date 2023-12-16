@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using EulynxLive.Point.Services;
-using EulynxLive.FieldElementSubsystems.Interfaces;
 using EulynxLive.Point.Connections;
 
 namespace EulynxLive.Point
@@ -21,7 +20,7 @@ namespace EulynxLive.Point
             services.AddGrpc();
             services.AddGrpcReflection();
 
-            services.AddSingleton(x => new ConnectionFactory(x.GetRequiredService<ILogger<ConnectionFactory>>(), x.GetRequiredService<IConfiguration>()).CreateConnection(x));
+            services.AddSingleton(x => x.GetRequiredService<ConnectionFactory>().CreateConnection(x));
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
@@ -31,10 +30,10 @@ namespace EulynxLive.Point
 
             try
             {
-                services.AddSingleton<Point>(x =>
+                services.AddSingleton(x =>
                 {
-                    Func<Task> simulateTimout = async () => await Task.Delay(new Random().Next(1, 5) * 1000);
-                    return new Point(x.GetRequiredService<ILogger<Point>>(), x.GetRequiredService<IConfiguration>(), x.GetRequiredService<IPointToInterlockingConnection>(), simulateTimout);
+                    var simulateTimout = async () => await Task.Delay(new Random().Next(1, 5) * 1000);
+                    return ActivatorUtilities.CreateInstance<Point>(x, simulateTimout);
                 });
             }
             catch (Exception e)

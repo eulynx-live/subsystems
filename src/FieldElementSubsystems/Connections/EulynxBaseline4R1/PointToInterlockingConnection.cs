@@ -16,8 +16,7 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
     public PointConfiguration Configuration { get; }
     public CancellationToken TimeoutToken => _timeout.Token;
 
-    private IConnection? _currentConnection;
-    public IConnection? CurrentConnection { get => _currentConnection; }
+    public IConnection? CurrentConnection { get; private set; }
     private CancellationTokenSource _timeout;
     private readonly int _timeoutDuration;
     private CancellationToken _stoppingToken;
@@ -29,7 +28,7 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
         _timeoutDuration = timeoutDuration;
         _timeout = new CancellationTokenSource();
         _logger = logger;
-        _currentConnection = null;
+        CurrentConnection = null;
 
         var config = configuration.GetSection("PointSettings").Get<PointConfiguration>() ?? throw new Exception("No configuration provided");
         _localId = config.LocalId;
@@ -40,7 +39,7 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
     public void Connect(IConnection connection)
     {
         ResetTimeout();
-        _currentConnection = connection;
+        CurrentConnection = connection;
     }
 
     public async Task<bool> InitializeConnection(GenericPointState state, CancellationToken stoppingToken)
@@ -101,24 +100,24 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
 
     private async Task SendMessage(Message message)
     {
-        if (_currentConnection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
+        if (CurrentConnection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
         await SendMessage(message.ToByteArray());
     }
 
     private async Task SendMessage(byte[] message)
     {
-        if (_currentConnection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
-        await _currentConnection.SendAsync(message);
+        if (CurrentConnection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
+        await CurrentConnection.SendAsync(message);
     }
 
     private async Task<T?> ReceiveMessage<T>(CancellationToken cancellationToken) where T : Message
     {
-        if (_currentConnection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
+        if (CurrentConnection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
         ResetTimeout();
 
         try
         {
-            var message = Message.FromBytes(await _currentConnection.ReceiveAsync(CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _timeout.Token).Token));
+            var message = Message.FromBytes(await CurrentConnection.ReceiveAsync(CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _timeout.Token).Token));
             if (message is not T)
             {
                 _logger.LogError("Unexpected message: {}", message);
@@ -144,7 +143,7 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
 
     public async Task SendGenericMessage(byte[] message)
     {
-        if (_currentConnection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
+        if (CurrentConnection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
         await SendMessage(message);
     }
 }

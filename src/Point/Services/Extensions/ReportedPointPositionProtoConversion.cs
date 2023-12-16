@@ -51,7 +51,7 @@ namespace Point.Services.Extensions
         };
     }
 
-    public static class AbilityToMoveConvertion
+    public static class AbilityToMoveConversion
     {
         public static GenericAbiliyToMove ConvertToGenericAbilityToMove(this ProtoAbilityToMove protoAbilityToMove) => protoAbilityToMove switch
         {
@@ -60,5 +60,5 @@ namespace Point.Services.Extensions
             ProtoAbilityToMove.Undefined => GenericAbiliyToMove.Unknown,
             _ => throw new InvalidCastException($"Unable to convert proto ability to move {protoAbilityToMove} to reported point position.")
         };
-    }   
+    }
 }

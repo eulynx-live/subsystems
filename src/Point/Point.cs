@@ -5,10 +5,7 @@ using EulynxLive.Point.Proto;
 using Grpc.Core;
 using System.Net.WebSockets;
 using System.Text;
-using System.Collections.Generic;
 using System.Text.Json;
-
-using static Point.Services.Extensions.AbilityToMoveConvertion;
 using Point.Services.Extensions;
 
 namespace EulynxLive.Point
@@ -22,16 +19,16 @@ namespace EulynxLive.Point
     public class Point : BackgroundService
     {
         public bool AllPointMachinesCrucial { get; }
+        public GenericPointState PointState { get; }
+        public IPointToInterlockingConnection Connection { get; }
 
         private readonly ILogger<Point> _logger;
         private readonly Func<Task> _simulateTimeout;
         private readonly List<WebSocket> _webSockets;
-        private readonly IPointToInterlockingConnection _connection;
+
         private readonly Random _random;
         private bool _initialized;
-        private SimulatedPointState _simulatedPointState;
-        private readonly GenericPointState _pointState;
-        public GenericPointState PointState { get { return _pointState; } }
+        private readonly SimulatedPointState _simulatedPointState;
 
         public Point(ILogger<Point> logger, IConfiguration configuration, IPointToInterlockingConnection connection, Func<Task> simulateTimeout)
         {
@@ -46,7 +43,7 @@ namespace EulynxLive.Point
             AllPointMachinesCrucial = config.AllPointMachinesCrucial ?? false;
 
             _webSockets = new List<WebSocket>();
-            _pointState = new GenericPointState()
+            PointState = new GenericPointState()
             {
                 DegradedPointPosition = RespectAllPointMachinesCrucial(GenericDegradedPointPosition.NotDegraded),
                 PointPosition = GenericPointPosition.NoEndPosition,
@@ -59,7 +56,7 @@ namespace EulynxLive.Point
                 AbilityToMove = AbilityToMove.AbleToMove,
             };
             _random = new Random();
-            _connection = connection;
+            Connection = connection;
         }
 
         public async Task HandleWebSocket(WebSocket webSocket)
@@ -89,12 +86,12 @@ namespace EulynxLive.Point
 
         public async Task SendSCIMessage(GenericSCIMessage message){
             _logger.LogInformation("Sending generic message: {}", message.Message);
-            await _connection.SendGenericMessage(message.Message.ToByteArray());
+            await Connection.SendGenericMessage(message.Message.ToByteArray());
         }
 
         private async Task SendTimeoutMessage(){
             _logger.LogInformation("Timeout");
-            await _connection.SendTimeoutMessage();
+            await Connection.SendTimeoutMessage();
         }
 
         /// <summary>
@@ -145,8 +142,8 @@ namespace EulynxLive.Point
 
         private void SetPointState(GenericPointPosition pointPosition, GenericDegradedPointPosition degradedPointPosition)
         {
-            _pointState.PointPosition = pointPosition;
-            _pointState.DegradedPointPosition = degradedPointPosition;
+            PointState.PointPosition = pointPosition;
+            PointState.DegradedPointPosition = degradedPointPosition;
         }
 
         /// <summary>
@@ -167,14 +164,14 @@ namespace EulynxLive.Point
         public async Task PutInEndPosition()
         {
 
-            if (_connection != null)
+            if (Connection != null)
             {
-                if (_pointState.PointPosition != GenericPointPosition.Right &&
-                _pointState.PointPosition != GenericPointPosition.Left)
+                if (PointState.PointPosition != GenericPointPosition.Right &&
+                PointState.PointPosition != GenericPointPosition.Left)
                 {
                     var reportedDegradedPointPosition = RespectAllPointMachinesCrucial(GenericDegradedPointPosition.NotDegraded);
 
-                    GenericPointPosition? finalPosition = _pointState.DegradedPointPosition switch
+                    GenericPointPosition? finalPosition = PointState.DegradedPointPosition switch
                     {
                         GenericDegradedPointPosition.DegradedRight => GenericPointPosition.Right,
                         GenericDegradedPointPosition.DegradedLeft => GenericPointPosition.Left,
@@ -186,7 +183,7 @@ namespace EulynxLive.Point
                     {
                         _logger.LogInformation("Putting point into end position {}.", finalPosition);
                         SetPointState(finalPosition.Value, reportedDegradedPointPosition);
-                        await _connection.SendPointPosition(PointState);
+                        await Connection.SendPointPosition(PointState);
                     }
                 }
             }
@@ -217,13 +214,13 @@ namespace EulynxLive.Point
             while (true)
             {
                 _logger.LogTrace("Connecting...");
-                var metadata = new Metadata { { "rasta-id", _connection.Configuration.LocalRastaId.ToString() } };
-                using var grpc = new GrpcConnection(metadata, _connection.Configuration.RemoteEndpoint, stoppingToken);
-                _connection.Connect(grpc);
+                var metadata = new Metadata { { "rasta-id", Connection.Configuration.LocalRastaId.ToString() } };
+                using var grpc = new GrpcConnection(metadata, Connection.Configuration.RemoteEndpoint, stoppingToken);
+                Connection.Connect(grpc);
                 await Reset();
                 try
                 {
-                    var success = await _connection.InitializeConnection(PointState, stoppingToken);
+                    var success = await Connection.InitializeConnection(PointState, stoppingToken);
                     if (!success)
                     {
                         throw new Exception("Unable to initialize connection");
@@ -232,21 +229,21 @@ namespace EulynxLive.Point
                     _initialized = true;
                     while (_initialized)
                     {
-                        var commandedPointPosition = await _connection.ReceivePointPosition(stoppingToken);
+                        var commandedPointPosition = await Connection.ReceivePointPosition(stoppingToken);
                         if (commandedPointPosition == null)
                         {
                             break;
                         }
 
-                        if ((commandedPointPosition == GenericPointPosition.Left && _pointState.PointPosition == GenericPointPosition.Left)
-                            || (commandedPointPosition == GenericPointPosition.Right && _pointState.PointPosition == GenericPointPosition.Right))
+                        if ((commandedPointPosition == GenericPointPosition.Left && PointState.PointPosition == GenericPointPosition.Left)
+                            || (commandedPointPosition == GenericPointPosition.Right && PointState.PointPosition == GenericPointPosition.Right))
                         {
                             _logger.LogInformation("Point is already in position {}.", commandedPointPosition);
-                            await _connection.SendPointPosition(PointState);
+                            await Connection.SendPointPosition(PointState);
                             continue;
                         }
 
-                        SetPointState(GenericPointPosition.NoEndPosition, RespectAllPointMachinesCrucial(_pointState.DegradedPointPosition));
+                        SetPointState(GenericPointPosition.NoEndPosition, RespectAllPointMachinesCrucial(PointState.DegradedPointPosition));
 
                         await UpdateConnectedWebClients();
 
@@ -264,12 +261,12 @@ namespace EulynxLive.Point
                         else
                         {
                             UpdatePointState(commandedPointPosition.Value);
-                            _logger.LogDebug("Moving to {}.", _pointState.PointPosition);
+                            _logger.LogDebug("Moving to {}.", PointState.PointPosition);
 
                             await UpdateConnectedWebClients();
 
                             _logger.LogInformation("End position reached.");
-                            await _connection.SendPointPosition(_pointState);
+                            await Connection.SendPointPosition(PointState);
                         }
                     }
                 }
@@ -302,7 +299,7 @@ namespace EulynxLive.Point
         private (GenericPointPosition PointPosition, GenericDegradedPointPosition DegradedPointPosition) HandlePreventedPointPosition(GenericPointPosition commandedPosition)
         {
             var pointPosition = commandedPosition;
-            var degradedPointPosition = _pointState.DegradedPointPosition;
+            var degradedPointPosition = PointState.DegradedPointPosition;
 
             switch (_simulatedPointState.PreventedPosition)
             {
@@ -339,7 +336,7 @@ namespace EulynxLive.Point
                 case AbilityToMove.UnableToMove:
                 case AbilityToMove.Undefined:
                     _logger.LogWarning("Point is unable to move.");
-                    return (_pointState.PointPosition, RespectAllPointMachinesCrucial(_pointState.DegradedPointPosition));
+                    return (PointState.PointPosition, RespectAllPointMachinesCrucial(PointState.DegradedPointPosition));
             }
 
             throw new InvalidOperationException($"Unknown ability to move {_simulatedPointState.AbilityToMove}.");
@@ -377,7 +374,7 @@ namespace EulynxLive.Point
             var serializedState = JsonSerializer.Serialize(new
             {
                 initialized = _initialized,
-                position = positions[_pointState.PointPosition]
+                position = positions[PointState.PointPosition]
             }, options);
             var serializedStateBytes = Encoding.UTF8.GetBytes(serializedState);
             await webSocket.SendAsync(serializedStateBytes, WebSocketMessageType.Text, true, CancellationToken.None);

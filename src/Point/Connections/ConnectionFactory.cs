@@ -7,8 +7,8 @@ using EulynxBaseline4R2 = EulynxLive.FieldElementSubsystems.Connections.EulynxBa
 namespace EulynxLive.Point.Connections;
 
 public class ConnectionFactory{
-    private IConfiguration _configuration { get; }
-    private ILogger<ConnectionFactory> _logger { get; }
+    private readonly IConfiguration _configuration;
+    private readonly ILogger<ConnectionFactory> _logger;
 
     public ConnectionFactory(ILogger<ConnectionFactory> logger, IConfiguration configuration){
         _logger = logger;
@@ -19,15 +19,14 @@ public class ConnectionFactory{
         var connectionProtocol = _configuration.GetSection("ConnectionSettings").Get<PointConfiguration>()?.ConnectionProtocol;
         switch (connectionProtocol){
             case ConnectionProtocol.EulynxBaseline4R1:
-                return new EulynxBaseline4R1.PointToInterlockingConnection(x.GetRequiredService<ILogger<EulynxBaseline4R1.PointToInterlockingConnection>>(), _configuration);
+                return ActivatorUtilities.CreateInstance<EulynxBaseline4R1.PointToInterlockingConnection>(x, _configuration);
             case ConnectionProtocol.EulynxBaseline4R2:
-                return new EulynxBaseline4R2.PointToInterlockingConnection(x.GetRequiredService<ILogger<EulynxBaseline4R2.PointToInterlockingConnection>>(), _configuration, CancellationToken.None);
+                return ActivatorUtilities.CreateInstance<EulynxBaseline4R2.PointToInterlockingConnection>(x, _configuration);
+            case null:
+                _logger.LogWarning($"No connection protocol specified. Using EulynxBaseline4R2.");
+                return ActivatorUtilities.CreateInstance<EulynxBaseline4R2.PointToInterlockingConnection>(x, _configuration);
             default:
-                if (connectionProtocol != null)
-                    _logger.LogWarning($"Unknown connection protocol {connectionProtocol}. Using EulynxBaseline4R2.");
-                else
-                    _logger.LogWarning($"No connection protocol specified. Using EulynxBaseline4R2.");
-                return new EulynxBaseline4R2.PointToInterlockingConnection(x.GetRequiredService<ILogger<EulynxBaseline4R2.PointToInterlockingConnection>>(), _configuration, CancellationToken.None);
+                throw new NotImplementedException($"Unknown connection protocol {connectionProtocol}.");
         }
     }
 }
