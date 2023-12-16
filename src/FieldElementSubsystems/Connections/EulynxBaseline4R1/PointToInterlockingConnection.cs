@@ -16,20 +16,22 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
     public PointConfiguration Configuration { get; }
     public CancellationToken TimeoutToken => _timeout.Token;
 
-    private IConnection? _currentConnection;
-    public IConnection? CurrentConnection { get => _currentConnection; }
+    public IConnection? CurrentConnection { get; private set; }
     private CancellationTokenSource _timeout;
     private readonly int _timeoutDuration;
-    private CancellationToken _stoppingToken;
+    private readonly CancellationToken _stoppingToken;
 
     public PointToInterlockingConnection(
         ILogger<PointToInterlockingConnection> logger,
-        IConfiguration configuration, int timeoutDuration = 10000)
+        IConfiguration configuration,
+        CancellationToken stoppingToken,
+        int timeoutDuration = 10000)
     {
         _timeoutDuration = timeoutDuration;
+        _stoppingToken = stoppingToken;
         _timeout = new CancellationTokenSource();
         _logger = logger;
-        _currentConnection = null;
+        CurrentConnection = null;
 
         var config = configuration.GetSection("PointSettings").Get<PointConfiguration>() ?? throw new Exception("No configuration provided");
         _localId = config.LocalId;
@@ -40,23 +42,21 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
     public void Connect(IConnection connection)
     {
         ResetTimeout();
-        _currentConnection = connection;
+        CurrentConnection = connection;
     }
 
-    public async Task<bool> InitializeConnection(GenericPointState state, CancellationToken stoppingToken)
+    public async Task<bool> InitializeConnection(GenericPointState state, bool observeAbilityToMove, CancellationToken cancellationToken)
     {
-        _stoppingToken = stoppingToken;
-        _logger.LogTrace("Connected. Waiting for request...");
-        if (await ReceiveMessage<PointPdiVersionCheckCommand>(CancellationToken.None) == null)
+        if (await ReceiveMessage<PointPdiVersionCheckCommand>(cancellationToken) == null)
         {
             _logger.LogError("Unexpected message.");
             return false;
         }
 
-        var versionCheckResponse = new PointPdiVersionCheckMessage(_localId, _remoteId, PointPdiVersionCheckMessageResultPdiVersionCheck.PDIVersionsFromReceiverAndSenderDoMatch, /* TODO */ 0, 0, new byte[] { });
+        var versionCheckResponse = new PointPdiVersionCheckMessage(_localId, _remoteId, PointPdiVersionCheckMessageResultPdiVersionCheck.PDIVersionsFromReceiverAndSenderDoMatch, /* TODO */ 0, 0, Array.Empty<byte>());
         await SendMessage(versionCheckResponse);
 
-        if (await ReceiveMessage<PointInitialisationRequestCommand>(CancellationToken.None) == null)
+        if (await ReceiveMessage<PointInitialisationRequestCommand>(cancellationToken) == null)
         {
             _logger.LogError("Unexpected message.");
             return false;
@@ -68,6 +68,13 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
         var pointState = new PointState(state);
         var initialPosition = new PointPointPositionMessage(_localId, _remoteId, pointState.PointPosition, pointState.DegradedPointPosition);
         await SendMessage(initialPosition);
+
+        if (observeAbilityToMove)
+        {
+            var abilityToMove = new AbilityToMove(state);
+            var initialAbilityToMove = new PointAbilityToMovePointMessage(_localId, _remoteId, abilityToMove.AbilityToMove);
+            await SendMessage(initialAbilityToMove);
+        }
 
         var completeInitialization = new PointInitialisationCompletedMessage(_localId, _remoteId);
         await SendMessage(completeInitialization);
@@ -87,53 +94,39 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
         await SendMessage(response);
     }
 
-    public async Task<GenericPointPosition?> ReceivePointPosition(CancellationToken cancellationToken)
+    public async Task<GenericPointPosition> ReceiveMovePointCommand(CancellationToken cancellationToken)
     {
         var message = await ReceiveMessage<PointMovePointCommand>(cancellationToken);
 
-        return (message != null)? message.CommandedPointPosition switch
+        return message.CommandedPointPosition switch
         {
             PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsARightHandPointMoving => GenericPointPosition.Right,
             PointMovePointCommandCommandedPointPosition.SubsystemElectronicInterlockingRequestsALeftHandPointMoving => GenericPointPosition.Left,
             _ => throw new NotImplementedException(),
-        } : null;
+        };
     }
 
     private async Task SendMessage(Message message)
     {
-        if (_currentConnection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
-        await SendMessage(message.ToByteArray());
+        if (CurrentConnection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
+        await CurrentConnection.SendAsync(message.ToByteArray());
     }
 
     private async Task SendMessage(byte[] message)
     {
-        if (_currentConnection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
-        await _currentConnection.SendAsync(message);
+        if (CurrentConnection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
+        await CurrentConnection.SendAsync(message);
     }
 
-    private async Task<T?> ReceiveMessage<T>(CancellationToken cancellationToken) where T : Message
+    private async Task<T> ReceiveMessage<T>(CancellationToken cancellationToken) where T : Message
     {
-        if (_currentConnection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
+        if (CurrentConnection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
         ResetTimeout();
 
-        try
-        {
-            var message = Message.FromBytes(await _currentConnection.ReceiveAsync(CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _timeout.Token).Token));
-            if (message is not T)
-            {
-                _logger.LogError("Unexpected message: {}", message);
-                return null;
-            }
-            return message as T;
-        }
-        catch (RpcException e) when (e.StatusCode == StatusCode.Cancelled)
-        {
-            return null;
-        }
-        catch (OperationCanceledException)
-        {
-            return null;
-        }
+        var message = Message.FromBytes(await CurrentConnection.ReceiveAsync(CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _timeout.Token).Token));
+        if (message is T tMessage) return tMessage;
+        _logger.LogError("Unexpected message: {}", message);
+        throw new InvalidOperationException("Unexpected message.");
     }
 
     private void ResetTimeout()
@@ -142,9 +135,17 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
         _timeout.CancelAfter(_timeoutDuration);
     }
 
-    public async Task SendGenericMessage(byte[] message)
+
+    public async Task SendSciMessage(byte[] message)
     {
-        if (_currentConnection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
+        if (CurrentConnection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
         await SendMessage(message);
+    }
+
+    public async Task SendAbilityToMove(GenericPointState pointState)
+    {
+        var abilityToMove = new AbilityToMove(pointState);
+        var abilityToMoveMessage = new PointAbilityToMovePointMessage(_localId, _remoteId, abilityToMove.AbilityToMove);
+        await SendMessage(abilityToMoveMessage);
     }
 }

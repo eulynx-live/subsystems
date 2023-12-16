@@ -8,6 +8,20 @@ EULYNX Point Simulator
 
 Then, execute `dotnet run` in this directory and open http://localhost:5101 in the browser.
 
+
+## gRPC API
+
+`PreventEndPosition(SimulatedPositionMessage)` can be used to put the point in a degraded or no end position at all.
+The following are the allowed parameter values and resulting point states:
+
+|SimulatedPositionMessage.position|SimulatedPositionMessage.degradedPosition|pointPosition|degradedPointPosition|
+|--|--|--|--|
+|UnintendedPosition| * | NoEndPosition | NotDegraded
+|PreventedLeft|DegradedLeft| NoEndPosition | DegradedLeft
+|PreventedRight|DegradedRight| NoEndPosition | DegradedRight
+|PreventedLeft|NotDegraded| NoEndPosition | NotDegraded
+|PreventedRight|NotDegraded| NoEndPosition | NotDegraded
+
 ## Arguments
 
 The `PointSettings` command-line arguments are used to configure the point simulator.

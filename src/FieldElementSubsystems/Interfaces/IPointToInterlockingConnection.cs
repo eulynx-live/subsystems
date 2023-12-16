@@ -5,10 +5,13 @@ namespace EulynxLive.FieldElementSubsystems.Interfaces;
 public interface IPointToInterlockingConnection {
     PointConfiguration Configuration { get; }
     CancellationToken TimeoutToken { get; }
-    Task SendPointPosition(GenericPointState state);
-    Task SendGenericMessage(byte[] state);
-    Task SendTimeoutMessage();
+
     void Connect(IConnection connection);
-    Task<bool> InitializeConnection(GenericPointState state, CancellationToken cancellationToken);
-    public Task<GenericPointPosition?> ReceivePointPosition(CancellationToken stoppingToken);
+
+    Task SendPointPosition(GenericPointState state);
+    Task SendSciMessage(byte[] state);
+    Task SendTimeoutMessage();
+    Task<bool> InitializeConnection(GenericPointState state, bool observeAbilityToMove, CancellationToken cancellationToken);
+    Task<GenericPointPosition> ReceiveMovePointCommand(CancellationToken stoppingToken);
+    Task SendAbilityToMove(GenericPointState pointState);
 }

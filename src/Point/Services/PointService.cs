@@ -3,6 +3,7 @@ using static EulynxLive.Point.Proto.Point;
 using EulynxLive.Point.Proto;
 using Point.Services.Extensions;
 using Google.Protobuf.WellKnownTypes;
+using EulynxLive.FieldElementSubsystems.Configuration;
 
 namespace EulynxLive.Point.Services
 {
@@ -21,21 +22,62 @@ namespace EulynxLive.Point.Services
             return new Empty();
         }
 
-        public override async Task<Empty> SendGenericMessage(GenericSCIMessage request, ServerCallContext context)
+        public override Task<Empty> ScheduleTimeoutRight(Empty request, ServerCallContext context)
         {
-            await _point.SendSCIMessage(request);
+            _point.EnableTimeoutRight();
+            return Task.FromResult(new Empty());
+        }
+
+        public override Task<Empty> ScheduleTimeoutLeft(Empty request, ServerCallContext context)
+        {
+            _point.EnableTimeoutLeft();
+            return Task.FromResult(new Empty());
+        }
+
+        public override async Task<Empty> SetAbilityToMove(AbilityToMoveMessage request, ServerCallContext context)
+        {
+            await _point.SetAbilityToMove(request);
             return new Empty();
         }
 
-        public override async Task<Empty> PreventEndPosition(SimulatedPositionMessage message, ServerCallContext context)
+        public override async Task<Empty> SendSciMessage(SciMessage request, ServerCallContext context)
         {
-            await _point.PreventEndPosition(message);
+            await _point.SendSciMessage(request);
             return new Empty();
         }
 
-        public override async Task<Empty> PutInEndPosition(Empty request, ServerCallContext context)
+        public override Task<Empty> OverrideSciMessage(SciMessage request, ServerCallContext context)
         {
-            await _point.PutInEndPosition();
+            throw new NotImplementedException();
+        }
+
+        public override Task<Empty> SchedulePreventLeftEndPosition(PreventedPositionMessage request, ServerCallContext context)
+        {
+            _point.PreventLeftEndPosition(request);
+            return Task.FromResult(new Empty());
+        }
+
+        override public Task<Empty> SchedulePreventRightEndPosition(PreventedPositionMessage request, ServerCallContext context)
+        {
+            _point.PreventRightEndPosition(request);
+            return Task.FromResult(new Empty());
+        }
+
+        public override async Task<Empty> PutIntoTrailedPosition(DegradedPositionMessage request, ServerCallContext context)
+        {
+            if (_point.Connection.Configuration.ConnectionProtocol != ConnectionProtocol.EulynxBaseline4R1)
+                throw new RpcException(new Status(StatusCode.InvalidArgument, "Only supported for EulynxBaseline4R1"));
+
+            await _point.PutIntoUnintendedPosition(request);
+            return new Empty();
+        }
+
+        public override async Task<Empty> PutIntoUnintendedPosition(DegradedPositionMessage request, ServerCallContext context)
+        {
+            if (_point.Connection.Configuration.ConnectionProtocol != ConnectionProtocol.EulynxBaseline4R2)
+                throw new RpcException(new Status(StatusCode.InvalidArgument, "Only supported for EulynxBaseline4R2"));
+
+            await _point.PutIntoUnintendedPosition(request);
             return new Empty();
         }
 
@@ -58,6 +100,5 @@ namespace EulynxLive.Point.Services
 
             return Task.FromResult(response);
         }
-
     }
 }

@@ -51,14 +51,13 @@ namespace Point.Services.Extensions
         };
     }
 
-    public static class AbilityToMoveConvertion
+    public static class AbilityToMoveConversion
     {
-        public static GenericAbiliyToMove ConvertToGenericAbilityToMove(this ProtoAbilityToMove protoAbilityToMove) => protoAbilityToMove switch
+        public static GenericAbilityToMove ConvertToGenericAbilityToMove(this ProtoAbilityToMove protoAbilityToMove) => protoAbilityToMove switch
         {
-            ProtoAbilityToMove.AbleToMove => GenericAbiliyToMove.CanMove,
-            ProtoAbilityToMove.UnableToMove => GenericAbiliyToMove.CannotMove,
-            ProtoAbilityToMove.Undefined => GenericAbiliyToMove.Unknown,
+            ProtoAbilityToMove.AbleToMove => GenericAbilityToMove.AbleToMove,
+            ProtoAbilityToMove.UnableToMove => GenericAbilityToMove.UnableToMove,
             _ => throw new InvalidCastException($"Unable to convert proto ability to move {protoAbilityToMove} to reported point position.")
         };
-    }   
+    }
 }

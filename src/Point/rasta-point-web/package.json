@@ -19,6 +19,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "grpc:generate": "protoc -I=../../ProtobufInterfaces/proto point.proto --js_out=import_style=commonjs:./src/proto --grpc-web_out=import_style=typescript,mode=grpcwebtext:./src/proto",
     "build": "react-scripts build",
     "eject": "react-scripts eject"
   },
