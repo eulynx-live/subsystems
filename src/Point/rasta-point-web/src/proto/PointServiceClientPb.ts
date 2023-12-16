@@ -129,26 +129,26 @@ export class PointClient {
   methodDescriptorPutIntoUnintendedPosition = new grpcWeb.MethodDescriptor(
     '/point.Point/PutIntoUnintendedPosition',
     grpcWeb.MethodType.UNARY,
-    point_pb.SimulatedPositionMessage,
+    point_pb.DegradedPositionMessage,
     google_protobuf_empty_pb.Empty,
-    (request: point_pb.SimulatedPositionMessage) => {
+    (request: point_pb.DegradedPositionMessage) => {
       return request.serializeBinary();
     },
     google_protobuf_empty_pb.Empty.deserializeBinary
   );
 
   putIntoUnintendedPosition(
-    request: point_pb.SimulatedPositionMessage,
+    request: point_pb.DegradedPositionMessage,
     metadata?: grpcWeb.Metadata | null): Promise<google_protobuf_empty_pb.Empty>;
 
   putIntoUnintendedPosition(
-    request: point_pb.SimulatedPositionMessage,
+    request: point_pb.DegradedPositionMessage,
     metadata: grpcWeb.Metadata | null,
     callback: (err: grpcWeb.RpcError,
                response: google_protobuf_empty_pb.Empty) => void): grpcWeb.ClientReadableStream<google_protobuf_empty_pb.Empty>;
 
   putIntoUnintendedPosition(
-    request: point_pb.SimulatedPositionMessage,
+    request: point_pb.DegradedPositionMessage,
     metadata?: grpcWeb.Metadata | null,
     callback?: (err: grpcWeb.RpcError,
                response: google_protobuf_empty_pb.Empty) => void) {
@@ -172,26 +172,26 @@ export class PointClient {
   methodDescriptorPutIntoTrailedPosition = new grpcWeb.MethodDescriptor(
     '/point.Point/PutIntoTrailedPosition',
     grpcWeb.MethodType.UNARY,
-    point_pb.SimulatedPositionMessage,
+    point_pb.DegradedPositionMessage,
     google_protobuf_empty_pb.Empty,
-    (request: point_pb.SimulatedPositionMessage) => {
+    (request: point_pb.DegradedPositionMessage) => {
       return request.serializeBinary();
     },
     google_protobuf_empty_pb.Empty.deserializeBinary
   );
 
   putIntoTrailedPosition(
-    request: point_pb.SimulatedPositionMessage,
+    request: point_pb.DegradedPositionMessage,
     metadata?: grpcWeb.Metadata | null): Promise<google_protobuf_empty_pb.Empty>;
 
   putIntoTrailedPosition(
-    request: point_pb.SimulatedPositionMessage,
+    request: point_pb.DegradedPositionMessage,
     metadata: grpcWeb.Metadata | null,
     callback: (err: grpcWeb.RpcError,
                response: google_protobuf_empty_pb.Empty) => void): grpcWeb.ClientReadableStream<google_protobuf_empty_pb.Empty>;
 
   putIntoTrailedPosition(
-    request: point_pb.SimulatedPositionMessage,
+    request: point_pb.DegradedPositionMessage,
     metadata?: grpcWeb.Metadata | null,
     callback?: (err: grpcWeb.RpcError,
                response: google_protobuf_empty_pb.Empty) => void) {
@@ -341,51 +341,94 @@ export class PointClient {
     this.methodDescriptorOverrideSciMessage);
   }
 
-  methodDescriptorSchedulePreventEndPosition = new grpcWeb.MethodDescriptor(
-    '/point.Point/SchedulePreventEndPosition',
+  methodDescriptorSchedulePreventRightEndPosition = new grpcWeb.MethodDescriptor(
+    '/point.Point/SchedulePreventRightEndPosition',
     grpcWeb.MethodType.UNARY,
-    point_pb.SimulatedPositionMessage,
+    point_pb.PreventedPositionMessage,
     google_protobuf_empty_pb.Empty,
-    (request: point_pb.SimulatedPositionMessage) => {
+    (request: point_pb.PreventedPositionMessage) => {
       return request.serializeBinary();
     },
     google_protobuf_empty_pb.Empty.deserializeBinary
   );
 
-  schedulePreventEndPosition(
-    request: point_pb.SimulatedPositionMessage,
+  schedulePreventRightEndPosition(
+    request: point_pb.PreventedPositionMessage,
     metadata?: grpcWeb.Metadata | null): Promise<google_protobuf_empty_pb.Empty>;
 
-  schedulePreventEndPosition(
-    request: point_pb.SimulatedPositionMessage,
+  schedulePreventRightEndPosition(
+    request: point_pb.PreventedPositionMessage,
     metadata: grpcWeb.Metadata | null,
     callback: (err: grpcWeb.RpcError,
                response: google_protobuf_empty_pb.Empty) => void): grpcWeb.ClientReadableStream<google_protobuf_empty_pb.Empty>;
 
-  schedulePreventEndPosition(
-    request: point_pb.SimulatedPositionMessage,
+  schedulePreventRightEndPosition(
+    request: point_pb.PreventedPositionMessage,
     metadata?: grpcWeb.Metadata | null,
     callback?: (err: grpcWeb.RpcError,
                response: google_protobuf_empty_pb.Empty) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
         this.hostname_ +
-          '/point.Point/SchedulePreventEndPosition',
+          '/point.Point/SchedulePreventRightEndPosition',
         request,
         metadata || {},
-        this.methodDescriptorSchedulePreventEndPosition,
+        this.methodDescriptorSchedulePreventRightEndPosition,
         callback);
     }
     return this.client_.unaryCall(
     this.hostname_ +
-      '/point.Point/SchedulePreventEndPosition',
+      '/point.Point/SchedulePreventRightEndPosition',
     request,
     metadata || {},
-    this.methodDescriptorSchedulePreventEndPosition);
+    this.methodDescriptorSchedulePreventRightEndPosition);
   }
 
-  methodDescriptorScheduleReachEndPosition = new grpcWeb.MethodDescriptor(
-    '/point.Point/ScheduleReachEndPosition',
+  methodDescriptorSchedulePreventLeftEndPosition = new grpcWeb.MethodDescriptor(
+    '/point.Point/SchedulePreventLeftEndPosition',
+    grpcWeb.MethodType.UNARY,
+    point_pb.PreventedPositionMessage,
+    google_protobuf_empty_pb.Empty,
+    (request: point_pb.PreventedPositionMessage) => {
+      return request.serializeBinary();
+    },
+    google_protobuf_empty_pb.Empty.deserializeBinary
+  );
+
+  schedulePreventLeftEndPosition(
+    request: point_pb.PreventedPositionMessage,
+    metadata?: grpcWeb.Metadata | null): Promise<google_protobuf_empty_pb.Empty>;
+
+  schedulePreventLeftEndPosition(
+    request: point_pb.PreventedPositionMessage,
+    metadata: grpcWeb.Metadata | null,
+    callback: (err: grpcWeb.RpcError,
+               response: google_protobuf_empty_pb.Empty) => void): grpcWeb.ClientReadableStream<google_protobuf_empty_pb.Empty>;
+
+  schedulePreventLeftEndPosition(
+    request: point_pb.PreventedPositionMessage,
+    metadata?: grpcWeb.Metadata | null,
+    callback?: (err: grpcWeb.RpcError,
+               response: google_protobuf_empty_pb.Empty) => void) {
+    if (callback !== undefined) {
+      return this.client_.rpcCall(
+        this.hostname_ +
+          '/point.Point/SchedulePreventLeftEndPosition',
+        request,
+        metadata || {},
+        this.methodDescriptorSchedulePreventLeftEndPosition,
+        callback);
+    }
+    return this.client_.unaryCall(
+    this.hostname_ +
+      '/point.Point/SchedulePreventLeftEndPosition',
+    request,
+    metadata || {},
+    this.methodDescriptorSchedulePreventLeftEndPosition);
+  }
+
+  methodDescriptorScheduleTimeoutRight = new grpcWeb.MethodDescriptor(
+    '/point.Point/ScheduleTimeoutRight',
     grpcWeb.MethodType.UNARY,
     google_protobuf_empty_pb.Empty,
     google_protobuf_empty_pb.Empty,
@@ -395,17 +438,17 @@ export class PointClient {
     google_protobuf_empty_pb.Empty.deserializeBinary
   );
 
-  scheduleReachEndPosition(
+  scheduleTimeoutRight(
     request: google_protobuf_empty_pb.Empty,
     metadata?: grpcWeb.Metadata | null): Promise<google_protobuf_empty_pb.Empty>;
 
-  scheduleReachEndPosition(
+  scheduleTimeoutRight(
     request: google_protobuf_empty_pb.Empty,
     metadata: grpcWeb.Metadata | null,
     callback: (err: grpcWeb.RpcError,
                response: google_protobuf_empty_pb.Empty) => void): grpcWeb.ClientReadableStream<google_protobuf_empty_pb.Empty>;
 
-  scheduleReachEndPosition(
+  scheduleTimeoutRight(
     request: google_protobuf_empty_pb.Empty,
     metadata?: grpcWeb.Metadata | null,
     callback?: (err: grpcWeb.RpcError,
@@ -413,22 +456,22 @@ export class PointClient {
     if (callback !== undefined) {
       return this.client_.rpcCall(
         this.hostname_ +
-          '/point.Point/ScheduleReachEndPosition',
+          '/point.Point/ScheduleTimeoutRight',
         request,
         metadata || {},
-        this.methodDescriptorScheduleReachEndPosition,
+        this.methodDescriptorScheduleTimeoutRight,
         callback);
     }
     return this.client_.unaryCall(
     this.hostname_ +
-      '/point.Point/ScheduleReachEndPosition',
+      '/point.Point/ScheduleTimeoutRight',
     request,
     metadata || {},
-    this.methodDescriptorScheduleReachEndPosition);
+    this.methodDescriptorScheduleTimeoutRight);
   }
 
-  methodDescriptorScheduleTimeout = new grpcWeb.MethodDescriptor(
-    '/point.Point/ScheduleTimeout',
+  methodDescriptorScheduleTimeoutLeft = new grpcWeb.MethodDescriptor(
+    '/point.Point/ScheduleTimeoutLeft',
     grpcWeb.MethodType.UNARY,
     google_protobuf_empty_pb.Empty,
     google_protobuf_empty_pb.Empty,
@@ -438,17 +481,17 @@ export class PointClient {
     google_protobuf_empty_pb.Empty.deserializeBinary
   );
 
-  scheduleTimeout(
+  scheduleTimeoutLeft(
     request: google_protobuf_empty_pb.Empty,
     metadata?: grpcWeb.Metadata | null): Promise<google_protobuf_empty_pb.Empty>;
 
-  scheduleTimeout(
+  scheduleTimeoutLeft(
     request: google_protobuf_empty_pb.Empty,
     metadata: grpcWeb.Metadata | null,
     callback: (err: grpcWeb.RpcError,
                response: google_protobuf_empty_pb.Empty) => void): grpcWeb.ClientReadableStream<google_protobuf_empty_pb.Empty>;
 
-  scheduleTimeout(
+  scheduleTimeoutLeft(
     request: google_protobuf_empty_pb.Empty,
     metadata?: grpcWeb.Metadata | null,
     callback?: (err: grpcWeb.RpcError,
@@ -456,18 +499,18 @@ export class PointClient {
     if (callback !== undefined) {
       return this.client_.rpcCall(
         this.hostname_ +
-          '/point.Point/ScheduleTimeout',
+          '/point.Point/ScheduleTimeoutLeft',
         request,
         metadata || {},
-        this.methodDescriptorScheduleTimeout,
+        this.methodDescriptorScheduleTimeoutLeft,
         callback);
     }
     return this.client_.unaryCall(
     this.hostname_ +
-      '/point.Point/ScheduleTimeout',
+      '/point.Point/ScheduleTimeoutLeft',
     request,
     metadata || {},
-    this.methodDescriptorScheduleTimeout);
+    this.methodDescriptorScheduleTimeoutLeft);
   }
 
   methodDescriptorReset = new grpcWeb.MethodDescriptor(

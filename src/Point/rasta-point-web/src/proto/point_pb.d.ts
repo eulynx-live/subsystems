@@ -41,25 +41,43 @@ export namespace SciMessage {
   }
 }
 
-export class SimulatedPositionMessage extends jspb.Message {
+export class PreventedPositionMessage extends jspb.Message {
   getPosition(): PreventedPosition;
-  setPosition(value: PreventedPosition): SimulatedPositionMessage;
+  setPosition(value: PreventedPosition): PreventedPositionMessage;
 
-  getDegradedposition(): PointDegradedPosition;
-  setDegradedposition(value: PointDegradedPosition): SimulatedPositionMessage;
+  getDegradedposition(): boolean;
+  setDegradedposition(value: boolean): PreventedPositionMessage;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): SimulatedPositionMessage.AsObject;
-  static toObject(includeInstance: boolean, msg: SimulatedPositionMessage): SimulatedPositionMessage.AsObject;
-  static serializeBinaryToWriter(message: SimulatedPositionMessage, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): SimulatedPositionMessage;
-  static deserializeBinaryFromReader(message: SimulatedPositionMessage, reader: jspb.BinaryReader): SimulatedPositionMessage;
+  toObject(includeInstance?: boolean): PreventedPositionMessage.AsObject;
+  static toObject(includeInstance: boolean, msg: PreventedPositionMessage): PreventedPositionMessage.AsObject;
+  static serializeBinaryToWriter(message: PreventedPositionMessage, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PreventedPositionMessage;
+  static deserializeBinaryFromReader(message: PreventedPositionMessage, reader: jspb.BinaryReader): PreventedPositionMessage;
 }
 
-export namespace SimulatedPositionMessage {
+export namespace PreventedPositionMessage {
   export type AsObject = {
     position: PreventedPosition,
-    degradedposition: PointDegradedPosition,
+    degradedposition: boolean,
+  }
+}
+
+export class DegradedPositionMessage extends jspb.Message {
+  getDegradedposition(): boolean;
+  setDegradedposition(value: boolean): DegradedPositionMessage;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): DegradedPositionMessage.AsObject;
+  static toObject(includeInstance: boolean, msg: DegradedPositionMessage): DegradedPositionMessage.AsObject;
+  static serializeBinaryToWriter(message: DegradedPositionMessage, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): DegradedPositionMessage;
+  static deserializeBinaryFromReader(message: DegradedPositionMessage, reader: jspb.BinaryReader): DegradedPositionMessage;
+}
+
+export namespace DegradedPositionMessage {
+  export type AsObject = {
+    degradedposition: boolean,
   }
 }
 
@@ -112,13 +130,11 @@ export enum PointDegradedPosition {
   NOTAPPLICABLE = 3,
 }
 export enum PreventedPosition { 
-  NONE = 0,
-  PREVENTEDLEFT = 1,
-  PREVENTEDRIGHT = 2,
-  PREVENTTRAILED = 3,
+  DONOTPREVENT = 0,
+  SETUNINTENDEDORTRAILED = 1,
+  SETNOENDPOSITION = 2,
 }
 export enum AbilityToMove { 
-  UNDEFINED = 0,
-  ABLE_TO_MOVE = 1,
-  UNABLE_TO_MOVE = 2,
+  ABLE_TO_MOVE = 0,
+  UNABLE_TO_MOVE = 1,
 }

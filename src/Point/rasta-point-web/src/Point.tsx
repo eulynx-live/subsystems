@@ -4,7 +4,7 @@ import * as google_protobuf_empty_pb from 'google-protobuf/google/protobuf/empty
 import { SimulatorState } from './SimulatorState';
 import { PointClient } from './proto/PointServiceClientPb';
 
-import { SimulatedPositionMessage, PreventedPosition, PointDegradedPosition, AbilityToMoveMessage, AbilityToMove } from './proto/point_pb';
+import { PreventedPosition, AbilityToMoveMessage, AbilityToMove, PreventedPositionMessage, DegradedPositionMessage } from './proto/point_pb';
 
 interface PointState {
     webSocket: WebSocket | null,
@@ -86,44 +86,48 @@ class Point extends Component<{}, PointState> {
                 <h2>Position</h2>
                 <p>{this.state.position}</p>
                 <button onClick={async () => {
-                    let request = new SimulatedPositionMessage();
-                    request.setPosition(PreventedPosition.PREVENTEDLEFT);
-                    request.setDegradedposition(PointDegradedPosition.DEGRADEDLEFT)
-                    await client.schedulePreventEndPosition(request, null);
+                    let request = new PreventedPositionMessage();
+                    request.setPosition(PreventedPosition.SETNOENDPOSITION);
+                    request.setDegradedposition(true)
+                    await client.schedulePreventLeftEndPosition(request, null);
                 }}>Degrade position left</button>
                 <button onClick={async () => {
-                    let request = new SimulatedPositionMessage();
-                    request.setPosition(PreventedPosition.PREVENTEDRIGHT);
-                    request.setDegradedposition(PointDegradedPosition.DEGRADEDRIGHT)
-                    await client.schedulePreventEndPosition(request, null);
+                    let request = new PreventedPositionMessage();
+                    request.setPosition(PreventedPosition.SETNOENDPOSITION);
+                    request.setDegradedposition(true)
+                    await client.schedulePreventRightEndPosition(request, null);
                 }}>Degrade position right</button>
                 <p></p>
                 <button onClick={async () => {
-                    let request = new SimulatedPositionMessage();
-                    request.setPosition(PreventedPosition.PREVENTEDLEFT);
-                    request.setDegradedposition(PointDegradedPosition.NOTDEGRADED)
-                    await client.schedulePreventEndPosition(request, null);
+                    let request = new PreventedPositionMessage();
+                    request.setPosition(PreventedPosition.SETNOENDPOSITION);
+                    request.setDegradedposition(false)
+                    await client.schedulePreventLeftEndPosition(request, null);
                 }}>Prevent position left</button>
                 <button onClick={async () => {
-                    let request = new SimulatedPositionMessage();
-                    request.setPosition(PreventedPosition.PREVENTEDRIGHT);
-                    request.setDegradedposition(PointDegradedPosition.NOTDEGRADED)
-                    await client.schedulePreventEndPosition(request, null);
+                    let request = new PreventedPositionMessage();
+                    request.setPosition(PreventedPosition.SETNOENDPOSITION);
+                    request.setDegradedposition(false)
+                    await client.schedulePreventRightEndPosition(request, null);
                 }}>Prevent position right</button>
                 <p></p>
                 <button onClick={async () => {
-                    let request = new SimulatedPositionMessage();
-                    request.setPosition(PreventedPosition.PREVENTTRAILED);
+                    let request = new DegradedPositionMessage();
+                    request.setDegradedposition(true);
                     await client.putIntoUnintendedPosition(request, null);
-                }}>Set to unintended position</button>
+                }}>Set to unintended and degraded position</button>
+                <button onClick={async () => {
+                    let request = new DegradedPositionMessage();
+                    request.setDegradedposition(false);
+                    await client.putIntoUnintendedPosition(request, null);
+                }}>Set to unintended and not degraded position</button>
                 <p></p>
                 <button onClick={async () => {
-                    await client.scheduleReachEndPosition(new google_protobuf_empty_pb.Empty(), null);
-                }}>Finalize position</button>
-                <p></p>
+                    await client.scheduleTimeoutLeft(new google_protobuf_empty_pb.Empty(), null);
+                }}>Simulate timeout on left movement</button>
                 <button onClick={async () => {
-                    await client.scheduleTimeout(new google_protobuf_empty_pb.Empty(), null);
-                }}>Simulate timeout</button>
+                    await client.scheduleTimeoutRight(new google_protobuf_empty_pb.Empty(), null);
+                }}>Simulate timeout on right movement</button>
                 <p></p>
                 <button onClick={async () => {
                     let request = new AbilityToMoveMessage();
