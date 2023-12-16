@@ -37,9 +37,6 @@ service Point {
     rpc SetAbilityToMove (AbilityToMoveMessage) returns (google.protobuf.Empty) {}
     rpc SendGenericMessage (GenericSCIMessage) returns (google.protobuf.Empty) {}
     rpc Reset (google.protobuf.Empty) returns (google.protobuf.Empty) {}
-
-    rpc EstablishPointMachineState (PointMachineStateMessage) returns (google.protobuf.Empty) {}
-    rpc GetPointMachineState (google.protobuf.Empty) returns (PointMachineStateMessage) {}
 }
 
 enum AbilityToMove {
@@ -68,36 +65,4 @@ message PointPositionMessage {
 
 message PointDegradedPositionMessage {
     PointDegradedPosition position = 1;
-}
-
-message PointMachineStateMessage {
-    enum Target {
-        Target_UNDEFINED = 0;
-        Target_Left = 1;
-        Target_Right = 2;
-        Target_None = 3;
-    }
-
-    enum AbilityToMove {
-        AbilityToMove_UNDEFINED = 0;
-        AbilityToMove_Able = 1;
-        AbilityToMove_Unable = 2;
-    }
-
-    enum LastPointPosition {
-        LastPointPosition_UNDEFINED = 0;
-        LastPointPosition_None = 1;
-    }
-
-    enum Crucial {
-        Crucial_UNDEFINED = 0;
-        Crucial_Crucial = 1;
-        Crucial_NonCrucial = 2;
-    }
-
-    PointPosition pointPosition = 1;
-    Target target = 2;
-    AbilityToMove abilityToMove = 3;
-    LastPointPosition lastPointPosition = 4;
-    Crucial crucial = 5;
 }
