@@ -19,7 +19,7 @@ public class PointTest
                 config[key] = value;
             }
         }
-        return new EulynxLive.Point.Point(_logger, config, connection ?? Mock.Of<IPointToInterlockingConnection>(), async () => {});
+        return new EulynxLive.Point.Point(_logger, config, connection ?? Mock.Of<IPointToInterlockingConnection>(), () => Task.CompletedTask);
     }
 
     private static Mock<IPointToInterlockingConnection> CreateDefaultMockConnection() {
@@ -282,7 +282,7 @@ public class PointTest
 
         mockConnection
             .SetupSequence(m => m.ReceivePointPosition(It.IsAny<CancellationToken>()))
-            .Returns(async () => {
+            .Returns(() => {
                 var message = new SimulatedPositionMessage
                 {
                     Position = simulatedPosition,
@@ -290,7 +290,7 @@ public class PointTest
                 };
                 point.PreventEndPosition(message);
 
-                return null;
+                return Task.FromResult<GenericPointPosition?>(null);
             })
             .Returns(Task.FromResult<GenericPointPosition?>(actionedPosition))
             .Returns(() =>

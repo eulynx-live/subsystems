@@ -39,10 +39,10 @@ namespace EulynxLive.Point.Services
             return new Empty();
         }
 
-        public override async Task<Empty> PreventEndPosition(SimulatedPositionMessage message, ServerCallContext context)
+        public override Task<Empty> PreventEndPosition(SimulatedPositionMessage message, ServerCallContext context)
         {
             _point.PreventEndPosition(message);
-            return new Empty();
+            return Task.FromResult(new Empty());
         }
 
         public override async Task<Empty> PutIntoUnintendedPosition(SimulatedPositionMessage message, ServerCallContext context)
