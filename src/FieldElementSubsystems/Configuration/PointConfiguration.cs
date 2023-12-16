@@ -7,6 +7,7 @@ public record PointConfiguration(
     uint LocalRastaId,
     string RemoteId,
     string RemoteEndpoint,
+    decimal SimulatedTransitioningTimeSeconds,
     // Whether all point machines are crucial to the point's operation.
     // - Point has only a single point machine or
     // - Point has multiple point machines, but they are all crucial or

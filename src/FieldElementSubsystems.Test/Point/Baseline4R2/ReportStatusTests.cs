@@ -20,6 +20,7 @@ public class ReportStatusTests
             {"PointSettings:LocalRastaId", "100" },
             {"PointSettings:RemoteId", "INTERLOCKING" },
             {"PointSettings:RemoteEndpoint", "http://localhost:50051" },
+            {"PointSettings:SimulatedTransitioningTimeSeconds", "0" },
             {"PointSettings:AllPointMachinesCrucial", allPointMachinesCrucial.ToString() },
             {"PointSettings:InitialLastCommandedPointPosition", initialPointState.LastCommandedPointPosition.ToString() },
             {"PointSettings:InitialPointPosition", initialPointState.PointPosition.ToString() },
@@ -37,7 +38,8 @@ public class ReportStatusTests
         mockConnection.SetupSequence(x => x.ReceiveAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(new PointPdiVersionCheckCommand("99W1", "100", 0x01).ToByteArray())
             .ReturnsAsync(new PointInitialisationRequestCommand("99W1", "100").ToByteArray())
-            .Returns(() => {
+            .Returns(() =>
+            {
                 cancel.Cancel();
                 return new TaskCompletionSource<byte[]>().Task;
             });

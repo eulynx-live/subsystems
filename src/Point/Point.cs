@@ -1,8 +1,12 @@
 ﻿using EulynxLive.FieldElementSubsystems.Configuration;
 using EulynxLive.FieldElementSubsystems.Interfaces;
 using EulynxLive.Point.Proto;
+
 using Grpc.Core;
+
 using System.Net.WebSockets;
+using System.Reactive.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
 
@@ -182,7 +186,8 @@ namespace EulynxLive.Point
                 throw new InvalidOperationException("All point machines are crucial, cannot set degraded position.");
             }
 
-            _simulatedPointState = _simulatedPointState with {
+            _simulatedPointState = _simulatedPointState with
+            {
                 PreventedPositionLeft = request.Position,
                 DegradedPositionLeft = request.DegradedPosition,
             };
@@ -200,7 +205,8 @@ namespace EulynxLive.Point
                 throw new InvalidOperationException("All point machines are crucial, cannot set degraded position.");
             }
 
-            _simulatedPointState = _simulatedPointState with {
+            _simulatedPointState = _simulatedPointState with
+            {
                 PreventedPositionRight = request.Position,
                 DegradedPositionRight = request.DegradedPosition,
             };
@@ -263,14 +269,16 @@ namespace EulynxLive.Point
                     }
                     await UpdateConnectedWebClients();
                     _initialized = true;
-                    while (_initialized)
-                    {
-                        var commandedPointPosition = await Connection.ReceiveMovePointCommand(stoppingToken);
-                        await HandleCommandedPointPosition(commandedPointPosition);
-                    }
+
+                    await AllMovePointCommands(stoppingToken)
+                        .ToObservable()
+                        .Select(x => Observable.FromAsync(token => HandleCommandedPointPosition(x, token)))
+                        // This will abort the previous simulated point movement if a new command is received.
+                        .Switch();
                 }
                 catch (RpcException)
                 {
+                    // TODO: Since this is gRPC-specific, catch and re-throw this in the GrpcConnectionProvider
                     _logger.LogWarning("Could not communicate with remote endpoint.");
                     await Reset();
                     await Task.Delay(1000, stoppingToken);
@@ -289,7 +297,16 @@ namespace EulynxLive.Point
             }
         }
 
-        private async Task HandleCommandedPointPosition(GenericPointPosition commandedPointPosition)
+        private async IAsyncEnumerable<GenericPointPosition> AllMovePointCommands([EnumeratorCancellation] CancellationToken stoppingToken)
+        {
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                var commandedPointPosition = await Connection.ReceiveMovePointCommand(stoppingToken);
+                yield return commandedPointPosition;
+            }
+        }
+
+        private async Task HandleCommandedPointPosition(GenericPointPosition commandedPointPosition, CancellationToken cancellationToken)
         {
             if ((commandedPointPosition == GenericPointPosition.Left && PointState.PointPosition == GenericPointPosition.Left)
                             || (commandedPointPosition == GenericPointPosition.Right && PointState.PointPosition == GenericPointPosition.Right))
@@ -308,9 +325,15 @@ namespace EulynxLive.Point
                 await UpdateConnectedWebClients();
             }
 
-            // Simulate point movement
-            // var transitioningTimeSeconds = 2;
-            // await Task.Delay(transitioningTimeSeconds * 1000, CancellationToken.None);
+            try
+            {
+                // Simulate point movement
+                await Task.Delay((int)(_config.SimulatedTransitioningTimeSeconds * 1000), cancellationToken);
+            }
+            catch (TaskCanceledException)
+            {
+                return;
+            }
 
             if (ShouldSimulateTimeout(commandedPointPosition))
             {

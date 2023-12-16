@@ -28,6 +28,7 @@ public class PointToInterlockingConnectionTest
         {"PointSettings:LocalRastaId", "100" },
         {"PointSettings:RemoteId", "INTERLOCKING" },
         {"PointSettings:RemoteEndpoint", "http://localhost:50051" },
+        {"PointSettings:SimulatedTransitioningTimeSeconds", "0" },
         {"PointSettings:AllPointMachinesCrucial", "false" },
     };
 

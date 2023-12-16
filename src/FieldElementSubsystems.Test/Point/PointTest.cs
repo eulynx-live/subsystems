@@ -19,6 +19,7 @@ public class PointTest
             {"PointSettings:LocalRastaId", "100" },
             {"PointSettings:RemoteId", "INTERLOCKING" },
             {"PointSettings:RemoteEndpoint", "http://localhost:50051" },
+            {"PointSettings:SimulatedTransitioningTimeSeconds", "0" },
             {"PointSettings:AllPointMachinesCrucial", allPointMachinesCrucial.ToString() },
             {"PointSettings:InitialLastCommandedPointPosition", initialPointState.LastCommandedPointPosition.ToString() },
             {"PointSettings:InitialPointPosition", initialPointState.PointPosition.ToString() },
@@ -64,23 +65,12 @@ public class PointTest
         return mockConnection;
     }
 
-    // private static readonly IDictionary<string, string?> TestSettings = new Dictionary<string, string?> {
-    //     {"PointSettings:LocalId", "99W1" },
-    //     {"PointSettings:LocalRastaId", "100" },
-    //     {"PointSettings:RemoteId", "INTERLOCKING" },
-    //     {"PointSettings:RemoteEndpoint", "http://localhost:50051" },
-    //     {"PointSettings:AllPointMachinesCrucial", "false" },
-    // };
-
-    // private readonly IConfiguration _configuration = new ConfigurationBuilder()
-    //     .AddInMemoryCollection(TestSettings)
-    //     .Build();
     private readonly ILogger<EulynxLive.Point.Point> _logger = Mock.Of<ILogger<EulynxLive.Point.Point>>();
 
     [Fact]
     public void Test_Parse_Configuration()
     {
-        var (point, pointTask, connection, cancel) = CreateDefaultPoint(true, new GenericPointState(null, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.NotApplicable, GenericAbilityToMove.AbleToMove));
+        var (point, _, _, _) = CreateDefaultPoint(true, new GenericPointState(null, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.NotApplicable, GenericAbilityToMove.AbleToMove));
 
         Assert.True(point.AllPointMachinesCrucial);
     }
@@ -88,7 +78,7 @@ public class PointTest
     [Fact]
     public void Test_Default_Position()
     {
-        var (point, pointTask, connection, cancel) = CreateDefaultPoint(true, new GenericPointState(null, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.NotApplicable, GenericAbilityToMove.AbleToMove));
+        var (point, _, _, _) = CreateDefaultPoint(true, new GenericPointState(null, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.NotApplicable, GenericAbilityToMove.AbleToMove));
         Assert.Equal(GenericPointPosition.NoEndPosition, point.PointState.PointPosition);
     }
 
