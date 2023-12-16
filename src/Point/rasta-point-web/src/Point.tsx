@@ -89,26 +89,26 @@ class Point extends Component<{}, PointState> {
                     let request = new SimulatedPositionMessage();
                     request.setPosition(PreventedPosition.PREVENTEDLEFT);
                     request.setDegradedposition(PointDegradedPosition.DEGRADEDLEFT)
-                    await client.preventEndPosition(request, null);
+                    await client.schedulePreventEndPosition(request, null);
                 }}>Degrade position left</button>
                 <button onClick={async () => {
                     let request = new SimulatedPositionMessage();
                     request.setPosition(PreventedPosition.PREVENTEDRIGHT);
                     request.setDegradedposition(PointDegradedPosition.DEGRADEDRIGHT)
-                    await client.preventEndPosition(request, null);
+                    await client.schedulePreventEndPosition(request, null);
                 }}>Degrade position right</button>
                 <p></p>
                 <button onClick={async () => {
                     let request = new SimulatedPositionMessage();
                     request.setPosition(PreventedPosition.PREVENTEDLEFT);
                     request.setDegradedposition(PointDegradedPosition.NOTDEGRADED)
-                    await client.preventEndPosition(request, null);
+                    await client.schedulePreventEndPosition(request, null);
                 }}>Prevent position left</button>
                 <button onClick={async () => {
                     let request = new SimulatedPositionMessage();
                     request.setPosition(PreventedPosition.PREVENTEDRIGHT);
                     request.setDegradedposition(PointDegradedPosition.NOTDEGRADED)
-                    await client.preventEndPosition(request, null);
+                    await client.schedulePreventEndPosition(request, null);
                 }}>Prevent position right</button>
                 <p></p>
                 <button onClick={async () => {
@@ -118,11 +118,11 @@ class Point extends Component<{}, PointState> {
                 }}>Set to unintended position</button>
                 <p></p>
                 <button onClick={async () => {
-                    await client.putInEndPosition(new google_protobuf_empty_pb.Empty(), null);
+                    await client.scheduleReachEndPosition(new google_protobuf_empty_pb.Empty(), null);
                 }}>Finalize position</button>
                 <p></p>
                 <button onClick={async () => {
-                    await client.enableTimeout(new google_protobuf_empty_pb.Empty(), null);
+                    await client.scheduleTimeout(new google_protobuf_empty_pb.Empty(), null);
                 }}>Simulate timeout</button>
                 <p></p>
                 <button onClick={async () => {

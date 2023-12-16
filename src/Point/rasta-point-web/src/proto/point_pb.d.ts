@@ -1,6 +1,6 @@
 import * as jspb from 'google-protobuf'
 
-import * as google_protobuf_empty_pb from 'google-protobuf/google/protobuf/empty_pb';
+import * as google_protobuf_empty_pb from 'google-protobuf/google/protobuf/empty_pb'; // proto import: "google/protobuf/empty.proto"
 
 
 export class AbilityToMoveMessage extends jspb.Message {
@@ -21,27 +21,23 @@ export namespace AbilityToMoveMessage {
   }
 }
 
-export class GenericSCIMessage extends jspb.Message {
+export class SciMessage extends jspb.Message {
   getMessage(): Uint8Array | string;
   getMessage_asU8(): Uint8Array;
   getMessage_asB64(): string;
-  setMessage(value: Uint8Array | string): GenericSCIMessage;
-
-  getDataLength(): number;
-  setDataLength(value: number): GenericSCIMessage;
+  setMessage(value: Uint8Array | string): SciMessage;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): GenericSCIMessage.AsObject;
-  static toObject(includeInstance: boolean, msg: GenericSCIMessage): GenericSCIMessage.AsObject;
-  static serializeBinaryToWriter(message: GenericSCIMessage, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): GenericSCIMessage;
-  static deserializeBinaryFromReader(message: GenericSCIMessage, reader: jspb.BinaryReader): GenericSCIMessage;
+  toObject(includeInstance?: boolean): SciMessage.AsObject;
+  static toObject(includeInstance: boolean, msg: SciMessage): SciMessage.AsObject;
+  static serializeBinaryToWriter(message: SciMessage, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): SciMessage;
+  static deserializeBinaryFromReader(message: SciMessage, reader: jspb.BinaryReader): SciMessage;
 }
 
-export namespace GenericSCIMessage {
+export namespace SciMessage {
   export type AsObject = {
     message: Uint8Array | string,
-    dataLength: number,
   }
 }
 
