@@ -16,4 +16,4 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore src/FieldElementSubsystems.Test
       - name: Test
-        run: dotnet test --no-restore src/FieldElementSubsystems.Test
+        run: dotnet test --no-restore src/FieldElementSubsystems.Test /p:CollectCoverage=true /p:Threshold=\"20,5,30\" /p:ThresholdType=\"line,branch,method\" /p:ThresholdStat=total /p:Exclude=\"[*]EulynxLive.Messages.*\"
