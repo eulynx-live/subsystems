@@ -47,9 +47,10 @@ namespace EulynxLive.Point.Services
             return new Empty();
         }
 
-        public override Task<Empty> OverrideSciMessage(SciMessage request, ServerCallContext context)
+        public override async Task<Empty> OverrideSciMessage(SciMessage request, ServerCallContext context)
         {
-            throw new NotImplementedException();
+            await _point.Connection.OverrideNextSciMessage(request.Message.ToByteArray());
+            return new Empty();
         }
 
         public override Task<Empty> SchedulePreventLeftEndPosition(PreventedPositionMessage request, ServerCallContext context)

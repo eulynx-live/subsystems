@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using EulynxLive.FieldElementSubsystems.Configuration;
 using Grpc.Core;
 using EulynxLive.Messages.Baseline4R2;
+using System.Threading.Channels;
 
 namespace EulynxLive.FieldElementSubsystems.Connections.EulynxBaseline4R2;
 
@@ -13,6 +14,9 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
     private readonly string _localId;
     private readonly string _remoteId;
     public PointConfiguration Configuration { get; }
+
+    private readonly Channel<byte[]> _overrideMessages;
+
     public CancellationToken TimeoutToken => _timeout.Token;
 
     public IConnection? CurrentConnection { get; private set; }
@@ -36,6 +40,7 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
         _localId = config.LocalId;
         _remoteId = config.RemoteId;
         Configuration = config;
+        _overrideMessages = Channel.CreateUnbounded<byte[]>();
     }
 
     public void Connect(IConnection connection)
@@ -107,13 +112,13 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
 
     private async Task SendMessage(Message message)
     {
-        if (CurrentConnection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
-        await CurrentConnection.SendAsync(message.ToByteArray());
+        await SendMessage(message.ToByteArray());
     }
 
     private async Task SendMessage(byte[] message)
     {
         if (CurrentConnection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
+        if (_overrideMessages.Reader.TryRead(out var overrideMessage)) message = overrideMessage;
         await CurrentConnection.SendAsync(message);
     }
 
@@ -139,6 +144,11 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
     {
         if (CurrentConnection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
         await SendMessage(message);
+    }
+
+    public async Task OverrideNextSciMessage(byte[] message)
+    {
+        await _overrideMessages.Writer.WriteAsync(message);
     }
 
     public async Task SendAbilityToMove(GenericPointState pointState)
