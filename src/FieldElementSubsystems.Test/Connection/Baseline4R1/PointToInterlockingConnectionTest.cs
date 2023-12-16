@@ -24,12 +24,11 @@ public class PointToInterlockingConnectionTest{
         {"PointSettings:RemoteId", "INTERLOCKING" },
         {"PointSettings:RemoteEndpoint", "http://localhost:50051" },
         {"PointSettings:AllPointMachinesCrucial", "false" },
-        {"PointSettings:SimulateRandomTimeouts", "false" },
     };
 
     private readonly IConfiguration _configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(TestSettings)
-            .Build();
+        .AddInMemoryCollection(TestSettings)
+        .Build();
 
     [Fact]
     public void Test_Connect(){
@@ -56,7 +55,7 @@ public class PointToInterlockingConnectionTest{
 
         // Act
         connection.Connect(mockConnection.Object);
-        await connection.InitializeConnection(new GenericPointState(){PointPosition = GenericPointPosition.Left, DegradedPointPosition = GenericDegradedPointPosition.NotDegraded}, CancellationToken.None);
+        await connection.InitializeConnection(new GenericPointState(LastCommandedPointPosition: null, PointPosition: GenericPointPosition.Left, DegradedPointPosition: GenericDegradedPointPosition.NotDegraded, AbilityToMove: GenericAbilityToMove.AbleToMove), CancellationToken.None);
 
         // Assert
         mockConnection.Verify(v => v.ReceiveAsync(It.IsAny<CancellationToken>()), Times.Exactly(2));
@@ -79,10 +78,10 @@ public class PointToInterlockingConnectionTest{
 
         // Act
         connection.Connect(mockConnection.Object);
-        await connection.InitializeConnection(new GenericPointState(){PointPosition = GenericPointPosition.Left, DegradedPointPosition = GenericDegradedPointPosition.NotDegraded}, CancellationToken.None);
+        await connection.InitializeConnection(new GenericPointState(LastCommandedPointPosition: null, PointPosition: GenericPointPosition.Left, DegradedPointPosition: GenericDegradedPointPosition.NotDegraded, AbilityToMove: GenericAbilityToMove.AbleToMove), CancellationToken.None);
         foreach (var position in new List<GenericPointPosition>(){GenericPointPosition.Left, GenericPointPosition.Right, GenericPointPosition.UnintendedPosition, GenericPointPosition.NoEndPosition})
         {
-            await connection.SendPointPosition(new GenericPointState(){PointPosition = position, DegradedPointPosition = GenericDegradedPointPosition.NotDegraded});
+            await connection.SendPointPosition(new GenericPointState(LastCommandedPointPosition: null, PointPosition: position, DegradedPointPosition: GenericDegradedPointPosition.NotDegraded, AbilityToMove: GenericAbilityToMove.AbleToMove));
         }
 
         // Assert
@@ -107,7 +106,7 @@ public class PointToInterlockingConnectionTest{
 
         // Act
         connection.Connect(mockConnection.Object);
-        await connection.InitializeConnection(new GenericPointState(){PointPosition = GenericPointPosition.Left, DegradedPointPosition = GenericDegradedPointPosition.NotDegraded}, CancellationToken.None);
+        await connection.InitializeConnection(new GenericPointState(LastCommandedPointPosition: null, PointPosition: GenericPointPosition.Left, DegradedPointPosition: GenericDegradedPointPosition.NotDegraded, AbilityToMove: GenericAbilityToMove.AbleToMove), CancellationToken.None);
         var position1 = await connection.ReceivePointPosition(CancellationToken.None);
         var position2 = await connection.ReceivePointPosition(CancellationToken.None);
 
@@ -129,7 +128,7 @@ public class PointToInterlockingConnectionTest{
 
         // Act
         connection.Connect(mockConnection.Object);
-        await connection.InitializeConnection(new GenericPointState(){PointPosition = GenericPointPosition.Left, DegradedPointPosition = GenericDegradedPointPosition.NotDegraded}, CancellationToken.None);
+        await connection.InitializeConnection(new GenericPointState(LastCommandedPointPosition: null, PointPosition: GenericPointPosition.Left, DegradedPointPosition: GenericDegradedPointPosition.NotDegraded, AbilityToMove: GenericAbilityToMove.AbleToMove), CancellationToken.None);
         await connection.SendTimeoutMessage();
 
         // Assert

@@ -46,7 +46,14 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
 
     public async Task<bool> InitializeConnection(GenericPointState state, CancellationToken cancellationToken)
     {
-        _logger.LogTrace("Connected. Waiting for request...");
+        if (state.LastCommandedPointPosition == null && state.PointPosition != GenericPointPosition.NoEndPosition) {
+            throw new InvalidOperationException("If the last commanded point position is null, the position reported by the point machine must be NoEndPosition.");
+        }
+
+        if (Configuration.AllPointMachinesCrucial && state.DegradedPointPosition != GenericDegradedPointPosition.NotApplicable) {
+            throw new InvalidOperationException("If all point machines are crucial, the degraded point position must be NotApplicable.");
+        }
+
         if (await ReceiveMessage<PointPdiVersionCheckCommand>(cancellationToken) == null)
         {
             _logger.LogError("Unexpected message.");

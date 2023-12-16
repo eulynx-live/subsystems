@@ -10,16 +10,18 @@ using Point.Services.Extensions;
 
 namespace EulynxLive.Point
 {
-    public record SimulatedPointState{
+    // TODO: Fixme
+    public record SimulatedPointState {
         public PreventedPosition PreventedPosition { get; set; }
         public GenericDegradedPointPosition DegradedPointPosition { get; set; }
-        public Boolean SimulateTimeout { get; set; }
+        public bool SimulateTimeout { get; set; }
         public AbilityToMove AbilityToMove { get; set; }
     }
+
     public class Point : BackgroundService
     {
         public bool AllPointMachinesCrucial { get; }
-        public GenericPointState PointState { get; }
+        public GenericPointState PointState { get; private set; }
         public IPointToInterlockingConnection Connection { get; }
 
         private readonly ILogger<Point> _logger;
@@ -36,18 +38,16 @@ namespace EulynxLive.Point
             _simulateTimeout = simulateTimeout;
 
             var config = configuration.GetSection("PointSettings").Get<PointConfiguration>() ?? throw new Exception("No configuration provided");
-            if (config.AllPointMachinesCrucial == null)
-            {
-                _logger.LogInformation("Assuming all point machines are crucial.");
-            }
-            AllPointMachinesCrucial = config.AllPointMachinesCrucial ?? false;
+            AllPointMachinesCrucial = config.AllPointMachinesCrucial;
 
             _webSockets = new List<WebSocket>();
-            PointState = new GenericPointState()
-            {
-                DegradedPointPosition = RespectAllPointMachinesCrucial(GenericDegradedPointPosition.NotDegraded),
-                PointPosition = GenericPointPosition.NoEndPosition,
-            };
+            PointState = new GenericPointState
+            (
+                LastCommandedPointPosition: null,
+                DegradedPointPosition: RespectAllPointMachinesCrucial(GenericDegradedPointPosition.NotDegraded),
+                PointPosition: GenericPointPosition.NoEndPosition,
+                AbilityToMove: GenericAbilityToMove.AbleToMove
+            );
             _simulatedPointState = new SimulatedPointState()
             {
                 PreventedPosition = PreventedPosition.None,
@@ -142,8 +142,10 @@ namespace EulynxLive.Point
 
         private void SetPointState(GenericPointPosition pointPosition, GenericDegradedPointPosition degradedPointPosition)
         {
-            PointState.PointPosition = pointPosition;
-            PointState.DegradedPointPosition = degradedPointPosition;
+            PointState = PointState with {
+                PointPosition = pointPosition,
+                DegradedPointPosition = degradedPointPosition,
+            };
         }
 
         /// <summary>

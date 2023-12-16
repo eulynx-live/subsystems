@@ -30,7 +30,6 @@ public class PointTest
                 "INTERLOCKING",
                 "http://localhost:50051",
                 true,
-                false,
                 ConnectionProtocol.EulynxBaseline4R1
             ));
         mockConnection.Setup(x => x.TimeoutToken).Returns(() => CancellationToken.None);
@@ -51,11 +50,10 @@ public class PointTest
         {"PointSettings:RemoteId", "INTERLOCKING" },
         {"PointSettings:RemoteEndpoint", "http://localhost:50051" },
         {"PointSettings:AllPointMachinesCrucial", "false" },
-        {"PointSettings:SimulateRandomTimeouts", "false" },
     };
-    private IConfiguration _configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(TestSettings)
-            .Build();
+    private readonly IConfiguration _configuration = new ConfigurationBuilder()
+        .AddInMemoryCollection(TestSettings)
+        .Build();
     private readonly ILogger<EulynxLive.Point.Point> _logger = Mock.Of<ILogger<EulynxLive.Point.Point>>();
 
     [Fact]

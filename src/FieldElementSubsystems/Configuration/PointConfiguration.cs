@@ -5,7 +5,6 @@ public record PointConfiguration(
     uint LocalRastaId,
     string RemoteId,
     string RemoteEndpoint,
-    bool? AllPointMachinesCrucial = null,
-    bool? SimulateRandomTimeouts = null,
+    bool AllPointMachinesCrucial = true,
     ConnectionProtocol? ConnectionProtocol = null
 );

@@ -47,7 +47,6 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
 
     public async Task<bool> InitializeConnection(GenericPointState state, CancellationToken cancellationToken)
     {
-        _logger.LogTrace("Connected. Waiting for request...");
         if (await ReceiveMessage<PointPdiVersionCheckCommand>(cancellationToken) == null)
         {
             _logger.LogError("Unexpected message.");
