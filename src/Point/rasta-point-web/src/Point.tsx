@@ -78,19 +78,23 @@ class Point extends Component<PointProps, {}> {
                     await client.schedulePreventRightEndPosition(request, null);
                 }}>Prevent position right</button>
                 <p>Degraded position left: {this.props.simulatedPointState?.degradedPositionLeft ? 'yes' : 'no'}</p>
-                <button onClick={async () => {
-                    let request = new PreventedPositionMessage();
-                    request.setPosition(PreventedPosition.SETNOENDPOSITION);
-                    request.setDegradedposition(true)
-                    await client.schedulePreventLeftEndPosition(request, null);
-                }}>Degrade position left</button>
+                {this.props.simulatorConfiguration?.allPointMachinesCrucial === false && (
+                    <button onClick={async () => {
+                        let request = new PreventedPositionMessage();
+                        request.setPosition(PreventedPosition.SETNOENDPOSITION);
+                        request.setDegradedposition(true)
+                        await client.schedulePreventLeftEndPosition(request, null);
+                    }}>Degrade position left</button>
+                )}
                 <p>Degraded position right: {this.props.simulatedPointState?.degradedPositionRight ? 'yes' : 'no'}</p>
-                <button onClick={async () => {
-                    let request = new PreventedPositionMessage();
-                    request.setPosition(PreventedPosition.SETNOENDPOSITION);
-                    request.setDegradedposition(true)
-                    await client.schedulePreventRightEndPosition(request, null);
-                }}>Degrade position right</button>
+                {this.props.simulatorConfiguration?.allPointMachinesCrucial === false && (
+                    <button onClick={async () => {
+                        let request = new PreventedPositionMessage();
+                        request.setPosition(PreventedPosition.SETNOENDPOSITION);
+                        request.setDegradedposition(true)
+                        await client.schedulePreventRightEndPosition(request, null);
+                    }}>Degrade position right</button>
+                )}
                 <p>Simulate timeout left: {this.props.simulatedPointState?.simulateTimeoutLeft ? 'yes' : 'no'}</p>
                 <button onClick={async () => {
                     await client.scheduleTimeoutLeft(new google_protobuf_empty_pb.Empty(), null);
