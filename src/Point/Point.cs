@@ -84,9 +84,9 @@ namespace EulynxLive.Point
             _webSockets.Remove(webSocket);
         }
 
-        public async Task SendSCIMessage(GenericSCIMessage message){
-            _logger.LogInformation("Sending generic message: {}", message.Message);
-            await Connection.SendGenericMessage(message.Message.ToByteArray());
+        public async Task SendSciMessage(SciMessage message){
+            _logger.LogInformation("Sending SCI message: {}", message.Message);
+            await Connection.SendSciMessage(message.Message.ToByteArray());
         }
 
         private async Task SendTimeoutMessage(){

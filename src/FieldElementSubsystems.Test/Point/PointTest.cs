@@ -147,7 +147,7 @@ public class PointTest
         var cancel = new CancellationTokenSource();
 
         var rawBytes = new byte[]{ 0x0d, 0x0e, 0x0a, 0x0d, 0x0b, 0x0e, 0x0e, 0x0f };
-        var genericMessage = new GenericSCIMessage()
+        var genericMessage = new SciMessage()
         {
             Message = ByteString.CopyFrom (rawBytes)
         };
@@ -158,7 +158,7 @@ public class PointTest
             .Returns(Task.FromResult<GenericPointPosition?>(null))
             .Returns(async () =>
             {
-                await point.SendSCIMessage(genericMessage);
+                await point.SendSciMessage(genericMessage);
                 return null;
             })
             .Returns(() =>
@@ -170,7 +170,7 @@ public class PointTest
         var args = new List<byte[]>();
 
         mockConnection
-            .SetupSequence(m => m.SendGenericMessage(Capture.In(args)))
+            .SetupSequence(m => m.SendSciMessage(Capture.In(args)))
             .Returns(() =>
             {
                 cancel.Cancel();

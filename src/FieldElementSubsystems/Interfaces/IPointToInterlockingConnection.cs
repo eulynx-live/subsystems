@@ -9,7 +9,7 @@ public interface IPointToInterlockingConnection {
     void Connect(IConnection connection);
 
     Task SendPointPosition(GenericPointState state);
-    Task SendGenericMessage(byte[] state);
+    Task SendSciMessage(byte[] state);
     Task SendTimeoutMessage();
     Task<bool> InitializeConnection(GenericPointState state, CancellationToken cancellationToken);
     Task<GenericPointPosition?> ReceivePointPosition(CancellationToken stoppingToken);

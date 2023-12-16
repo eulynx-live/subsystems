@@ -22,7 +22,7 @@ namespace EulynxLive.Point.Services
             return new Empty();
         }
 
-        public override Task<Empty> EnableTimeout(Empty request, ServerCallContext context)
+        public override Task<Empty> ScheduleTimeout(Empty request, ServerCallContext context)
         {
             _point.EnableTimeout();
             return Task.FromResult(new Empty());
@@ -34,13 +34,13 @@ namespace EulynxLive.Point.Services
             return Task.FromResult(new Empty());
         }
 
-        public override async Task<Empty> SendGenericMessage(GenericSCIMessage request, ServerCallContext context)
+        public override async Task<Empty> SendSciMessage(SciMessage request, ServerCallContext context)
         {
-            await _point.SendSCIMessage(request);
+            await _point.SendSciMessage(request);
             return new Empty();
         }
 
-        public override Task<Empty> PreventEndPosition(SimulatedPositionMessage message, ServerCallContext context)
+        public override Task<Empty> SchedulePreventEndPosition(SimulatedPositionMessage message, ServerCallContext context)
         {
             _point.PreventEndPosition(message);
             return Task.FromResult(new Empty());
@@ -64,7 +64,7 @@ namespace EulynxLive.Point.Services
             return new Empty();
         }
 
-        public override async Task<Empty> PutInEndPosition(Empty request, ServerCallContext context)
+        public override async Task<Empty> ScheduleReachEndPosition(Empty request, ServerCallContext context)
         {
             await _point.PutInEndPosition();
             return new Empty();

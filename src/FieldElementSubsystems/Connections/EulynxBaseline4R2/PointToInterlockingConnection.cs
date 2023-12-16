@@ -143,7 +143,7 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
     }
 
 
-    public async Task SendGenericMessage(byte[] message)
+    public async Task SendSciMessage(byte[] message)
     {
         if (CurrentConnection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
         await SendMessage(message);

@@ -27,15 +27,20 @@ enum PreventedPosition {
 }
 
 service Point {
-    rpc PreventEndPosition (SimulatedPositionMessage) returns (google.protobuf.Empty) {}
-    rpc PutIntoUnintendedPosition (SimulatedPositionMessage) returns (google.protobuf.Empty) {}
-    rpc PutIntoTrailedPosition (SimulatedPositionMessage) returns (google.protobuf.Empty) {}
-    rpc PutInEndPosition (google.protobuf.Empty) returns (google.protobuf.Empty) {}
     rpc GetPointPosition (google.protobuf.Empty) returns (PointPositionMessage) {}
     rpc GetDegradedPointPosition (google.protobuf.Empty) returns (PointDegradedPositionMessage) {}
-    rpc EnableTimeout (google.protobuf.Empty) returns (google.protobuf.Empty) {}
+
+    rpc PutIntoUnintendedPosition (SimulatedPositionMessage) returns (google.protobuf.Empty) {}
+    rpc PutIntoTrailedPosition (SimulatedPositionMessage) returns (google.protobuf.Empty) {}
     rpc SetAbilityToMove (AbilityToMoveMessage) returns (google.protobuf.Empty) {}
-    rpc SendGenericMessage (GenericSCIMessage) returns (google.protobuf.Empty) {}
+
+    rpc SendSciMessage (SciMessage) returns (google.protobuf.Empty) {}
+    rpc OverrideSciMessage (SciMessage) returns (google.protobuf.Empty) {}
+
+    rpc SchedulePreventEndPosition (SimulatedPositionMessage) returns (google.protobuf.Empty) {}
+    rpc ScheduleReachEndPosition (google.protobuf.Empty) returns (google.protobuf.Empty) {}
+    rpc ScheduleTimeout (google.protobuf.Empty) returns (google.protobuf.Empty) {}
+
     rpc Reset (google.protobuf.Empty) returns (google.protobuf.Empty) {}
 }
 
@@ -49,9 +54,8 @@ message AbilityToMoveMessage{
     AbilityToMove ability = 1;
 }
 
-message GenericSCIMessage{
+message SciMessage{
     bytes message = 1;
-    int32 data_length = 2;
 }
 
 message SimulatedPositionMessage {
