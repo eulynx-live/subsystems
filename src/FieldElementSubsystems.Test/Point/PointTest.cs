@@ -38,7 +38,9 @@ public class PointTest
         var config = configuration.GetSection("PointSettings").Get<PointConfiguration>()!;
         var mockConnection = CreateDefaultMockConnection(config);
 
-        var point = new EulynxLive.Point.Point(Mock.Of<ILogger<EulynxLive.Point.Point>>(), configuration, mockConnection.Object, Mock.Of<IConnectionProvider>(), () => Task.CompletedTask, Mock.Of<IHubContext<StatusHub>>());
+        var mockHubContext = new Mock<IHubContext<StatusHub>>();
+        mockHubContext.Setup(x => x.Clients.All.SendCoreAsync(It.IsAny<string>(), It.IsAny<object[]>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+        var point = new EulynxLive.Point.Point(Mock.Of<ILogger<EulynxLive.Point.Point>>(), configuration, mockConnection.Object, Mock.Of<IConnectionProvider>(), () => Task.CompletedTask, mockHubContext.Object);
 
         async Task SimulatePoint()
         {
@@ -95,7 +97,7 @@ public class PointTest
             .SetupSequence(m => m.ReceiveMovePointCommand(It.IsAny<CancellationToken>()))
             .Returns(() =>
             {
-                point.EnableTimeoutLeft();
+                point.EnableTimeoutLeft(true);
                 return Task.FromResult(GenericPointPosition.Left);
             })
             .Returns(() =>
@@ -123,7 +125,7 @@ public class PointTest
             .SetupSequence(m => m.ReceiveMovePointCommand(It.IsAny<CancellationToken>()))
             .Returns(() =>
             {
-                point.EnableTimeoutRight();
+                point.EnableTimeoutRight(true);
                 return Task.FromResult(GenericPointPosition.Right);
             })
             .Returns(() =>
