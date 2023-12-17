@@ -1,9 +1,124 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: #eee;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+/* Switch element */
+
+.form-switch{
+    position: relative;
+    -webkit-user-select: none;
+       -moz-user-select: none;
+            user-select: none;
+    width: 44px;
+  }
+
+  .form-switch label{
+    display: block;
+    height: 1.5rem;
+    cursor: pointer;
+    overflow: hidden;
+    border-radius: 9999px;
+  }
+
+  .form-switch label > span:first-child{
+    position: absolute;
+    display: block;
+    border-radius: 9999px;
+    width: 20px;
+    height: 20px;
+    top: 2px;
+    left: 2px;
+    right: 50%;
+    transition: all .15s ease-out;
+  }
+
+  .form-switch input[type="checkbox"]:checked + label{
+    --tw-bg-opacity: 1;
+    background-color: rgb(99 102 241 / var(--tw-bg-opacity));
+  }
+
+  .form-switch input[type="checkbox"]:checked + label > span:first-child {
+    left: 22px;
+  }
+
+  .form-switch input[type="checkbox"]:disabled + label{
+    cursor: not-allowed;
+  }
+
+  .form-switch input[type="checkbox"]:disabled:not(:checked) + label {
+    border-width: 1px;
+    --tw-border-opacity: 1;
+    border-color: rgb(226 232 240 / var(--tw-border-opacity));
+    --tw-bg-opacity: 1;
+    background-color: rgb(241 245 249 / var(--tw-bg-opacity));
+  }
+
+  :is(.dark .form-switch input[type="checkbox"]:disabled + label){
+    --tw-border-opacity: 1;
+    border-color: rgb(51 65 85 / var(--tw-border-opacity));
+    background-color: rgb(51 65 85 / 0.2);
+  }
+
+  .form-switch input[type="checkbox"]:disabled + label > span:first-child{
+    --tw-bg-opacity: 1;
+    background-color: rgb(148 163 184 / var(--tw-bg-opacity));
+  }
+
+  :is(.dark .form-switch input[type="checkbox"]:disabled + label > span:first-child){
+    --tw-bg-opacity: 1;
+    background-color: rgb(71 85 105 / var(--tw-bg-opacity));
+  }
+
+/* Buttons */
+
+.btn,
+.btn-lg,
+.btn-sm,
+.btn-xs{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-width: 1px;
+  border-color: transparent;
+  font-size: 0.875rem;
+  line-height: 1.5715;
+  font-weight: 500;
+  line-height: 1.25rem;
+  --tw-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-backdrop-filter;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-backdrop-filter;
+  transition-duration: 150ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn{
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.btn-lg{
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+.btn-sm{
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+.btn-xs{
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  padding-top: 0.125rem;
+  padding-bottom: 0.125rem;
 }

@@ -81,6 +81,24 @@ export namespace DegradedPositionMessage {
   }
 }
 
+export class EnableMovementFailedMessage extends jspb.Message {
+  getEnablemovementfailed(): boolean;
+  setEnablemovementfailed(value: boolean): EnableMovementFailedMessage;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): EnableMovementFailedMessage.AsObject;
+  static toObject(includeInstance: boolean, msg: EnableMovementFailedMessage): EnableMovementFailedMessage.AsObject;
+  static serializeBinaryToWriter(message: EnableMovementFailedMessage, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): EnableMovementFailedMessage;
+  static deserializeBinaryFromReader(message: EnableMovementFailedMessage, reader: jspb.BinaryReader): EnableMovementFailedMessage;
+}
+
+export namespace EnableMovementFailedMessage {
+  export type AsObject = {
+    enablemovementfailed: boolean,
+  }
+}
+
 export class PointPositionMessage extends jspb.Message {
   getPosition(): PointPosition;
   setPosition(value: PointPosition): PointPositionMessage;

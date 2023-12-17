@@ -6,15 +6,15 @@ import { createSignalRContext } from 'react-signalr';
 const { Provider, useSignalREffect } = createSignalRContext();
 
 export type PointState = {
-    'lastCommandedPointPosition': 'NoEndPosition',
-    'pointPosition': 'NoEndPosition',
-    'degradedPointPosition': 'NotApplicable',
-    'abilityToMove': 'AbleToMove'
+    'lastCommandedPointPosition': string,
+    'pointPosition': string,
+    'degradedPointPosition': string,
+    'abilityToMove': string
 };
 
 export type SimulatedPointState = {
-    "preventedPositionLeft": "DoNotPrevent",
-    "preventedPositionRight": "DoNotPrevent",
+    "preventedPositionLeft": string,
+    "preventedPositionRight": string,
     "degradedPositionLeft": boolean,
     "degradedPositionRight": boolean,
     "simulateTimeoutLeft": boolean,
@@ -41,7 +41,7 @@ function App() {
     }, []);
 
     return (
-        <div className="container">
+        <div className="text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-900">
             <Provider url="/status" automaticReconnect={true} >
                 <Point initialized={initialized} pointState={pointState} simulatedPointState={simulatedPointState} simulatorConfiguration={simulatorConfiguration} />
             </Provider>

@@ -95,33 +95,27 @@ namespace EulynxLive.Point
             await Connection.SendSciMessage(message.Message.ToByteArray());
         }
 
-        private async Task SendTimeoutMessage()
-        {
-            _logger.LogInformation("Timeout");
-            await Connection.SendTimeoutMessage();
-        }
-
         /// <summary>
         /// Sets the timeout flag for the next move left command.
         /// </summary>
-        public void EnableTimeoutLeft()
+        public void EnableTimeoutLeft(bool enableMovementFailed)
         {
             _logger.LogInformation("Timeout on next move left command enabled.");
             _simulatedPointState = _simulatedPointState with
             {
-                SimulateTimeoutLeft = true
+                SimulateTimeoutLeft = enableMovementFailed
             };
         }
 
         /// <summary>
         /// Sets the timeout flag for the next move right command.
         /// </summary>
-        public void EnableTimeoutRight()
+        public void EnableTimeoutRight(bool enableMovementFailed)
         {
             _logger.LogInformation("Timeout on next move right command enabled.");
             _simulatedPointState = _simulatedPointState with
             {
-                SimulateTimeoutRight = true
+                SimulateTimeoutRight = enableMovementFailed
             };
         }
 
@@ -146,13 +140,15 @@ namespace EulynxLive.Point
                 }
             };
 
-            await Connection.SendAbilityToMove(PointState);
+            if (_initialized) {
+                await Connection.SendAbilityToMove(PointState);
+            }
         }
 
         /// <summary>
         /// Puts the point into an unintended position immediately.
         /// </summary>
-        public void PutIntoUnintendedPosition(DegradedPositionMessage simulatedPositionMessage)
+        public async Task PutIntoUnintendedPosition(DegradedPositionMessage simulatedPositionMessage)
         {
             if (AllPointMachinesCrucial && simulatedPositionMessage.DegradedPosition)
             {
@@ -168,6 +164,10 @@ namespace EulynxLive.Point
             var notDegradedPosition = AllPointMachinesCrucial ? GenericDegradedPointPosition.NotApplicable : GenericDegradedPointPosition.NotDegraded;
             var degradedPosition = PointState.PointPosition == GenericPointPosition.Left ? GenericDegradedPointPosition.DegradedLeft : GenericDegradedPointPosition.DegradedRight;
             SetPointState(GenericPointPosition.UnintendedPosition, simulatedPositionMessage.DegradedPosition ? degradedPosition : notDegradedPosition);
+
+            if (_initialized) {
+                await Connection.SendPointPosition(PointState);
+            }
         }
 
         /// <summary>
@@ -332,7 +332,8 @@ namespace EulynxLive.Point
 
             if (ShouldSimulateTimeout(commandedPointPosition, simulatedState))
             {
-                await SendTimeoutMessage();
+                _logger.LogInformation("Timeout");
+                await Connection.SendTimeoutMessage();
                 await _simulateTimeout();
             }
             else
