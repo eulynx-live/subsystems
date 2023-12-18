@@ -34,15 +34,13 @@ namespace EulynxLive.Point
 
         private readonly ILogger<Point> _logger;
         private readonly IConnectionProvider _connectionProvider;
-        private readonly Func<Task> _simulateTimeout;
         private readonly PointConfiguration _config;
 
-        public Point(ILogger<Point> logger, IConfiguration configuration, IPointToInterlockingConnection connection, IConnectionProvider connectionProvider, Func<Task> simulateTimeout, IHubContext<StatusHub> statusHub)
+        public Point(ILogger<Point> logger, IConfiguration configuration, IPointToInterlockingConnection connection, IConnectionProvider connectionProvider, IHubContext<StatusHub> statusHub)
         {
             Connection = connection;
             _connectionProvider = connectionProvider;
             _logger = logger;
-            _simulateTimeout = simulateTimeout;
 
             _config = configuration.GetSection("PointSettings").Get<PointConfiguration>() ?? throw new Exception("No configuration provided");
             AllPointMachinesCrucial = _config.AllPointMachinesCrucial;
@@ -338,7 +336,6 @@ namespace EulynxLive.Point
             {
                 _logger.LogInformation("Timeout");
                 await Connection.SendTimeoutMessage();
-                await _simulateTimeout();
             }
             else
             {

@@ -38,12 +38,7 @@ namespace EulynxLive.Point
 
             try
             {
-                services.AddSingleton(x =>
-                {
-                    var simulateTimout = async () => await Task.Delay(new Random().Next(1, 5) * 1000);
-                    return ActivatorUtilities.CreateInstance<Point>(x, simulateTimout);
-                });
-                services.AddSingleton(x => x.GetRequiredService<Point>());
+                services.AddSingleton<Point>();
             }
             catch (Exception e)
             {
@@ -51,6 +46,7 @@ namespace EulynxLive.Point
                 Environment.Exit(1);
             }
 
+            services.AddSingleton<IPoint>(x => x.GetRequiredService<Point>());
             _ = services.AddHostedService(provider => provider.GetRequiredService<Point>());
         }
 
