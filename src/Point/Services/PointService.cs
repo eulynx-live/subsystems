@@ -9,28 +9,29 @@ namespace EulynxLive.Point.Services
 {
     public class PointService : PointBase
     {
-        private readonly Point _point;
+        private readonly IPoint _point;
 
-        public PointService(Point point)
+        public PointService(IPoint point)
         {
             _point = point;
         }
 
-        public override async Task<Empty> Reset(Empty request, ServerCallContext context)
+        public override Task<Empty> Reset(Empty request, ServerCallContext context)
         {
-            await _point.Reset();
-            return new Empty();
-        }
-
-        public override Task<Empty> ScheduleTimeoutRight(Empty request, ServerCallContext context)
-        {
-            _point.EnableTimeoutRight();
+            // TODO: We have to disconnect here!
+            _point.Reset();
             return Task.FromResult(new Empty());
         }
 
-        public override Task<Empty> ScheduleTimeoutLeft(Empty request, ServerCallContext context)
+        public override Task<Empty> ScheduleTimeoutRight(EnableMovementFailedMessage request, ServerCallContext context)
         {
-            _point.EnableTimeoutLeft();
+            _point.EnableTimeoutRight(request.EnableMovementFailed);
+            return Task.FromResult(new Empty());
+        }
+
+        public override Task<Empty> ScheduleTimeoutLeft(EnableMovementFailedMessage request, ServerCallContext context)
+        {
+            _point.EnableTimeoutLeft(request.EnableMovementFailed);
             return Task.FromResult(new Empty());
         }
 
@@ -46,9 +47,10 @@ namespace EulynxLive.Point.Services
             return new Empty();
         }
 
-        public override Task<Empty> OverrideSciMessage(SciMessage request, ServerCallContext context)
+        public override async Task<Empty> OverrideSciMessage(SciMessage request, ServerCallContext context)
         {
-            throw new NotImplementedException();
+            await _point.Connection.OverrideNextSciMessage(request.Message.ToByteArray());
+            return new Empty();
         }
 
         public override Task<Empty> SchedulePreventLeftEndPosition(PreventedPositionMessage request, ServerCallContext context)
@@ -65,7 +67,7 @@ namespace EulynxLive.Point.Services
 
         public override async Task<Empty> PutIntoTrailedPosition(DegradedPositionMessage request, ServerCallContext context)
         {
-            if (_point.Connection.Configuration.ConnectionProtocol != ConnectionProtocol.EulynxBaseline4R1)
+            if (_point.ConnectionProtocol != ConnectionProtocol.EulynxBaseline4R1)
                 throw new RpcException(new Status(StatusCode.InvalidArgument, "Only supported for EulynxBaseline4R1"));
 
             await _point.PutIntoUnintendedPosition(request);
@@ -74,7 +76,7 @@ namespace EulynxLive.Point.Services
 
         public override async Task<Empty> PutIntoUnintendedPosition(DegradedPositionMessage request, ServerCallContext context)
         {
-            if (_point.Connection.Configuration.ConnectionProtocol != ConnectionProtocol.EulynxBaseline4R2)
+            if (_point.ConnectionProtocol != ConnectionProtocol.EulynxBaseline4R2)
                 throw new RpcException(new Status(StatusCode.InvalidArgument, "Only supported for EulynxBaseline4R2"));
 
             await _point.PutIntoUnintendedPosition(request);

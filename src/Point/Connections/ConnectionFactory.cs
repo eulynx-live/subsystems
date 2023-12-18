@@ -19,12 +19,12 @@ public class ConnectionFactory{
         var connectionProtocol = _configuration.GetSection("ConnectionSettings").Get<PointConfiguration>()?.ConnectionProtocol;
         switch (connectionProtocol){
             case ConnectionProtocol.EulynxBaseline4R1:
-                return ActivatorUtilities.CreateInstance<EulynxBaseline4R1.PointToInterlockingConnection>(x, _configuration);
+                return ActivatorUtilities.CreateInstance<EulynxBaseline4R1.PointToInterlockingConnection>(x, _configuration, CancellationToken.None);
             case ConnectionProtocol.EulynxBaseline4R2:
-                return ActivatorUtilities.CreateInstance<EulynxBaseline4R2.PointToInterlockingConnection>(x, _configuration);
+                return ActivatorUtilities.CreateInstance<EulynxBaseline4R2.PointToInterlockingConnection>(x, _configuration, CancellationToken.None);
             case null:
                 _logger.LogWarning($"No connection protocol specified. Using EulynxBaseline4R2.");
-                return ActivatorUtilities.CreateInstance<EulynxBaseline4R2.PointToInterlockingConnection>(x, _configuration);
+                return ActivatorUtilities.CreateInstance<EulynxBaseline4R2.PointToInterlockingConnection>(x, _configuration, CancellationToken.None);
             default:
                 throw new NotImplementedException($"Unknown connection protocol {connectionProtocol}.");
         }

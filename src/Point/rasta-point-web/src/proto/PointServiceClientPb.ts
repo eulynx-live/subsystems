@@ -430,26 +430,26 @@ export class PointClient {
   methodDescriptorScheduleTimeoutRight = new grpcWeb.MethodDescriptor(
     '/point.Point/ScheduleTimeoutRight',
     grpcWeb.MethodType.UNARY,
+    point_pb.EnableMovementFailedMessage,
     google_protobuf_empty_pb.Empty,
-    google_protobuf_empty_pb.Empty,
-    (request: google_protobuf_empty_pb.Empty) => {
+    (request: point_pb.EnableMovementFailedMessage) => {
       return request.serializeBinary();
     },
     google_protobuf_empty_pb.Empty.deserializeBinary
   );
 
   scheduleTimeoutRight(
-    request: google_protobuf_empty_pb.Empty,
+    request: point_pb.EnableMovementFailedMessage,
     metadata?: grpcWeb.Metadata | null): Promise<google_protobuf_empty_pb.Empty>;
 
   scheduleTimeoutRight(
-    request: google_protobuf_empty_pb.Empty,
+    request: point_pb.EnableMovementFailedMessage,
     metadata: grpcWeb.Metadata | null,
     callback: (err: grpcWeb.RpcError,
                response: google_protobuf_empty_pb.Empty) => void): grpcWeb.ClientReadableStream<google_protobuf_empty_pb.Empty>;
 
   scheduleTimeoutRight(
-    request: google_protobuf_empty_pb.Empty,
+    request: point_pb.EnableMovementFailedMessage,
     metadata?: grpcWeb.Metadata | null,
     callback?: (err: grpcWeb.RpcError,
                response: google_protobuf_empty_pb.Empty) => void) {
@@ -473,26 +473,26 @@ export class PointClient {
   methodDescriptorScheduleTimeoutLeft = new grpcWeb.MethodDescriptor(
     '/point.Point/ScheduleTimeoutLeft',
     grpcWeb.MethodType.UNARY,
+    point_pb.EnableMovementFailedMessage,
     google_protobuf_empty_pb.Empty,
-    google_protobuf_empty_pb.Empty,
-    (request: google_protobuf_empty_pb.Empty) => {
+    (request: point_pb.EnableMovementFailedMessage) => {
       return request.serializeBinary();
     },
     google_protobuf_empty_pb.Empty.deserializeBinary
   );
 
   scheduleTimeoutLeft(
-    request: google_protobuf_empty_pb.Empty,
+    request: point_pb.EnableMovementFailedMessage,
     metadata?: grpcWeb.Metadata | null): Promise<google_protobuf_empty_pb.Empty>;
 
   scheduleTimeoutLeft(
-    request: google_protobuf_empty_pb.Empty,
+    request: point_pb.EnableMovementFailedMessage,
     metadata: grpcWeb.Metadata | null,
     callback: (err: grpcWeb.RpcError,
                response: google_protobuf_empty_pb.Empty) => void): grpcWeb.ClientReadableStream<google_protobuf_empty_pb.Empty>;
 
   scheduleTimeoutLeft(
-    request: google_protobuf_empty_pb.Empty,
+    request: point_pb.EnableMovementFailedMessage,
     metadata?: grpcWeb.Metadata | null,
     callback?: (err: grpcWeb.RpcError,
                response: google_protobuf_empty_pb.Empty) => void) {

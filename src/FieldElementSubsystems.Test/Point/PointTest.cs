@@ -7,6 +7,8 @@ using Moq;
 using EulynxLive.Point.Proto;
 using Google.Protobuf;
 using EulynxLive.Point;
+using EulynxLive.Point.Hubs;
+using Microsoft.AspNetCore.SignalR;
 
 namespace FieldElementSubsystems.Test;
 
@@ -36,7 +38,9 @@ public class PointTest
         var config = configuration.GetSection("PointSettings").Get<PointConfiguration>()!;
         var mockConnection = CreateDefaultMockConnection(config);
 
-        var point = new EulynxLive.Point.Point(Mock.Of<ILogger<EulynxLive.Point.Point>>(), configuration, mockConnection.Object, Mock.Of<IConnectionProvider>(), () => Task.CompletedTask);
+        var mockHubContext = new Mock<IHubContext<StatusHub>>();
+        mockHubContext.Setup(x => x.Clients.All.SendCoreAsync(It.IsAny<string>(), It.IsAny<object[]>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+        var point = new EulynxLive.Point.Point(Mock.Of<ILogger<EulynxLive.Point.Point>>(), configuration, mockConnection.Object, Mock.Of<IConnectionProvider>(), mockHubContext.Object);
 
         async Task SimulatePoint()
         {
@@ -93,7 +97,7 @@ public class PointTest
             .SetupSequence(m => m.ReceiveMovePointCommand(It.IsAny<CancellationToken>()))
             .Returns(() =>
             {
-                point.EnableTimeoutLeft();
+                point.EnableTimeoutLeft(true);
                 return Task.FromResult(GenericPointPosition.Left);
             })
             .Returns(() =>
@@ -121,7 +125,7 @@ public class PointTest
             .SetupSequence(m => m.ReceiveMovePointCommand(It.IsAny<CancellationToken>()))
             .Returns(() =>
             {
-                point.EnableTimeoutRight();
+                point.EnableTimeoutRight(true);
                 return Task.FromResult(GenericPointPosition.Right);
             })
             .Returns(() =>
@@ -334,7 +338,7 @@ public class PointTest
                 {
                     DegradedPosition = simulatedDegradedPosition
                 };
-                await point.PutIntoUnintendedPosition(message);
+                point.PutIntoUnintendedPosition(message);
 
                 cancel.Cancel();
                 return await new TaskCompletionSource<GenericPointPosition>().Task;
