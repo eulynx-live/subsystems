@@ -2,9 +2,13 @@
 using EulynxLive.FieldElementSubsystems.Interfaces;
 using EulynxLive.Point.Hubs;
 using EulynxLive.Point.Proto;
+
 using Grpc.Core;
+
 using Microsoft.AspNetCore.SignalR;
+
 using PropertyChanged.SourceGenerator;
+
 using System.ComponentModel;
 using System.Net.WebSockets;
 using System.Reactive;
@@ -13,13 +17,13 @@ using System.Runtime.CompilerServices;
 
 namespace EulynxLive.Point
 {
-    public partial class Point : BackgroundService
+    public partial class Point : BackgroundService, IPoint
     {
         public IPointToInterlockingConnection Connection { get; }
 
         public bool AllPointMachinesCrucial { get; }
         public bool ObserveAbilityToMove { get; }
-
+        public ConnectionProtocol? ConnectionProtocol => _config.ConnectionProtocol;
 
         [Notify]
         private GenericPointState _pointState;

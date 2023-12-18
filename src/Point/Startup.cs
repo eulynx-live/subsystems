@@ -43,6 +43,7 @@ namespace EulynxLive.Point
                     var simulateTimout = async () => await Task.Delay(new Random().Next(1, 5) * 1000);
                     return ActivatorUtilities.CreateInstance<Point>(x, simulateTimout);
                 });
+                services.AddSingleton(x => x.GetRequiredService<Point>());
             }
             catch (Exception e)
             {

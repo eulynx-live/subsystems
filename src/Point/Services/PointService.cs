@@ -9,9 +9,9 @@ namespace EulynxLive.Point.Services
 {
     public class PointService : PointBase
     {
-        private readonly Point _point;
+        private readonly IPoint _point;
 
-        public PointService(Point point)
+        public PointService(IPoint point)
         {
             _point = point;
         }
@@ -65,22 +65,22 @@ namespace EulynxLive.Point.Services
             return Task.FromResult(new Empty());
         }
 
-        public override Task<Empty> PutIntoTrailedPosition(DegradedPositionMessage request, ServerCallContext context)
+        public override async Task<Empty> PutIntoTrailedPosition(DegradedPositionMessage request, ServerCallContext context)
         {
-            if (_point.Connection.Configuration.ConnectionProtocol != ConnectionProtocol.EulynxBaseline4R1)
+            if (_point.ConnectionProtocol != ConnectionProtocol.EulynxBaseline4R1)
                 throw new RpcException(new Status(StatusCode.InvalidArgument, "Only supported for EulynxBaseline4R1"));
 
-            _point.PutIntoUnintendedPosition(request);
-            return Task.FromResult(new Empty());
+            await _point.PutIntoUnintendedPosition(request);
+            return new Empty();
         }
 
-        public override Task<Empty> PutIntoUnintendedPosition(DegradedPositionMessage request, ServerCallContext context)
+        public override async Task<Empty> PutIntoUnintendedPosition(DegradedPositionMessage request, ServerCallContext context)
         {
-            if (_point.Connection.Configuration.ConnectionProtocol != ConnectionProtocol.EulynxBaseline4R2)
+            if (_point.ConnectionProtocol != ConnectionProtocol.EulynxBaseline4R2)
                 throw new RpcException(new Status(StatusCode.InvalidArgument, "Only supported for EulynxBaseline4R2"));
 
-            _point.PutIntoUnintendedPosition(request);
-            return Task.FromResult(new Empty());
+            await _point.PutIntoUnintendedPosition(request);
+            return new Empty();
         }
 
         public override Task<PointDegradedPositionMessage> GetDegradedPointPosition(Empty request, ServerCallContext context)
