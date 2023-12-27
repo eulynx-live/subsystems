@@ -52,7 +52,7 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
 
     public async Task<bool> InitializeConnection(GenericPointState state, bool observeAbilityToMove, CancellationToken cancellationToken)
     {
-        if (await ReceiveMessageWithTimeout<PointPdiVersionCheckCommand>(cancellationToken) == null)
+        if (await ReceiveMessage<PointPdiVersionCheckCommand>(cancellationToken) == null)
         {
             _logger.LogError("Unexpected message.");
             return false;
@@ -61,7 +61,7 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
         var versionCheckResponse = new PointPdiVersionCheckMessage(_localId, _remoteId, PointPdiVersionCheckMessageResultPdiVersionCheck.PDIVersionsFromReceiverAndSenderDoMatch, /* TODO */ 0, 0, Array.Empty<byte>());
         await SendMessage(versionCheckResponse);
 
-        if (await ReceiveMessageWithTimeout<PointInitialisationRequestCommand>(cancellationToken) == null)
+        if (await ReceiveMessage<PointInitialisationRequestCommand>(cancellationToken) == null)
         {
             _logger.LogError("Unexpected message.");
             return false;
@@ -121,14 +121,6 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
         if (CurrentConnection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
         if (_overrideMessages.Reader.TryRead(out var overrideMessage)) message = overrideMessage;
         await CurrentConnection.SendAsync(message);
-    }
-
-    private async Task<T> ReceiveMessageWithTimeout<T>(CancellationToken cancellationToken) where T : Message
-    {
-        if (CurrentConnection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
-        ResetTimeout();
-        var token = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _timeout.Token).Token;
-        return await ReceiveMessage<T>(token);
     }
 
     private async Task<T> ReceiveMessage<T>(CancellationToken cancellationToken) where T : Message

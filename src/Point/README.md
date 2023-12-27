@@ -26,13 +26,18 @@ The following are the allowed parameter values and resulting point states:
 
 The `PointSettings` command-line arguments are used to configure the point simulator.
 
-| Argument | Description |
-|---|---|
+| Argument | Description | Possible Values
+|---|---|--|
 | `--PointSettings:LocalId` | The local point ID. |
 | `--PointSettings:LocalRastaId` | The local Rasta ID. |
 | `--PointSettings:RemoteId` | The remote point ID. |
 | `--PointSettings:RemoteEndpoint` | The remote endpoint URL. |
 | `--PointSettings:ConnectionProtocol` | The protocol to use  when connecting to an endpoint. |
+| `--PointSettings:AllPointMachinesCrucial` | Set the point property AllPointMachinesCrucial. Whether or not the point can be degraded. | true/ false |
+| `--PointSettings:ObserveAbilityToMove` | Set the point property ObserveAbilityToMove. Should notify the endpoint of that ability. | true/ false|
+| `--PointSettings:InitialLastCommandedPointPosition` | Set the point to start with specific property InitialLastCommandedPointPosition. | Left/ Right/ UnintendedPosition/ NoEndPosition|
+| `--PointSettings:InitialPointPosition` | Set the point to start with specific property InitialPointPosition. | Left/ Right/ UnintendedPosition/ NoEndPosition| `--PointSettings:InitialDegradedPointPosition` | Set the point to start with specific property InitialDegradedPointPosition. | DegradedLeft/ DegradedRight/ NotDegraded/ NotApplicable 
+| `--PointSettings:InitialAbilityToMove` | Set the point to start with specific property InitialAbilityToMove. | UnAbleToMove/ AbleToMove |
 
 For example, to set the local point ID to `W1`, the local Rasta ID to `96`, the remote point ID to `INTERLOCKING`, and the remote endpoint URL to `http://localhost:5100` using `EulynxBaseline4R1`, you would use the following command:
 ```
