@@ -4,7 +4,6 @@ namespace EulynxLive.FieldElementSubsystems.Interfaces;
 
 public interface IPointToInterlockingConnection {
     PointConfiguration Configuration { get; }
-    CancellationToken TimeoutToken { get; }
 
     void Connect(IConnection connection);
 

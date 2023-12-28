@@ -17,22 +17,15 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
 
     private readonly Channel<byte[]> _overrideMessages;
 
-    public CancellationToken TimeoutToken => _timeout.Token;
-
     public IConnection? CurrentConnection { get; private set; }
-    private CancellationTokenSource _timeout;
-    private readonly int _timeoutDuration;
     private readonly CancellationToken _stoppingToken;
 
     public PointToInterlockingConnection(
         ILogger<PointToInterlockingConnection> logger,
         IConfiguration configuration,
-        CancellationToken stoppingToken,
-        int timeoutDuration = 10000)
+        CancellationToken stoppingToken)
     {
-        _timeoutDuration = timeoutDuration;
         _stoppingToken = stoppingToken;
-        _timeout = new CancellationTokenSource();
         _logger = logger;
         CurrentConnection = null;
 
@@ -45,7 +38,6 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
 
     public void Connect(IConnection connection)
     {
-        ResetTimeout();
         CurrentConnection = connection;
     }
 
@@ -57,7 +49,7 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
             return false;
         }
 
-        var versionCheckResponse = new PointPdiVersionCheckMessage(_localId, _remoteId, PointPdiVersionCheckMessageResultPdiVersionCheck.PDIVersionsFromReceiverAndSenderDoMatch, /* TODO */ 0, 0, new byte[] { });
+        var versionCheckResponse = new PointPdiVersionCheckMessage(_localId, _remoteId, PointPdiVersionCheckMessageResultPdiVersionCheck.PDIVersionsFromReceiverAndSenderDoMatch, /* TODO */ 0, 0, Array.Empty<byte>());
         await SendMessage(versionCheckResponse);
 
         if (await ReceiveMessage<PointInitialisationRequestCommand>(cancellationToken) == null)
@@ -125,20 +117,12 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
     private async Task<T> ReceiveMessage<T>(CancellationToken cancellationToken) where T : Message
     {
         if (CurrentConnection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
-        ResetTimeout();
 
         var message = Message.FromBytes(await CurrentConnection.ReceiveAsync(cancellationToken));
         if (message is T tMessage) return tMessage;
         _logger.LogError("Unexpected message: {}", message);
         throw new InvalidOperationException("Unexpected message.");
     }
-
-    private void ResetTimeout()
-    {
-        _timeout = CancellationTokenSource.CreateLinkedTokenSource(_stoppingToken);
-        _timeout.CancelAfter(_timeoutDuration);
-    }
-
 
     public async Task SendSciMessage(byte[] message)
     {

@@ -6,7 +6,6 @@ using Grpc.Core;
 using EulynxLive.Messages.Baseline4R1;
 using System.Threading.Channels;
 
-
 namespace EulynxLive.FieldElementSubsystems.Connections.EulynxBaseline4R1;
 
 public class PointToInterlockingConnection : IPointToInterlockingConnection
@@ -18,22 +17,15 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
 
     private readonly Channel<byte[]> _overrideMessages;
 
-    public CancellationToken TimeoutToken => _timeout.Token;
-
     public IConnection? CurrentConnection { get; private set; }
-    private CancellationTokenSource _timeout;
-    private readonly int _timeoutDuration;
     private readonly CancellationToken _stoppingToken;
 
     public PointToInterlockingConnection(
         ILogger<PointToInterlockingConnection> logger,
         IConfiguration configuration,
-        CancellationToken stoppingToken,
-        int timeoutDuration = 10000)
+        CancellationToken stoppingToken)
     {
-        _timeoutDuration = timeoutDuration;
         _stoppingToken = stoppingToken;
-        _timeout = new CancellationTokenSource();
         _logger = logger;
         CurrentConnection = null;
 
@@ -46,7 +38,6 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
 
     public void Connect(IConnection connection)
     {
-        ResetTimeout();
         CurrentConnection = connection;
     }
 
@@ -132,13 +123,6 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
         _logger.LogError("Unexpected message: {}", message);
         throw new InvalidOperationException("Unexpected message.");
     }
-
-    private void ResetTimeout()
-    {
-        _timeout = CancellationTokenSource.CreateLinkedTokenSource(_stoppingToken);
-        _timeout.CancelAfter(_timeoutDuration);
-    }
-
 
     public async Task SendSciMessage(byte[] message)
     {
