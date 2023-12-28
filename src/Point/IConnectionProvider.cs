@@ -7,4 +7,9 @@ namespace EulynxLive.Point
     {
         IConnection Connect(PointConfiguration configuration, CancellationToken stoppingToken);
     }
+
+    public class ConnectionException : Exception
+    {
+        public ConnectionException(string message) : base(message) { }
+    }
 }

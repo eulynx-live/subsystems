@@ -10,8 +10,15 @@ namespace EulynxLive.Point
     {
         public IConnection Connect(PointConfiguration configuration, CancellationToken stoppingToken)
         {
-            var metadata = new Metadata { { "rasta-id", configuration.LocalRastaId.ToString() } };
-            return new GrpcConnection(metadata, configuration.RemoteEndpoint, stoppingToken);
+            try
+            {
+                var metadata = new Metadata { { "rasta-id", configuration.LocalRastaId.ToString() } };
+                return new GrpcConnection(metadata, configuration.RemoteEndpoint, stoppingToken);
+            }
+            catch (RpcException)
+            {
+                throw new ConnectionException("Unable to connect to remote gRPC endpoint.");
+            }
         }
     }
 }

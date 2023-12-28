@@ -1,19 +1,18 @@
 using EulynxLive.FieldElementSubsystems.Interfaces;
+
 using Google.Protobuf;
+
 using Grpc.Core;
 using Grpc.Net.Client;
+
 using Sci;
+
 using static Sci.Rasta;
 
 namespace EulynxLive.Point.Connections;
 
 class GrpcConnection : IConnection
 {
-    class GrpcConnectionException : Exception
-    {
-        public GrpcConnectionException(string message) : base(message) { }
-    }
-
     readonly AsyncDuplexStreamingCall<SciPacket, SciPacket>? _connection;
     private readonly CancellationToken _stoppingToken;
 
@@ -33,7 +32,14 @@ class GrpcConnection : IConnection
     public async Task<byte[]> ReceiveAsync(CancellationToken cancellationToken)
     {
         if (_connection == null) throw new InvalidOperationException("Grpc connection not connected.");
-        if (!await _connection.ResponseStream.MoveNext(cancellationToken)) throw new GrpcConnectionException("Could not receive grpc message.");
+        try
+        {
+            if (!await _connection.ResponseStream.MoveNext(cancellationToken)) throw new ConnectionException("Could not receive grpc message.");
+        }
+        catch (RpcException)
+        {
+            throw new ConnectionException("Could not receive grpc message.");
+        }
         return _connection.ResponseStream.Current.Message.ToByteArray();
     }
 

@@ -241,7 +241,7 @@ namespace EulynxLive.Point
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             // Main loop.
-            while (true)
+            while (!stoppingToken.IsCancellationRequested)
             {
                 _logger.LogTrace("Connecting...");
                 var conn = _connectionProvider.Connect(Connection.Configuration, stoppingToken);
@@ -262,9 +262,8 @@ namespace EulynxLive.Point
                         // This will abort the previous simulated point movement if a new command is received.
                         .Switch();
                 }
-                catch (RpcException)
+                catch (ConnectionException)
                 {
-                    // TODO: Since this is gRPC-specific, catch and re-throw this in the GrpcConnectionProvider
                     _logger.LogWarning("Could not communicate with remote endpoint.");
                     Reset();
                     await Task.Delay(1000, stoppingToken);
