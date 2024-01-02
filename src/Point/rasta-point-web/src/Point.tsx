@@ -27,7 +27,7 @@ function Toggle({ active, label, disabled, onChange }: { active: boolean, disabl
 }
 
 function ButtonGroup({ items }: { items: { active: boolean, label: string, disabled?: boolean, onClick?: (index: number) => void }[] }) {
-    const activeClassName = "btn bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-indigo-500 rounded-none first:rounded-l last:rounded-r";
+    const activeClassName = "btn bg-slate-200 dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-indigo-500 rounded-none first:rounded-l last:rounded-r";
     const defaultClassName = "btn bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 rounded-none first:rounded-l last:rounded-r";
     const enabledClassName = " hover:bg-slate-50 dark:hover:bg-slate-900";
     const disabledClassName = " cursor-auto";
@@ -66,7 +66,7 @@ function Point(props: PointProps) {
 
                 <div className="col-span-full sm:col-span-6 xl:col-span-3 bg-white dark:bg-slate-800 shadow-lg rounded-sm border border-slate-200 dark:border-slate-700 p-4">
                     <h2 className="text-l font-semibold text-slate-800 dark:text-slate-100">Simulator Configuration</h2>
-                    <div className="m-3 text-sm inline-flex font-medium bg-slate-100 dark:bg-slate-300 text-slate-300 dark:text-slate-600 rounded-full text-center px-2.5 py-1">{props.simulatorConfiguration?.connectionProtocol ?? 'Loading...'}</div>
+                    <div className="m-3 text-sm inline-flex font-medium bg-slate-100 dark:bg-slate-300 text-slate-600 dark:text-slate-600 rounded-full text-center px-2.5 py-1">{props.simulatorConfiguration?.connectionProtocol ?? 'Loading...'}</div>
                     <Toggle label="Observe Ability to Move" active={props.simulatorConfiguration?.observeAbilityToMove || false} disabled />
                     <Toggle label="All Point Machines Crucial" active={props.simulatorConfiguration?.allPointMachinesCrucial || false} disabled />
                 </div>
@@ -77,7 +77,7 @@ function Point(props: PointProps) {
                         <div className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase">
                             Electronic Interlocking Connection
                         </div>
-                        <div className="m-3 text-sm inline-flex font-medium bg-slate-100 dark:bg-slate-300 text-slate-300 dark:text-slate-600 rounded-full text-center px-2.5 py-1">{props.initialized ? 'connected' : 'disconnected'}</div>
+                        <div className="m-3 text-sm inline-flex font-medium bg-slate-100 dark:bg-slate-300 text-slate-600 dark:text-slate-600 rounded-full text-center px-2.5 py-1">{props.initialized ? 'connected' : 'disconnected'}</div>
                     </div>
 
                     <div className="py-3">
