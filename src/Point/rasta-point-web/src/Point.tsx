@@ -120,7 +120,7 @@ function Point({
               s
             </div>
             <Toggle label="Observe Ability to Move" active={simulatorConfiguration?.observeAbilityToMove || false} disabled />
-            <Toggle label="All Point Machines Crucial" active={simulatorConfiguration?.allPointMachinesCrucial || false} disabled />
+            <Toggle label="All Point Machines are Crucial" active={simulatorConfiguration?.allPointMachinesCrucial || false} disabled />
           </div>
         </div>
 

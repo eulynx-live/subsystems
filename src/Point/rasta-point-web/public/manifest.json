@@ -1,6 +1,6 @@
 {
-  "short_name": "Point",
-  "name": "Point",
+  "short_name": "Point Simulator",
+  "name": "Point Simulator",
   "start_url": ".",
   "display": "standalone",
   "theme_color": "#000000",
