@@ -92,9 +92,36 @@ function Point({
 
         <div className="col-span-full sm:col-span-6 xl:col-span-3 bg-white dark:bg-slate-800 shadow-lg rounded-sm border border-slate-200 dark:border-slate-700 p-4">
           <h2 className="text-l font-semibold text-slate-800 dark:text-slate-100">Simulator Configuration</h2>
-          <div className="m-3 text-sm inline-flex font-medium bg-slate-100 dark:bg-slate-300 text-slate-600 dark:text-slate-600 rounded-full text-center px-2.5 py-1">{simulatorConfiguration?.connectionProtocol ?? 'Loading...'}</div>
-          <Toggle label="Observe Ability to Move" active={simulatorConfiguration?.observeAbilityToMove || false} disabled />
-          <Toggle label="All Point Machines Crucial" active={simulatorConfiguration?.allPointMachinesCrucial || false} disabled />
+          <div className="py-3">
+            <div className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase">
+              Connection Protocol
+            </div>
+            <div className="m-3 text-sm inline-flex font-medium bg-slate-100 dark:bg-slate-300 text-slate-600 dark:text-slate-600 rounded-full text-center px-2.5 py-1">
+              {simulatorConfiguration?.connectionProtocol ?? 'Loading...'}
+            </div>
+            <div className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase">
+              Point technical identifier
+            </div>
+            <div className="m-3 text-sm inline-flex font-medium bg-slate-100 dark:bg-slate-300 text-slate-600 dark:text-slate-600 rounded-full text-center px-2.5 py-1">
+              {simulatorConfiguration?.localId}
+            </div>
+            <div className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase">
+              Electronic interlocking technical identifier
+            </div>
+            <div className="m-3 text-sm inline-flex font-medium bg-slate-100 dark:bg-slate-300 text-slate-600 dark:text-slate-600 rounded-full text-center px-2.5 py-1">
+              {simulatorConfiguration?.remoteId}
+            </div>
+            <div className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase">
+              Simulated Point Transitioning Time
+            </div>
+            <div className="m-3 text-sm inline-flex font-medium bg-slate-100 dark:bg-slate-300 text-slate-600 dark:text-slate-600 rounded-full text-center px-2.5 py-1">
+              {simulatorConfiguration?.simulatedTransitioningTimeSeconds}
+              {' '}
+              s
+            </div>
+            <Toggle label="Observe Ability to Move" active={simulatorConfiguration?.observeAbilityToMove || false} disabled />
+            <Toggle label="All Point Machines Crucial" active={simulatorConfiguration?.allPointMachinesCrucial || false} disabled />
+          </div>
         </div>
 
         <div className="col-span-full sm:col-span-6 xl:col-span-4 bg-white dark:bg-slate-800 shadow-lg rounded-sm border border-slate-200 dark:border-slate-700 p-4">

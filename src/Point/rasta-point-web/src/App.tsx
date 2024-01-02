@@ -22,8 +22,16 @@ export type SimulatedPointState = {
 };
 
 export type SimulatorConfiguration = {
-  observeAbilityToMove: boolean,
+  localId: string,
+  localRastaId: number,
+  remoteId: string,
+  simulatedTransitioningTimeSeconds: number,
   allPointMachinesCrucial: boolean,
+  observeAbilityToMove: boolean,
+  initialLastCommandedPointPosition: string,
+  initialPointPosition: string,
+  initialDegradedPointPosition: string,
+  initialAbilityToMove: string,
   connectionProtocol: 'EulynxBaseline4R1' | 'EulynxBaseline4R2',
 };
 

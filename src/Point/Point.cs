@@ -88,7 +88,7 @@ namespace EulynxLive.Point
             Observable.FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(h => PropertyChanged += h, h => PropertyChanged -= h)
                 .Select(x => Unit.Default)
                 .Merge(Observable.Interval(TimeSpan.FromSeconds(1)).Select(x => Unit.Default))
-                .Subscribe(x => statusHub.Clients.All.SendAsync("ReceiveStatus", _initialized, PointState, SimulatedPointState, new { AllPointMachinesCrucial, ObserveAbilityToMove, _config.ConnectionProtocol }));
+                .Subscribe(x => statusHub.Clients.All.SendAsync("ReceiveStatus", _initialized, PointState, SimulatedPointState, _config));
         }
 
         public async Task SendSciMessage(SciMessage message)
