@@ -6,6 +6,7 @@ import { PointClient } from './proto/PointServiceClientPb';
 
 import {
   PreventedPosition, AbilityToMoveMessage, AbilityToMove, PreventedPositionMessage, DegradedPositionMessage, EnableMovementFailedMessage,
+  EnableInitializationFailedMessage,
 } from './proto/point_pb';
 import { PointState, SimulatedPointState, SimulatorConfiguration } from './App';
 
@@ -345,14 +346,25 @@ function Point({
             <SemiBoldPropertyLabel>
               Connectivity
             </SemiBoldPropertyLabel>
-            <button
-              type="button"
-              onClick={() => sendCommand((client) => client.reset(new google_protobuf_empty_pb.Empty(), null))}
-              className="m-3 btn dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 text-rose-500"
-            >
-              Reset RaSTA Connection
+            <div className="grid grid-flow-col">
+              <button
+                type="button"
+                onClick={() => sendCommand((client) => client.reset(new google_protobuf_empty_pb.Empty(), null))}
+                className="m-3 btn dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 text-rose-500"
+              >
+                Reset RaSTA Connection
 
-            </button>
+              </button>
+              <div>
+                <Toggle
+                  label="Enable Initialization Timeout"
+                  active={simulatedPointState?.simulateInitializationTimeout || false}
+                  onChange={
+                    (enable) => sendCommand((client) => client.scheduleInitializationTimeout(new EnableInitializationFailedMessage().setEnableinitializationfailed(enable), null))
+                  }
+                />
+              </div>
+            </div>
           </div>
         </div>
 

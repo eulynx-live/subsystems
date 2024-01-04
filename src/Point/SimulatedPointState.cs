@@ -10,6 +10,6 @@ namespace EulynxLive.Point
         bool DegradedPositionRight,
         bool SimulateTimeoutLeft,
         bool SimulateTimeoutRight,
-        bool SimulateInitialisationTimeout
+        bool SimulateInitializationTimeout
     );
 }

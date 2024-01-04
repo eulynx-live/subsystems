@@ -53,6 +53,12 @@ namespace EulynxLive.Point.Services
             return new Empty();
         }
 
+        public override Task<Empty> ScheduleInitializationTimeout(EnableInitializationFailedMessage request, ServerCallContext context)
+        {
+            _point.EnableInitializationTimeout(request.EnableInitializationFailed);
+            return Task.FromResult(new Empty());
+        }
+
         public override Task<Empty> SchedulePreventLeftEndPosition(PreventedPositionMessage request, ServerCallContext context)
         {
             _point.PreventLeftEndPosition(request);

@@ -41,6 +41,7 @@ service Point {
     rpc ScheduleTimeoutRight (EnableMovementFailedMessage) returns (google.protobuf.Empty) {}
     rpc ScheduleTimeoutLeft (EnableMovementFailedMessage) returns (google.protobuf.Empty) {}
 
+    rpc ScheduleInitializationTimeout (EnableInitializationFailedMessage) returns (google.protobuf.Empty) {}
     rpc Reset (google.protobuf.Empty) returns (google.protobuf.Empty) {}
 }
 
@@ -68,6 +69,10 @@ message DegradedPositionMessage {
 
 message EnableMovementFailedMessage {
     bool enableMovementFailed = 1;
+}
+
+message EnableInitializationFailedMessage {
+    bool EnableInitializationFailed = 1;
 }
 
 message PointPositionMessage {

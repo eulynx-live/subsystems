@@ -11,6 +11,7 @@ namespace EulynxLive.Point
 
         void EnableTimeoutLeft(bool enableMovementFailed);
         void EnableTimeoutRight(bool enableMovementFailed);
+        void EnableInitializationTimeout(bool enableInitializationFailed);
         void PreventLeftEndPosition(PreventedPositionMessage request);
         void PreventRightEndPosition(PreventedPositionMessage request);
         Task PutIntoUnintendedPosition(DegradedPositionMessage request);

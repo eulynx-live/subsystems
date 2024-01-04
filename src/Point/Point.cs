@@ -84,7 +84,7 @@ namespace EulynxLive.Point
                 DegradedPositionRight: false,
                 SimulateTimeoutLeft: false,
                 SimulateTimeoutRight: false,
-                SimulateInitialisationTimeout: false
+                SimulateInitializationTimeout: false
             );
 
             Observable.FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(h => PropertyChanged += h, h => PropertyChanged -= h)
@@ -100,16 +100,15 @@ namespace EulynxLive.Point
         }
 
         /// <summary>
-        /// Sets the timeout flag for the next move left command.
+        /// Sets the sets the initialization timeout flag for the next initialization.
         /// </summary>
         public void EnableInitializationTimeout(bool enableInitialisationTimeout)
         {
             _logger.LogInformation("Reset and Timeout on next initialisation handshake enabled.");
             _simulatedPointState = _simulatedPointState with
             {
-                SimulateInitialisationTimeout = enableInitialisationTimeout
+                SimulateInitializationTimeout = enableInitialisationTimeout
             };
-            Reset();
         }
 
         /// <summary>
@@ -268,7 +267,7 @@ namespace EulynxLive.Point
 
                     try
                     {
-                        var success = await Connection.InitializeConnection(PointState, _config.ObserveAbilityToMove, _simulatedPointState.SimulateInitialisationTimeout, _resetTokenSource.Token);
+                        var success = await Connection.InitializeConnection(PointState, _config.ObserveAbilityToMove, _simulatedPointState.SimulateInitializationTimeout, _resetTokenSource.Token);
                         if (!success)
                         {
                             throw new Exception("Unable to initialize connection");

@@ -183,14 +183,14 @@ public class PointTest
 
         connection
             .SetupSequence(m => m.ReceiveMovePointCommand(It.IsAny<CancellationToken>()))
-            .Returns(() =>
+            .Returns(async () =>
             {
                 var message = new AbilityToMoveMessage
                 {
                     Ability = simulatedAbilityToMove
                 };
-                point.SetAbilityToMove(message);
-                return Task.FromResult(GenericPointPosition.Left);
+                await point.SetAbilityToMove(message);
+                return GenericPointPosition.Left;
             })
             .Returns(() =>
             {

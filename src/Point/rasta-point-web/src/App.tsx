@@ -18,7 +18,8 @@ export type SimulatedPointState = {
   'degradedPositionLeft': boolean,
   'degradedPositionRight': boolean,
   'simulateTimeoutLeft': boolean,
-  'simulateTimeoutRight': boolean
+  'simulateTimeoutRight': boolean,
+  'simulateInitializationTimeout': boolean
 };
 
 export type SimulatorConfiguration = {
