@@ -2,10 +2,10 @@ using EulynxLive.FieldElementSubsystems.Configuration;
 
 namespace EulynxLive.FieldElementSubsystems.Interfaces;
 
-public interface IPointToInterlockingConnection {
+public interface IPointToInterlockingConnection : IDisposable {
     PointConfiguration Configuration { get; }
 
-    void Connect(IConnection connection);
+    IPointToInterlockingConnection Connect(IConnection connection);
 
     Task SendPointPosition(GenericPointState state);
     Task SendSciMessage(byte[] message);

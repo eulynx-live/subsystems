@@ -36,9 +36,10 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
         _overrideMessages = Channel.CreateUnbounded<byte[]>();
     }
 
-    public void Connect(IConnection connection)
+    public IPointToInterlockingConnection Connect(IConnection connection)
     {
         CurrentConnection = connection;
+        return this;
     }
 
     public async Task<bool> InitializeConnection(GenericPointState state, bool observeAbilityToMove, CancellationToken cancellationToken)
@@ -140,5 +141,10 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
         var abilityToMove = new AbilityToMove(pointState);
         var abilityToMoveMessage = new PointAbilityToMovePointMessage(_localId, _remoteId, abilityToMove.AbilityToMove);
         await SendMessage(abilityToMoveMessage);
+    }
+
+    public void Dispose()
+    {
+        CurrentConnection?.Dispose();
     }
 }

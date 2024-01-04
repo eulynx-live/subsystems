@@ -19,7 +19,7 @@ namespace EulynxLive.Point
 {
     public partial class Point : BackgroundService, IPoint
     {
-        public IPointToInterlockingConnection Connection { get; }
+        public IPointToInterlockingConnection Connection { get; set; }
 
         public bool AllPointMachinesCrucial { get; }
         public bool ObserveAbilityToMove { get; }
@@ -35,6 +35,7 @@ namespace EulynxLive.Point
         private readonly ILogger<Point> _logger;
         private readonly IConnectionProvider _connectionProvider;
         private readonly PointConfiguration _config;
+        private CancellationTokenSource _resetTokenSource;
 
         public Point(ILogger<Point> logger, IConfiguration configuration, IPointToInterlockingConnection connection, IConnectionProvider connectionProvider, IHubContext<StatusHub> statusHub)
         {
@@ -142,7 +143,8 @@ namespace EulynxLive.Point
                 }
             };
 
-            if (_initialized) {
+            if (_initialized)
+            {
                 await Connection.SendAbilityToMove(PointState);
             }
         }
@@ -167,7 +169,8 @@ namespace EulynxLive.Point
             var degradedPosition = PointState.PointPosition == GenericPointPosition.Left ? GenericDegradedPointPosition.DegradedLeft : GenericDegradedPointPosition.DegradedRight;
             SetPointState(GenericPointPosition.UnintendedPosition, simulatedPositionMessage.DegradedPosition ? degradedPosition : notDegradedPosition);
 
-            if (_initialized) {
+            if (_initialized)
+            {
                 await Connection.SendPointPosition(PointState);
             }
         }
@@ -245,39 +248,42 @@ namespace EulynxLive.Point
             {
                 _logger.LogTrace("Connecting...");
                 var conn = _connectionProvider.Connect(Connection.Configuration, stoppingToken);
-                Connection.Connect(conn);
-                Reset();
-                try
+                using (Connection = Connection.Connect(conn))
                 {
-                    var success = await Connection.InitializeConnection(PointState, _config.ObserveAbilityToMove, stoppingToken);
-                    if (!success)
-                    {
-                        throw new Exception("Unable to initialize connection");
-                    }
-                    _initialized = true;
+                    _resetTokenSource = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
 
-                    await AllMovePointCommands(stoppingToken)
-                        .ToObservable()
-                        .Select(x => Observable.FromAsync(token => HandleCommandedPointPosition(x, token)))
-                        // This will abort the previous simulated point movement if a new command is received.
-                        .Switch();
-                }
-                catch (ConnectionException)
-                {
-                    _logger.LogWarning("Could not communicate with remote endpoint.");
-                    Reset();
-                    await Task.Delay(1000, stoppingToken);
-                }
-                catch (OperationCanceledException)
-                {
-                    Reset();
-                    return;
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogWarning(ex, "Exception during simulation.");
-                    Reset();
-                    await Task.Delay(1000, stoppingToken);
+                    try
+                    {
+                        var success = await Connection.InitializeConnection(PointState, _config.ObserveAbilityToMove, _resetTokenSource.Token);
+                        if (!success)
+                        {
+                            throw new Exception("Unable to initialize connection");
+                        }
+                        _initialized = true;
+
+                        await AllMovePointCommands(_resetTokenSource.Token)
+                            .ToObservable()
+                            .Select(x => Observable.FromAsync(token => HandleCommandedPointPosition(x, token)))
+                            // This will abort the previous simulated point movement if a new command is received.
+                            .Switch();
+                    }
+                    catch (ConnectionException)
+                    {
+                        _logger.LogWarning("Could not communicate with remote endpoint.");
+                        Reset();
+                        await Task.Delay(1000, stoppingToken);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        Reset();
+                        return;
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogWarning(ex, "Exception during simulation.");
+                        Reset();
+                        await Task.Delay(1000, stoppingToken);
+                    }
                 }
             }
         }
@@ -413,6 +419,7 @@ namespace EulynxLive.Point
         public void Reset()
         {
             _logger.LogInformation("Resetting point.");
+            _resetTokenSource.Cancel();
             _initialized = false;
         }
     }
