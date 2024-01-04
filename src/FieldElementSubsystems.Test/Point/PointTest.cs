@@ -91,6 +91,33 @@ public class PointTest
     }
 
     [Fact]
+    public async Task Test_Reset()
+    {
+        // Arrange
+        var (point, pointTask, connection, cancel) = CreateDefaultPoint(true, new GenericPointState(null, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.NotApplicable, GenericAbilityToMove.AbleToMove));
+
+        connection
+            .SetupSequence(m => m.ReceiveMovePointCommand(It.IsAny<CancellationToken>()))
+            .Returns(() =>
+            {
+                point.Reset();
+                return Task.FromResult(GenericPointPosition.Left);
+            })
+            .Returns(() =>
+            {
+                cancel.Cancel();
+                return new TaskCompletionSource<GenericPointPosition>().Task;
+            });
+
+
+        // Act
+        await pointTask();
+
+        // Assert
+        connection.Verify(v => v.InitializeConnection(It.IsAny<GenericPointState>(), It.IsAny<bool>(), It.IsAny<bool>(),It.IsAny<CancellationToken>()), Times.Exactly(2));
+    }
+
+    [Fact]
     public async Task Test_TimeoutLeft()
     {
         // Arrange
