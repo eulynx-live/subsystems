@@ -221,7 +221,7 @@ function Point({
 
         <div className="col-span-full sm:col-span-7 xl:col-span-5 bg-white dark:bg-slate-800 shadow-lg rounded-sm border border-slate-200 dark:border-slate-700 p-4">
           <h2 className="text-l font-semibold text-slate-800 dark:text-slate-100">Simulate Irregularities</h2>
-          <div className="grid-flow-col">
+          <div className="grid grid-flow-col">
             <div className="py-3">
               <SemiBoldPropertyLabel>
                 Prevent left end position
