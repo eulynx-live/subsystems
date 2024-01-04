@@ -11,6 +11,22 @@ import { PointState, SimulatedPointState, SimulatorConfiguration } from './App';
 
 type PointProps = { initialized: boolean, pointState: PointState | null, simulatedPointState: SimulatedPointState | null, simulatorConfiguration: SimulatorConfiguration | null };
 
+function PropertyLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="m-3 text-sm inline-flex font-medium bg-slate-100 dark:bg-slate-300 text-slate-600 dark:text-slate-600 rounded-full text-center px-2.5 py-1">
+      {children}
+    </div>
+  );
+}
+
+function SemiBoldPropertyLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase">
+      {children}
+    </div>
+  );
+}
+
 function Toggle({
   active, label, disabled, onChange,
 }: { active: boolean, disabled?: boolean, onChange?: (active: boolean) => void, label: string }) {
@@ -93,32 +109,32 @@ function Point({
         <div className="col-span-full sm:col-span-6 xl:col-span-3 bg-white dark:bg-slate-800 shadow-lg rounded-sm border border-slate-200 dark:border-slate-700 p-4">
           <h2 className="text-l font-semibold text-slate-800 dark:text-slate-100">Simulator Configuration</h2>
           <div className="py-3">
-            <div className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase">
+            <SemiBoldPropertyLabel>
               Connection Protocol
-            </div>
-            <div className="m-3 text-sm inline-flex font-medium bg-slate-100 dark:bg-slate-300 text-slate-600 dark:text-slate-600 rounded-full text-center px-2.5 py-1">
+            </SemiBoldPropertyLabel>
+            <PropertyLabel>
               {simulatorConfiguration?.connectionProtocol ?? 'Loading...'}
-            </div>
-            <div className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase">
+            </PropertyLabel>
+            <SemiBoldPropertyLabel>
               Point technical identifier
-            </div>
-            <div className="m-3 text-sm inline-flex font-medium bg-slate-100 dark:bg-slate-300 text-slate-600 dark:text-slate-600 rounded-full text-center px-2.5 py-1">
+            </SemiBoldPropertyLabel>
+            <PropertyLabel>
               {simulatorConfiguration?.localId}
-            </div>
-            <div className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase">
+            </PropertyLabel>
+            <SemiBoldPropertyLabel>
               Electronic interlocking technical identifier
-            </div>
-            <div className="m-3 text-sm inline-flex font-medium bg-slate-100 dark:bg-slate-300 text-slate-600 dark:text-slate-600 rounded-full text-center px-2.5 py-1">
+            </SemiBoldPropertyLabel>
+            <PropertyLabel>
               {simulatorConfiguration?.remoteId}
-            </div>
-            <div className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase">
+            </PropertyLabel>
+            <SemiBoldPropertyLabel>
               Simulated Point Transitioning Time
-            </div>
-            <div className="m-3 text-sm inline-flex font-medium bg-slate-100 dark:bg-slate-300 text-slate-600 dark:text-slate-600 rounded-full text-center px-2.5 py-1">
+            </SemiBoldPropertyLabel>
+            <PropertyLabel>
               {simulatorConfiguration?.simulatedTransitioningTimeSeconds}
               {' '}
               s
-            </div>
+            </PropertyLabel>
             <Toggle label="Observe Ability to Move" active={simulatorConfiguration?.observeAbilityToMove || false} disabled />
             <Toggle label="All Point Machines are Crucial" active={simulatorConfiguration?.allPointMachinesCrucial || false} disabled />
           </div>
@@ -127,16 +143,16 @@ function Point({
         <div className="col-span-full sm:col-span-6 xl:col-span-4 bg-white dark:bg-slate-800 shadow-lg rounded-sm border border-slate-200 dark:border-slate-700 p-4">
           <h2 className="text-l font-semibold text-slate-800 dark:text-slate-100">Point State</h2>
           <div className="py-3">
-            <div className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase">
+            <SemiBoldPropertyLabel>
               Electronic Interlocking Connection
-            </div>
+            </SemiBoldPropertyLabel>
             <div className="m-3 text-sm inline-flex font-medium bg-slate-100 dark:bg-slate-300 text-slate-600 dark:text-slate-600 rounded-full text-center px-2.5 py-1">{initialized ? 'connected' : 'disconnected'}</div>
           </div>
 
           <div className="py-3">
-            <div className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase">
+            <SemiBoldPropertyLabel>
               End Position
-            </div>
+            </SemiBoldPropertyLabel>
             <ButtonGroup items={[
               { label: 'Left', active: pointState?.pointPosition === 'Left' ?? false, disabled: true },
               { label: 'No End Position', active: pointState?.pointPosition === 'NoEndPosition' ?? false, disabled: true },
@@ -158,9 +174,9 @@ function Point({
           </div>
 
           <div className="py-3">
-            <div className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase">
+            <SemiBoldPropertyLabel>
               Degraded Point Position
-            </div>
+            </SemiBoldPropertyLabel>
             <ButtonGroup items={[
               { label: 'Left', active: pointState?.degradedPointPosition === 'DegradedLeft' ?? false, disabled: true },
               { label: 'Not Degraded', active: pointState?.degradedPointPosition === 'NotDegraded' ?? false, disabled: true },
@@ -171,9 +187,9 @@ function Point({
           </div>
 
           <div className="py-3">
-            <div className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase">
+            <SemiBoldPropertyLabel>
               Last Commanded Point Position
-            </div>
+            </SemiBoldPropertyLabel>
             <ButtonGroup items={[
               { label: 'Left', active: pointState?.lastCommandedPointPosition === 'Left' ?? false, disabled: true },
               { label: 'Right', active: pointState?.lastCommandedPointPosition === 'Right' ?? false, disabled: true },
@@ -183,9 +199,9 @@ function Point({
 
           {simulatorConfiguration?.observeAbilityToMove && (
             <div className="py-3">
-              <div className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase">
+              <SemiBoldPropertyLabel>
                 Ability to Move
-              </div>
+              </SemiBoldPropertyLabel>
               <ButtonGroup items={[
                 {
                   label: 'Able to Move',
@@ -205,130 +221,130 @@ function Point({
 
         <div className="col-span-full sm:col-span-7 xl:col-span-5 bg-white dark:bg-slate-800 shadow-lg rounded-sm border border-slate-200 dark:border-slate-700 p-4">
           <h2 className="text-l font-semibold text-slate-800 dark:text-slate-100">Simulate Irregularities</h2>
+          <div className="grid-flow-col">
+            <div className="py-3">
+              <SemiBoldPropertyLabel>
+                Prevent left end position
+              </SemiBoldPropertyLabel>
 
-          <div className="py-3">
-            <div className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase">
-              Prevent left end position
+              <Toggle
+                label="Trigger Movement Failed"
+                active={simulatedPointState?.simulateTimeoutLeft || false}
+                onChange={(enable) => sendCommand((client) => client.scheduleTimeoutLeft(new EnableMovementFailedMessage().setEnablemovementfailed(enable), null))}
+              />
+
+              <ButtonGroup items={[
+                {
+                  label: 'Do not prevent',
+                  active: simulatedPointState?.preventedPositionLeft === 'DoNotPrevent' ?? false,
+                  onClick: () => sendCommand((client) => client.schedulePreventLeftEndPosition(
+                    new PreventedPositionMessage()
+                      .setPosition(PreventedPosition.DONOTPREVENT)
+                      .setDegradedposition(simulatedPointState?.degradedPositionLeft ?? false),
+                    null,
+                  )),
+                },
+                {
+                  label: unintendedLabel,
+                  active: simulatedPointState?.preventedPositionLeft === 'SetUnintendedOrTrailed' ?? false,
+                  onClick: () => sendCommand((client) => client.schedulePreventLeftEndPosition(
+                    new PreventedPositionMessage()
+                      .setPosition(PreventedPosition.SETUNINTENDEDORTRAILED)
+                      .setDegradedposition(simulatedPointState?.degradedPositionLeft ?? false),
+                    null,
+                  )),
+                },
+                {
+                  label: 'No End Position',
+                  active: simulatedPointState?.preventedPositionLeft === 'SetNoEndPosition' ?? false,
+                  onClick: () => sendCommand((client) => client.schedulePreventLeftEndPosition(
+                    new PreventedPositionMessage()
+                      .setPosition(PreventedPosition.SETNOENDPOSITION)
+                      .setDegradedposition(simulatedPointState?.degradedPositionLeft ?? false),
+                    null,
+                  )),
+                },
+              ]}
+              />
+
+              <Toggle
+                label="Degraded Left Position"
+                active={simulatedPointState?.degradedPositionLeft || false}
+                onChange={(enable) => sendCommand((client) => client.schedulePreventLeftEndPosition(new PreventedPositionMessage().setDegradedposition(enable).setPosition({
+                  DoNotPrevent: PreventedPosition.DONOTPREVENT,
+                  SetUnintendedOrTrailed: PreventedPosition.SETUNINTENDEDORTRAILED,
+                  SetNoEndPosition: PreventedPosition.SETNOENDPOSITION,
+                  none: null,
+                }[simulatedPointState?.preventedPositionLeft ?? 'none'] ?? PreventedPosition.DONOTPREVENT), null))}
+              />
             </div>
 
-            <Toggle
-              label="Trigger Movement Failed"
-              active={simulatedPointState?.simulateTimeoutLeft || false}
-              onChange={(enable) => sendCommand((client) => client.scheduleTimeoutLeft(new EnableMovementFailedMessage().setEnablemovementfailed(enable), null))}
-            />
+            <div className="py-3">
+              <div className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase">
+                Prevent right end position
+              </div>
 
-            <ButtonGroup items={[
-              {
-                label: 'Do not prevent',
-                active: simulatedPointState?.preventedPositionLeft === 'DoNotPrevent' ?? false,
-                onClick: () => sendCommand((client) => client.schedulePreventLeftEndPosition(
-                  new PreventedPositionMessage()
-                    .setPosition(PreventedPosition.DONOTPREVENT)
-                    .setDegradedposition(simulatedPointState?.degradedPositionLeft ?? false),
-                  null,
-                )),
-              },
-              {
-                label: unintendedLabel,
-                active: simulatedPointState?.preventedPositionLeft === 'SetUnintendedOrTrailed' ?? false,
-                onClick: () => sendCommand((client) => client.schedulePreventLeftEndPosition(
-                  new PreventedPositionMessage()
-                    .setPosition(PreventedPosition.SETUNINTENDEDORTRAILED)
-                    .setDegradedposition(simulatedPointState?.degradedPositionLeft ?? false),
-                  null,
-                )),
-              },
-              {
-                label: 'No End Position',
-                active: simulatedPointState?.preventedPositionLeft === 'SetNoEndPosition' ?? false,
-                onClick: () => sendCommand((client) => client.schedulePreventLeftEndPosition(
-                  new PreventedPositionMessage()
-                    .setPosition(PreventedPosition.SETNOENDPOSITION)
-                    .setDegradedposition(simulatedPointState?.degradedPositionLeft ?? false),
-                  null,
-                )),
-              },
-            ]}
-            />
+              <Toggle
+                label="Trigger Movement Failed"
+                active={simulatedPointState?.simulateTimeoutRight || false}
+                onChange={(enable) => sendCommand((client) => client.scheduleTimeoutRight(new EnableMovementFailedMessage().setEnablemovementfailed(enable), null))}
+              />
 
-            <Toggle
-              label="Degraded Left Position"
-              active={simulatedPointState?.degradedPositionLeft || false}
-              onChange={(enable) => sendCommand((client) => client.schedulePreventLeftEndPosition(new PreventedPositionMessage().setDegradedposition(enable).setPosition({
-                DoNotPrevent: PreventedPosition.DONOTPREVENT,
-                SetUnintendedOrTrailed: PreventedPosition.SETUNINTENDEDORTRAILED,
-                SetNoEndPosition: PreventedPosition.SETNOENDPOSITION,
-                none: null,
-              }[simulatedPointState?.preventedPositionLeft ?? 'none'] ?? PreventedPosition.DONOTPREVENT), null))}
-            />
-          </div>
+              <ButtonGroup items={[
+                {
+                  label: 'Do not prevent',
+                  active: simulatedPointState?.preventedPositionRight === 'DoNotPrevent' ?? false,
+                  onClick: () => sendCommand((client) => client.schedulePreventRightEndPosition(
+                    new PreventedPositionMessage()
+                      .setPosition(PreventedPosition.DONOTPREVENT)
+                      .setDegradedposition(simulatedPointState?.degradedPositionRight ?? false),
+                    null,
+                  )),
+                },
+                {
+                  label: unintendedLabel,
+                  active: simulatedPointState?.preventedPositionRight === 'SetUnintendedOrTrailed' ?? false,
+                  onClick: () => sendCommand((client) => client.schedulePreventRightEndPosition(
+                    new PreventedPositionMessage()
+                      .setPosition(PreventedPosition.SETUNINTENDEDORTRAILED)
+                      .setDegradedposition(simulatedPointState?.degradedPositionRight ?? false),
+                    null,
+                  )),
+                },
+                {
+                  label: 'No End Position',
+                  active: simulatedPointState?.preventedPositionRight === 'SetNoEndPosition' ?? false,
+                  onClick: () => sendCommand((client) => client.schedulePreventRightEndPosition(
+                    new PreventedPositionMessage()
+                      .setPosition(PreventedPosition.SETNOENDPOSITION)
+                      .setDegradedposition(simulatedPointState?.degradedPositionRight ?? false),
+                    null,
+                  )),
+                },
+              ]}
+              />
 
-          <div className="py-3">
-            <div className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase">
-              Prevent right end position
+              <Toggle
+                label="Degraded Right Position"
+                active={simulatedPointState?.degradedPositionRight || false}
+                onChange={(enable) => sendCommand((client) => client.schedulePreventRightEndPosition(
+                  new PreventedPositionMessage()
+                    .setDegradedposition(enable)
+                    .setPosition({
+                      DoNotPrevent: PreventedPosition.DONOTPREVENT,
+                      SetUnintendedOrTrailed: PreventedPosition.SETUNINTENDEDORTRAILED,
+                      SetNoEndPosition: PreventedPosition.SETNOENDPOSITION,
+                      none: null,
+                    }[simulatedPointState?.preventedPositionRight ?? 'none'] ?? PreventedPosition.DONOTPREVENT),
+                  null,
+                ))}
+              />
             </div>
-
-            <Toggle
-              label="Trigger Movement Failed"
-              active={simulatedPointState?.simulateTimeoutRight || false}
-              onChange={(enable) => sendCommand((client) => client.scheduleTimeoutRight(new EnableMovementFailedMessage().setEnablemovementfailed(enable), null))}
-            />
-
-            <ButtonGroup items={[
-              {
-                label: 'Do not prevent',
-                active: simulatedPointState?.preventedPositionRight === 'DoNotPrevent' ?? false,
-                onClick: () => sendCommand((client) => client.schedulePreventRightEndPosition(
-                  new PreventedPositionMessage()
-                    .setPosition(PreventedPosition.DONOTPREVENT)
-                    .setDegradedposition(simulatedPointState?.degradedPositionRight ?? false),
-                  null,
-                )),
-              },
-              {
-                label: unintendedLabel,
-                active: simulatedPointState?.preventedPositionRight === 'SetUnintendedOrTrailed' ?? false,
-                onClick: () => sendCommand((client) => client.schedulePreventRightEndPosition(
-                  new PreventedPositionMessage()
-                    .setPosition(PreventedPosition.SETUNINTENDEDORTRAILED)
-                    .setDegradedposition(simulatedPointState?.degradedPositionRight ?? false),
-                  null,
-                )),
-              },
-              {
-                label: 'No End Position',
-                active: simulatedPointState?.preventedPositionRight === 'SetNoEndPosition' ?? false,
-                onClick: () => sendCommand((client) => client.schedulePreventRightEndPosition(
-                  new PreventedPositionMessage()
-                    .setPosition(PreventedPosition.SETNOENDPOSITION)
-                    .setDegradedposition(simulatedPointState?.degradedPositionRight ?? false),
-                  null,
-                )),
-              },
-            ]}
-            />
-
-            <Toggle
-              label="Degraded Right Position"
-              active={simulatedPointState?.degradedPositionRight || false}
-              onChange={(enable) => sendCommand((client) => client.schedulePreventRightEndPosition(
-                new PreventedPositionMessage()
-                  .setDegradedposition(enable)
-                  .setPosition({
-                    DoNotPrevent: PreventedPosition.DONOTPREVENT,
-                    SetUnintendedOrTrailed: PreventedPosition.SETUNINTENDEDORTRAILED,
-                    SetNoEndPosition: PreventedPosition.SETNOENDPOSITION,
-                    none: null,
-                  }[simulatedPointState?.preventedPositionRight ?? 'none'] ?? PreventedPosition.DONOTPREVENT),
-                null,
-              ))}
-            />
           </div>
-
           <div>
-            <div className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase">
+            <SemiBoldPropertyLabel>
               Connectivity
-            </div>
+            </SemiBoldPropertyLabel>
             <button
               type="button"
               onClick={() => sendCommand((client) => client.reset(new google_protobuf_empty_pb.Empty(), null))}
