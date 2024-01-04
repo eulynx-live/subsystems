@@ -66,6 +66,10 @@ public class PointTest
             .Setup(m => m.InitializeConnection(
                 It.IsAny<GenericPointState>(), It.IsAny<bool>(), It.IsAny<bool>(),It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult(true));
+        mockConnection
+            .Setup(m => m.Connect(
+                It.IsAny<IConnection>()))
+            .Returns(mockConnection.Object);
         return mockConnection;
     }
 
@@ -337,7 +341,7 @@ public class PointTest
                 {
                     DegradedPosition = simulatedDegradedPosition
                 };
-                point.PutIntoUnintendedPosition(message);
+                await point.PutIntoUnintendedPosition(message);
 
                 cancel.Cancel();
                 return await new TaskCompletionSource<GenericPointPosition>().Task;

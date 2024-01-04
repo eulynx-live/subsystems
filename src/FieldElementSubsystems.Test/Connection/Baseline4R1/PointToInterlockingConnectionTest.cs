@@ -77,7 +77,7 @@ public class PointToInterlockingConnectionTest
     }
     
     [Fact]
-    public async Task Test_Initialisation_Timeout(){
+    public async Task Test_Initialization_Timeout(){
         // Arrange
         var mockConnection = new Mock<IConnection>();
         mockConnection.SetupSequence(x => x.ReceiveAsync(It.IsAny<CancellationToken>()))

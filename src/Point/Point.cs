@@ -35,7 +35,7 @@ namespace EulynxLive.Point
         private readonly ILogger<Point> _logger;
         private readonly IConnectionProvider _connectionProvider;
         private readonly PointConfiguration _config;
-        private CancellationTokenSource _resetTokenSource;
+        private CancellationTokenSource _resetTokenSource = CancellationTokenSource.CreateLinkedTokenSource(CancellationToken.None);
 
         public Point(ILogger<Point> logger, IConfiguration configuration, IPointToInterlockingConnection connection, IConnectionProvider connectionProvider, IHubContext<StatusHub> statusHub)
         {
@@ -83,7 +83,8 @@ namespace EulynxLive.Point
                 DegradedPositionLeft: false,
                 DegradedPositionRight: false,
                 SimulateTimeoutLeft: false,
-                SimulateTimeoutRight: false
+                SimulateTimeoutRight: false,
+                SimulateInitialisationTimeout: false
             );
 
             Observable.FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(h => PropertyChanged += h, h => PropertyChanged -= h)
@@ -96,6 +97,19 @@ namespace EulynxLive.Point
         {
             _logger.LogInformation("Sending SCI message: {}", message.Message);
             await Connection.SendSciMessage(message.Message.ToByteArray());
+        }
+
+        /// <summary>
+        /// Sets the timeout flag for the next move left command.
+        /// </summary>
+        public void EnableInitializationTimeout(bool enableInitialisationTimeout)
+        {
+            _logger.LogInformation("Reset and Timeout on next initialisation handshake enabled.");
+            _simulatedPointState = _simulatedPointState with
+            {
+                SimulateInitialisationTimeout = enableInitialisationTimeout
+            };
+            Reset();
         }
 
         /// <summary>
@@ -254,7 +268,7 @@ namespace EulynxLive.Point
 
                     try
                     {
-                        var success = await Connection.InitializeConnection(PointState, _config.ObserveAbilityToMove, _resetTokenSource.Token);
+                        var success = await Connection.InitializeConnection(PointState, _config.ObserveAbilityToMove, _simulatedPointState.SimulateInitialisationTimeout, _resetTokenSource.Token);
                         if (!success)
                         {
                             throw new Exception("Unable to initialize connection");
