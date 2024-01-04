@@ -42,7 +42,7 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
         return this;
     }
 
-    public async Task<bool> InitializeConnection(GenericPointState state, bool observeAbilityToMove, CancellationToken cancellationToken)
+    public async Task<bool> InitializeConnection(GenericPointState state, bool observeAbilityToMove, bool simulateTimeout, CancellationToken cancellationToken)
     {
         if (await ReceiveMessage<PointPdiVersionCheckCommand>(cancellationToken) == null)
         {
@@ -53,12 +53,18 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
         var versionCheckResponse = new PointPdiVersionCheckMessage(_localId, _remoteId, PointPdiVersionCheckMessageResultPdiVersionCheck.PDIVersionsFromReceiverAndSenderDoMatch, /* TODO */ 0, 0, Array.Empty<byte>());
         await SendMessage(versionCheckResponse);
 
+        if (simulateTimeout)
+        {
+            // Never send the missing initialisation messages
+            return false;
+        }
+        
         if (await ReceiveMessage<PointInitialisationRequestCommand>(cancellationToken) == null)
         {
             _logger.LogError("Unexpected message.");
             return false;
         }
-
+        
         var startInitialization = new PointStartInitialisationMessage(_localId, _remoteId);
         await SendMessage(startInitialization);
 

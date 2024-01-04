@@ -11,7 +11,16 @@ public interface IPointToInterlockingConnection : IDisposable {
     Task SendSciMessage(byte[] message);
     Task OverrideNextSciMessage(byte[] message);
     Task SendTimeoutMessage();
-    Task<bool> InitializeConnection(GenericPointState state, bool observeAbilityToMove, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Initializes the connection. Returns true if the connection was successfully initialized, false otherwise.
+    /// </summary>
+    /// <param name="state"></param>
+    /// <param name="observeAbilityToMove"></param>
+    /// <param name="simulateTimeout"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<bool> InitializeConnection(GenericPointState state, bool observeAbilityToMove, bool simulateTimeout, CancellationToken cancellationToken);
     Task<GenericPointPosition> ReceiveMovePointCommand(CancellationToken stoppingToken);
     Task SendAbilityToMove(GenericPointState pointState);
 }
