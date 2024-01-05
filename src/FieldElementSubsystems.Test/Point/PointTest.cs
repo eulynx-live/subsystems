@@ -28,6 +28,8 @@ public class PointTest
             {"PointSettings:InitialPointPosition", initialPointState.PointPosition.ToString() },
             {"PointSettings:InitialDegradedPointPosition", initialPointState.DegradedPointPosition.ToString() },
             {"PointSettings:InitialAbilityToMove", initialPointState.AbilityToMove.ToString() },
+            {"PointSettings:PDIVersion", "1" },
+            {"PointSettings:PDIChecksum", "0x0000" }
         };
 
         var configuration = new ConfigurationBuilder()

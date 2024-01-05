@@ -22,6 +22,8 @@ public class PointToInterlockingConnectionTest
         {"PointSettings:SimulatedTransitioningTimeSeconds", "0" },
         {"PointSettings:AllPointMachinesCrucial", "false" },
         {"PointSettings:ObserveAbilityToMove", "true" },
+        {"PointSettings:PDIVersion", "1" },
+        {"PointSettings:PDIChecksum", "0x0000" }
     };
 
     private readonly IConfiguration _configuration = new ConfigurationBuilder()
@@ -63,7 +65,7 @@ public class PointToInterlockingConnectionTest
         // Assert
         mockConnection.Verify(v => v.ReceiveAsync(It.IsAny<CancellationToken>()), Times.Exactly(2));
         mockConnection.Verify(v => v.SendAsync(It.IsAny<byte[]>()), Times.Exactly(5));
-        Assert.Equal(new PointPdiVersionCheckMessage("99W1________________", "INTERLOCKING________", PointPdiVersionCheckMessageResultPdiVersionCheck.PDIVersionsFromReceiverAndSenderDoMatch, /* TODO */ 0, 0, Array.Empty<byte>()).ToByteArray(), receivedMessages[0]);
+        Assert.Equal(new PointPdiVersionCheckMessage("99W1________________", "INTERLOCKING________", PointPdiVersionCheckMessageResultPdiVersionCheck.PDIVersionsFromReceiverAndSenderDoMatch, 1, 2, new byte[] { 0x00, 0x00 }).ToByteArray(), receivedMessages[0]);
         Assert.Equal(new PointStartInitialisationMessage("99W1________________", "INTERLOCKING________").ToByteArray(), receivedMessages[1]);
         Assert.Equal(new PointPointPositionMessage("99W1________________", "INTERLOCKING________", PointPointPositionMessageReportedPointPosition.PointIsInALeftHandPositionDefinedEndPosition, PointPointPositionMessageReportedDegradedPointPosition.PointIsNotInADegradedPosition).ToByteArray(), receivedMessages[2]);
         Assert.Equal(new PointAbilityToMovePointMessage("99W1________________", "INTERLOCKING________", PointAbilityToMovePointMessageReportedAbilityToMovePointStatus.PointIsAbleToMove).ToByteArray(), receivedMessages[3]);
@@ -90,7 +92,33 @@ public class PointToInterlockingConnectionTest
         // Assert
         mockConnection.Verify(v => v.ReceiveAsync(It.IsAny<CancellationToken>()), Times.Exactly(1));
         mockConnection.Verify(v => v.SendAsync(It.IsAny<byte[]>()), Times.Exactly(1));
-        Assert.Equal(new PointPdiVersionCheckMessage("99W1________________", "INTERLOCKING________", PointPdiVersionCheckMessageResultPdiVersionCheck.PDIVersionsFromReceiverAndSenderDoMatch, /* TODO */ 0, 0, Array.Empty<byte>()).ToByteArray(), receivedMessages[0]);
+        Assert.Equal(new PointPdiVersionCheckMessage("99W1________________", "INTERLOCKING________", PointPdiVersionCheckMessageResultPdiVersionCheck.PDIVersionsFromReceiverAndSenderDoMatch,  1, 2, new byte[] { 0x00, 0x00 }).ToByteArray(), receivedMessages[0]);
+    }
+
+    /// <summary>
+    /// Eu.Gen-SCI.445 - PDI version is unequal, no retry
+    /// </summary>
+    [Fact]
+    public async Task Test_Initialization_Version_Mismatch(){
+        // Arrange
+        var mockConnection = new Mock<IConnection>();
+        mockConnection.SetupSequence(x => x.ReceiveAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new PointPdiVersionCheckCommand("99W1", "100", 0x00).ToByteArray())
+            .ReturnsAsync(new PointInitialisationRequestCommand("99W1", "100").ToByteArray());
+        var receivedMessages = new List<byte[]>();
+        mockConnection.Setup(x => x.SendAsync(Capture.In(receivedMessages)))
+            .Returns(Task.FromResult(0));
+
+        var connection = new PointToInterlockingConnection(Mock.Of<ILogger<PointToInterlockingConnection>>(), _configuration, CancellationToken.None);
+
+        // Act
+        connection.Connect(mockConnection.Object);
+        await connection.InitializeConnection(new GenericPointState(LastCommandedPointPosition: null, PointPosition: GenericPointPosition.Left, DegradedPointPosition: GenericDegradedPointPosition.NotDegraded, AbilityToMove: GenericAbilityToMove.AbleToMove), true, true, CancellationToken.None);
+
+        // Assert
+        mockConnection.Verify(v => v.ReceiveAsync(It.IsAny<CancellationToken>()), Times.Exactly(1));
+        mockConnection.Verify(v => v.SendAsync(It.IsAny<byte[]>()), Times.Exactly(1));
+        Assert.Equal(new PointPdiVersionCheckMessage("99W1________________", "INTERLOCKING________", PointPdiVersionCheckMessageResultPdiVersionCheck.PDIVersionsFromReceiverAndSenderDoNotMatch,  1, 0, []).ToByteArray(), receivedMessages[0]);
     }
 
     [Fact]
