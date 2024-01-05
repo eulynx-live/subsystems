@@ -16,7 +16,7 @@ public class ConnectionFactory{
     }
 
     public IPointToInterlockingConnection CreateConnection(IServiceProvider x) {
-        var connectionProtocol = _configuration.GetSection("ConnectionSettings").Get<PointConfiguration>()?.ConnectionProtocol;
+        var connectionProtocol = _configuration.GetSection("PointSettings").Get<PointConfiguration>()?.ConnectionProtocol;
         switch (connectionProtocol){
             case ConnectionProtocol.EulynxBaseline4R1:
                 return ActivatorUtilities.CreateInstance<EulynxBaseline4R1.PointToInterlockingConnection>(x, _configuration, CancellationToken.None);
