@@ -5,6 +5,8 @@ using EulynxLive.FieldElementSubsystems.Configuration;
 using Grpc.Core;
 using EulynxLive.Messages.Baseline4R2;
 using System.Threading.Channels;
+using EulynxLive.FieldElementSubsystems.Extensions;
+
 
 namespace EulynxLive.FieldElementSubsystems.Connections.EulynxBaseline4R2;
 
@@ -13,6 +15,9 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
     private readonly ILogger _logger;
     private readonly string _localId;
     private readonly string _remoteId;
+    private readonly byte _pdiVersion;
+    private readonly byte[] _checksum;
+
     public PointConfiguration Configuration { get; }
 
     private readonly Channel<byte[]> _overrideMessages;
@@ -32,6 +37,10 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
         var config = configuration.GetSection("PointSettings").Get<PointConfiguration>() ?? throw new Exception("No configuration provided");
         _localId = config.LocalId;
         _remoteId = config.RemoteId;
+        _pdiVersion = config.PDIVersion;
+        _checksum = config.PDIChecksum.HexToByteArray();
+        if (_checksum.Length != 2) throw new InvalidOperationException($"Invalid checksum length. Expected 2 bytes was ${_checksum.Length}.");
+       
         Configuration = config;
         _overrideMessages = Channel.CreateUnbounded<byte[]>();
     }
@@ -44,18 +53,31 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
 
     public async Task<bool> InitializeConnection(GenericPointState state, bool observeAbilityToMove, bool simulateTimeout, CancellationToken cancellationToken)
     {
-        if (await ReceiveMessage<PointPdiVersionCheckCommand>(cancellationToken) == null)
+        var versionCheckReceived = await ReceiveMessage<PointPdiVersionCheckCommand>(cancellationToken);
+        
+        if (versionCheckReceived == null)
         {
             _logger.LogError("Unexpected message.");
             return false;
         }
 
-        var versionCheckResponse = new PointPdiVersionCheckMessage(_localId, _remoteId, PointPdiVersionCheckMessageResultPdiVersionCheck.PDIVersionsFromReceiverAndSenderDoMatch, /* TODO */ 0, 0, Array.Empty<byte>());
+        if (!CheckPDIVersionReceived(versionCheckReceived.PdiVersionOfSender))
+        {
+            // Eu.Gen-SCI.445
+            // Eu.SCI-XX.PDI.91 - Eu.SCI-XX.PDI.94
+            _logger.LogError("Version check failed.");
+            var versionCheckFailedResponse = new PointPdiVersionCheckMessage(_localId, _remoteId, PointPdiVersionCheckMessageResultPdiVersionCheck.PDIVersionsFromReceiverAndSenderDoNotMatch, _pdiVersion, 0, []);
+            await SendMessage(versionCheckFailedResponse);
+            return false;
+        }
+
+        var versionCheckResponse = new PointPdiVersionCheckMessage(_localId, _remoteId, PointPdiVersionCheckMessageResultPdiVersionCheck.PDIVersionsFromReceiverAndSenderDoMatch, _pdiVersion, (byte)_checksum.Length, _checksum);
+        
         await SendMessage(versionCheckResponse);
 
         if (simulateTimeout)
         {
-            // Never send the missing initialisation messages
+            // Never send the missing initialization messages
             return false;
         }
 
@@ -83,6 +105,14 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
         await SendMessage(completeInitialization);
         return true;
     }
+    
+    /// <summary>
+    /// Checks whether the given version matches the expected version 
+    /// </summary>
+    /// <param name="versionCheckResponse"></param>
+    /// <returns></returns> <summary>
+    private bool CheckPDIVersionReceived(byte version) => version == _pdiVersion;
+
 
     public async Task SendPointPosition(GenericPointState state)
     {

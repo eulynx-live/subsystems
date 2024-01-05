@@ -43,7 +43,6 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
         _overrideMessages = Channel.CreateUnbounded<byte[]>();
     }
 
-
     public IPointToInterlockingConnection Connect(IConnection connection)
     {
         CurrentConnection = connection;
