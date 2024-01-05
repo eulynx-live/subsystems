@@ -107,7 +107,7 @@ function Point({
 
       <div className="grid grid-cols-12 gap-6">
 
-        <div className="col-span-full sm:col-span-6 xl:col-span-3 bg-white dark:bg-slate-800 shadow-lg rounded-sm border border-slate-200 dark:border-slate-700 p-4">
+        <div className="col-span-full sm:col-span-6 xl:col-span-4 bg-white dark:bg-slate-800 shadow-lg rounded-sm border border-slate-200 dark:border-slate-700 p-4">
           <h2 className="text-l font-semibold text-slate-800 dark:text-slate-100">Simulator Configuration</h2>
           <div className="py-3">
             <SemiBoldPropertyLabel>
@@ -220,7 +220,7 @@ function Point({
           )}
         </div>
 
-        <div className="col-span-full sm:col-span-7 xl:col-span-5 bg-white dark:bg-slate-800 shadow-lg rounded-sm border border-slate-200 dark:border-slate-700 p-4">
+        <div className="col-span-full sm:col-span-12 xl:col-span-8 bg-white dark:bg-slate-800 shadow-lg rounded-sm border border-slate-200 dark:border-slate-700 p-4">
           <h2 className="text-l font-semibold text-slate-800 dark:text-slate-100">Simulate Irregularities</h2>
           <div className="grid grid-flow-col">
             <div className="py-3">
@@ -346,7 +346,7 @@ function Point({
             <SemiBoldPropertyLabel>
               Connectivity
             </SemiBoldPropertyLabel>
-            <div className="grid grid-flow-col">
+            <div>
               <button
                 type="button"
                 onClick={() => sendCommand((client) => client.reset(new google_protobuf_empty_pb.Empty(), null))}
