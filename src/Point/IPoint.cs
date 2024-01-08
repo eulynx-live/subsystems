@@ -6,7 +6,7 @@ namespace EulynxLive.Point
 {
     public interface IPoint {
         ConnectionProtocol? ConnectionProtocol { get; }
-        IPointToInterlockingConnection Connection { get; }
+        IPointToInterlockingConnection? Connection { get; }
         GenericPointState PointState { get; }
 
         void EnableTimeoutLeft(bool enableMovementFailed);

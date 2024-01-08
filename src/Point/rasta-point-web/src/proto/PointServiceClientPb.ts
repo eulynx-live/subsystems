@@ -513,8 +513,8 @@ export class PointClient {
     this.methodDescriptorScheduleTimeoutLeft);
   }
 
-  methodDescriptorScheduleInitializationTimeout = new grpcWeb.MethodDescriptor(
-    '/point.Point/ScheduleInitializationTimeout',
+  methodDescriptorScheduleInitializationFailed = new grpcWeb.MethodDescriptor(
+    '/point.Point/ScheduleInitializationFailed',
     grpcWeb.MethodType.UNARY,
     point_pb.EnableInitializationFailedMessage,
     google_protobuf_empty_pb.Empty,
@@ -524,17 +524,17 @@ export class PointClient {
     google_protobuf_empty_pb.Empty.deserializeBinary
   );
 
-  scheduleInitializationTimeout(
+  scheduleInitializationFailed(
     request: point_pb.EnableInitializationFailedMessage,
     metadata: grpcWeb.Metadata | null): Promise<google_protobuf_empty_pb.Empty>;
 
-  scheduleInitializationTimeout(
+  scheduleInitializationFailed(
     request: point_pb.EnableInitializationFailedMessage,
     metadata: grpcWeb.Metadata | null,
     callback: (err: grpcWeb.RpcError,
                response: google_protobuf_empty_pb.Empty) => void): grpcWeb.ClientReadableStream<google_protobuf_empty_pb.Empty>;
 
-  scheduleInitializationTimeout(
+  scheduleInitializationFailed(
     request: point_pb.EnableInitializationFailedMessage,
     metadata: grpcWeb.Metadata | null,
     callback?: (err: grpcWeb.RpcError,
@@ -542,18 +542,18 @@ export class PointClient {
     if (callback !== undefined) {
       return this.client_.rpcCall(
         this.hostname_ +
-          '/point.Point/ScheduleInitializationTimeout',
+          '/point.Point/ScheduleInitializationFailed',
         request,
         metadata || {},
-        this.methodDescriptorScheduleInitializationTimeout,
+        this.methodDescriptorScheduleInitializationFailed,
         callback);
     }
     return this.client_.unaryCall(
     this.hostname_ +
-      '/point.Point/ScheduleInitializationTimeout',
+      '/point.Point/ScheduleInitializationFailed',
     request,
     metadata || {},
-    this.methodDescriptorScheduleInitializationTimeout);
+    this.methodDescriptorScheduleInitializationFailed);
   }
 
   methodDescriptorReset = new grpcWeb.MethodDescriptor(

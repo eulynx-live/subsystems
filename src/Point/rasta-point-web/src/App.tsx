@@ -34,6 +34,8 @@ export type SimulatorConfiguration = {
   initialDegradedPointPosition: string,
   initialAbilityToMove: string,
   connectionProtocol: 'EulynxBaseline4R1' | 'EulynxBaseline4R2',
+  pdiVersion: string,
+  pdiChecksum: string,
 };
 
 function App() {

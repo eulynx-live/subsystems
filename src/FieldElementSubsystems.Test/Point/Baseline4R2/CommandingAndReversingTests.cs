@@ -30,7 +30,7 @@ public class CommandingAndReversingTests
             {"PointSettings:InitialDegradedPointPosition", initialPointState.DegradedPointPosition.ToString() },
             {"PointSettings:InitialAbilityToMove", initialPointState.AbilityToMove.ToString() },
             {"PointSettings:PDIVersion", "1" },
-            {"PointSettings:PDIChecksum", "0x0000" }
+            {"PointSettings:PDIChecksum", "0x00" }
         };
 
         var configuration = new ConfigurationBuilder()
@@ -72,11 +72,11 @@ public class CommandingAndReversingTests
             .Setup(x => x.Connect(It.IsAny<PointConfiguration>(), It.IsAny<CancellationToken>()))
             .Returns(mockConnection.Object);
 
-        var connection = new PointToInterlockingConnection(Mock.Of<ILogger<PointToInterlockingConnection>>(), configuration, CancellationToken.None);
+        var builder = new PointToInterlockingConnectionBuilder(Mock.Of<ILogger<PointToInterlockingConnection>>(), configuration, CancellationToken.None);
 
         var mockHubContext = new Mock<IHubContext<StatusHub>>();
         mockHubContext.Setup(x => x.Clients.All.SendCoreAsync(It.IsAny<string>(), It.IsAny<object[]>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
-        var point = new EulynxLive.Point.Point(Mock.Of<ILogger<EulynxLive.Point.Point>>(), configuration, connection, connectionProvider.Object, mockHubContext.Object);
+        var point = new EulynxLive.Point.Point(Mock.Of<ILogger<EulynxLive.Point.Point>>(), configuration, builder, connectionProvider.Object, mockHubContext.Object);
         if (simulateTimeouts) {
             point.EnableTimeoutLeft(true);
             point.EnableTimeoutRight(true);

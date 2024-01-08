@@ -55,7 +55,7 @@ function ButtonGroup({ items }: { items: { active: boolean, label: string, disab
   return (
     <div className="flex flex-wrap items-center">
       <div className="m-1.5">
-        <div className="flex flex-wrap -space-x-px">
+        <div className="flex sm:flex-row -space-x-px">
           {items.map((item, index) => (
             <button key={item.label} type="button" onClick={() => item.disabled || item.onClick?.(index)} className={(item.active ? activeClassName : defaultClassName) + (item.disabled ? disabledClassName : enabledClassName)}>{item.label}</button>
           ))}
@@ -136,6 +136,20 @@ function Point({
               {' '}
               s
             </PropertyLabel>
+            <div className="flex flex-row">
+              <SemiBoldPropertyLabel>
+                PDI Version
+              </SemiBoldPropertyLabel>
+              <PropertyLabel>
+                {simulatorConfiguration?.pdiVersion}
+              </PropertyLabel>
+              <SemiBoldPropertyLabel>
+                PDI Checksum
+              </SemiBoldPropertyLabel>
+              <PropertyLabel>
+                {simulatorConfiguration?.pdiChecksum}
+              </PropertyLabel>
+            </div>
             <Toggle label="Observe Ability to Move" active={simulatorConfiguration?.observeAbilityToMove || false} disabled />
             <Toggle label="All Point Machines are Crucial" active={simulatorConfiguration?.allPointMachinesCrucial || false} disabled />
           </div>
@@ -360,7 +374,7 @@ function Point({
                   label="Enable Initialization Timeout"
                   active={simulatedPointState?.simulateInitializationTimeout || false}
                   onChange={
-                    (enable) => sendCommand((client) => client.scheduleInitializationTimeout(new EnableInitializationFailedMessage().setEnableinitializationfailed(enable), null))
+                    (enable) => sendCommand((client) => client.scheduleInitializationFailed(new EnableInitializationFailedMessage().setEnableinitializationfailed(enable), null))
                   }
                 />
               </div>

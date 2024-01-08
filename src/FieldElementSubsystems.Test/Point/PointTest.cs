@@ -29,7 +29,7 @@ public class PointTest
             {"PointSettings:InitialDegradedPointPosition", initialPointState.DegradedPointPosition.ToString() },
             {"PointSettings:InitialAbilityToMove", initialPointState.AbilityToMove.ToString() },
             {"PointSettings:PDIVersion", "1" },
-            {"PointSettings:PDIChecksum", "0x0000" }
+            {"PointSettings:PDIChecksum", "0x00" }
         };
 
         var configuration = new ConfigurationBuilder()
@@ -38,11 +38,11 @@ public class PointTest
 
         var cancel = new CancellationTokenSource();
         var config = configuration.GetSection("PointSettings").Get<PointConfiguration>()!;
-        var mockConnection = CreateDefaultMockConnection(config);
+        var (mockConnection, mockConnectionBuilder) = CreateDefaultMockConnection(config);
 
         var mockHubContext = new Mock<IHubContext<StatusHub>>();
         mockHubContext.Setup(x => x.Clients.All.SendCoreAsync(It.IsAny<string>(), It.IsAny<object[]>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
-        var point = new EulynxLive.Point.Point(Mock.Of<ILogger<EulynxLive.Point.Point>>(), configuration, mockConnection.Object, Mock.Of<IConnectionProvider>(), mockHubContext.Object);
+        var point = new EulynxLive.Point.Point(Mock.Of<ILogger<EulynxLive.Point.Point>>(), configuration, mockConnectionBuilder.Object, Mock.Of<IConnectionProvider>(), mockHubContext.Object);
 
         async Task SimulatePoint()
         {
@@ -56,9 +56,10 @@ public class PointTest
         return (point, SimulatePoint, mockConnection, cancel);
     }
 
-    private static Mock<IPointToInterlockingConnection> CreateDefaultMockConnection(PointConfiguration configuration)
+    private static (Mock<IPointToInterlockingConnection>, Mock<IPointToInterlockingConnectionBuilder>) CreateDefaultMockConnection(PointConfiguration configuration)
     {
         var mockConnection = new Mock<IPointToInterlockingConnection>();
+        var mockConnectionBuilder = new Mock<IPointToInterlockingConnectionBuilder>();
         mockConnection.Setup(x => x.Configuration).Returns(() => configuration);
         mockConnection
             .Setup(m => m.SendPointPosition(
@@ -66,13 +67,13 @@ public class PointTest
             .Returns(Task.FromResult(0));
         mockConnection
             .Setup(m => m.InitializeConnection(
-                It.IsAny<GenericPointState>(), It.IsAny<bool>(), It.IsAny<bool>(),It.IsAny<CancellationToken>()))
+                It.IsAny<GenericPointState>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult(true));
-        mockConnection
+        mockConnectionBuilder
             .Setup(m => m.Connect(
                 It.IsAny<IConnection>()))
             .Returns(mockConnection.Object);
-        return mockConnection;
+        return (mockConnection, mockConnectionBuilder);
     }
 
     private readonly ILogger<EulynxLive.Point.Point> _logger = Mock.Of<ILogger<EulynxLive.Point.Point>>();
@@ -116,7 +117,7 @@ public class PointTest
         await pointTask();
 
         // Assert
-        connection.Verify(v => v.InitializeConnection(It.IsAny<GenericPointState>(), It.IsAny<bool>(), It.IsAny<bool>(),It.IsAny<CancellationToken>()), Times.Exactly(2));
+        connection.Verify(v => v.InitializeConnection(It.IsAny<GenericPointState>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
     }
 
     [Fact]

@@ -19,7 +19,9 @@ namespace EulynxLive.Point
 {
     public partial class Point : BackgroundService, IPoint
     {
-        public IPointToInterlockingConnection Connection { get; set; }
+        public IPointToInterlockingConnectionBuilder? ConnectionBuilder { get; }
+
+        public IPointToInterlockingConnection? Connection { get; private set; }
 
         public bool AllPointMachinesCrucial { get; }
         public bool ObserveAbilityToMove { get; }
@@ -33,13 +35,14 @@ namespace EulynxLive.Point
         private bool _initialized;
 
         private readonly ILogger<Point> _logger;
+        private readonly IPointToInterlockingConnectionBuilder _connectionBuilder;
         private readonly IConnectionProvider _connectionProvider;
         private readonly PointConfiguration _config;
         private CancellationTokenSource _resetTokenSource = CancellationTokenSource.CreateLinkedTokenSource(CancellationToken.None);
 
-        public Point(ILogger<Point> logger, IConfiguration configuration, IPointToInterlockingConnection connection, IConnectionProvider connectionProvider, IHubContext<StatusHub> statusHub)
+        public Point(ILogger<Point> logger, IConfiguration configuration, IPointToInterlockingConnectionBuilder connectionBuilder, IConnectionProvider connectionProvider, IHubContext<StatusHub> statusHub)
         {
-            Connection = connection;
+            _connectionBuilder = connectionBuilder;
             _connectionProvider = connectionProvider;
             _logger = logger;
 
@@ -95,6 +98,7 @@ namespace EulynxLive.Point
 
         public async Task SendSciMessage(SciMessage message)
         {
+            if (Connection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
             _logger.LogInformation("Sending SCI message: {}", message.Message);
             await Connection.SendSciMessage(message.Message.ToByteArray());
         }
@@ -102,12 +106,13 @@ namespace EulynxLive.Point
         /// <summary>
         /// Sets the sets the initialization timeout flag for the next initialization.
         /// </summary>
-        public void EnableInitializationTimeout(bool enableInitialisationTimeout)
+        public void EnableInitializationTimeout(bool enableInitializationTimeout)
         {
-            _logger.LogInformation("Reset and Timeout on next initialisation handshake enabled.");
+            if (Connection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
+            _logger.LogInformation("Reset and Timeout on next initialization handshake enabled.");
             _simulatedPointState = _simulatedPointState with
             {
-                SimulateInitializationTimeout = enableInitialisationTimeout
+                SimulateInitializationTimeout = enableInitializationTimeout
             };
         }
 
@@ -158,6 +163,7 @@ namespace EulynxLive.Point
 
             if (_initialized)
             {
+                if (Connection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
                 await Connection.SendAbilityToMove(PointState);
             }
         }
@@ -184,6 +190,7 @@ namespace EulynxLive.Point
 
             if (_initialized)
             {
+                if (Connection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
                 await Connection.SendPointPosition(PointState);
             }
         }
@@ -260,8 +267,8 @@ namespace EulynxLive.Point
             while (!stoppingToken.IsCancellationRequested)
             {
                 _logger.LogTrace("Connecting...");
-                var conn = _connectionProvider.Connect(Connection.Configuration, stoppingToken);
-                using (Connection = Connection.Connect(conn))
+                var conn = _connectionProvider.Connect(_config, stoppingToken);
+                using (Connection = _connectionBuilder.Connect(conn))
                 {
                     _resetTokenSource = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
 
@@ -303,6 +310,7 @@ namespace EulynxLive.Point
 
         private async IAsyncEnumerable<GenericPointPosition> AllMovePointCommands([EnumeratorCancellation] CancellationToken stoppingToken)
         {
+            if (Connection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
             while (!stoppingToken.IsCancellationRequested)
             {
                 var commandedPointPosition = await Connection.ReceiveMovePointCommand(stoppingToken);
@@ -332,6 +340,7 @@ namespace EulynxLive.Point
                 return;
             }
 
+            if (Connection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
             _logger.LogDebug("Moving to {}.", commandedPointPosition);
 
             if (PointState.PointPosition != GenericPointPosition.NoEndPosition)

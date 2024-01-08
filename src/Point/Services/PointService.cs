@@ -18,7 +18,6 @@ namespace EulynxLive.Point.Services
 
         public override Task<Empty> Reset(Empty request, ServerCallContext context)
         {
-            // TODO: We have to disconnect here!
             _point.Reset();
             return Task.FromResult(new Empty());
         }
@@ -49,11 +48,12 @@ namespace EulynxLive.Point.Services
 
         public override async Task<Empty> OverrideSciMessage(SciMessage request, ServerCallContext context)
         {
+            if (_point.Connection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
             await _point.Connection.OverrideNextSciMessage(request.Message.ToByteArray());
             return new Empty();
         }
 
-        public override Task<Empty> ScheduleInitializationTimeout(EnableInitializationFailedMessage request, ServerCallContext context)
+        public override Task<Empty> ScheduleInitializationFailed(EnableInitializationFailedMessage request, ServerCallContext context)
         {
             _point.EnableInitializationTimeout(request.EnableInitializationFailed);
             return Task.FromResult(new Empty());

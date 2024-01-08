@@ -9,6 +9,29 @@ using EulynxLive.FieldElementSubsystems.Extensions;
 
 namespace EulynxLive.FieldElementSubsystems.Connections.EulynxBaseline4R1;
 
+
+public class PointToInterlockingConnectionBuilder : IPointToInterlockingConnectionBuilder
+{
+    private readonly ILogger<PointToInterlockingConnection> _logger;
+    private readonly CancellationToken _stoppingToken;
+    private readonly IConfiguration _configuration;
+  
+    public PointToInterlockingConnectionBuilder(
+        ILogger<PointToInterlockingConnection> logger,
+        IConfiguration configuration,
+        CancellationToken stoppingToken)
+    {
+        _logger = logger;
+        _stoppingToken = stoppingToken;
+        _configuration = configuration;
+    }
+
+    public IPointToInterlockingConnection Connect(IConnection conn)
+    {
+        return new PointToInterlockingConnection(_logger, _configuration, _stoppingToken, conn);
+    }
+}
+
 public class PointToInterlockingConnection : IPointToInterlockingConnection
 {
     private readonly ILogger _logger;
@@ -27,26 +50,19 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
     public PointToInterlockingConnection(
         ILogger<PointToInterlockingConnection> logger,
         IConfiguration configuration,
-        CancellationToken stoppingToken)
+        CancellationToken stoppingToken, IConnection connection)
     {
         _stoppingToken = stoppingToken;
         _logger = logger;
-        CurrentConnection = null;
+        CurrentConnection = connection;
 
         var config = configuration.GetSection("PointSettings").Get<PointConfiguration>() ?? throw new Exception("No configuration provided");
         _localId = config.LocalId;
         _remoteId = config.RemoteId;
         _pdiVersion = config.PDIVersion;
         _checksum = config.PDIChecksum.HexToByteArray();
-        if (_checksum.Length != 2) throw new InvalidOperationException($"Invalid checksum length. Expected 2 bytes was ${_checksum.Length}.");
         Configuration = config;
         _overrideMessages = Channel.CreateUnbounded<byte[]>();
-    }
-
-    public IPointToInterlockingConnection Connect(IConnection connection)
-    {
-        CurrentConnection = connection;
-        return this;
     }
 
     public async Task<bool> InitializeConnection(GenericPointState state, bool observeAbilityToMove, bool simulateTimeout, CancellationToken cancellationToken)
@@ -63,6 +79,8 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
         {
             // Eu.Gen-SCI.445
             // Eu.SCI-XX.PDI.91 - Eu.SCI-XX.PDI.94
+            // If byte 43 is set to 0x01, byte 45 shall be set to zero.
+            // The bytes 46 ... 46+n-1 shall not be allocated, if PDI-Version from Receiver and Sender does not match
             _logger.LogError("Version check failed.");
             var versionCheckFailedResponse = new PointPdiVersionCheckMessage(_localId, _remoteId, PointPdiVersionCheckMessageResultPdiVersionCheck.PDIVersionsFromReceiverAndSenderDoNotMatch, _pdiVersion, 0, []);
             await SendMessage(versionCheckFailedResponse);
@@ -76,7 +94,7 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
         if (simulateTimeout)
         {
             // Never send the missing initialization messages
-            return false;
+            return true;
         }
         
         if (await ReceiveMessage<PointInitialisationRequestCommand>(cancellationToken) == null)
