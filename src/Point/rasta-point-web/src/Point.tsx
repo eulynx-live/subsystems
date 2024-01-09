@@ -6,7 +6,7 @@ import { PointClient } from './proto/PointServiceClientPb';
 
 import {
   PreventedPosition, AbilityToMoveMessage, AbilityToMove, PreventedPositionMessage, DegradedPositionMessage, EnableMovementFailedMessage,
-  EnableInitializationFailedMessage,
+  EnableInitializationTimeoutMessage,
 } from './proto/point_pb';
 import { PointState, SimulatedPointState, SimulatorConfiguration } from './App';
 
@@ -374,7 +374,7 @@ function Point({
                   label="Enable Initialization Timeout"
                   active={simulatedPointState?.simulateInitializationTimeout || false}
                   onChange={
-                    (enable) => sendCommand((client) => client.scheduleInitializationFailed(new EnableInitializationFailedMessage().setEnableinitializationfailed(enable), null))
+                    (enable) => sendCommand((client) => client.scheduleInitializationTimeout(new EnableInitializationTimeoutMessage().setEnableinitializationtimeout(enable), null))
                   }
                 />
               </div>

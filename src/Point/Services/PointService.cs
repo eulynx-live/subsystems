@@ -53,9 +53,9 @@ namespace EulynxLive.Point.Services
             return new Empty();
         }
 
-        public override Task<Empty> ScheduleInitializationFailed(EnableInitializationFailedMessage request, ServerCallContext context)
+        public override Task<Empty> ScheduleInitializationTimeout(EnableInitializationTimeoutMessage request, ServerCallContext context)
         {
-            _point.EnableInitializationTimeout(request.EnableInitializationFailed);
+            _point.EnableInitializationTimeout(request.EnableInitializationTimeout);
             return Task.FromResult(new Empty());
         }
 
