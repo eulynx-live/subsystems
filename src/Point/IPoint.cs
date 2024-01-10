@@ -15,6 +15,7 @@ namespace EulynxLive.Point
         void PreventLeftEndPosition(PreventedPositionMessage request);
         void PreventRightEndPosition(PreventedPositionMessage request);
         Task PutIntoUnintendedPosition(DegradedPositionMessage request);
+        Task PutIntoNoEndPosition(DegradedPositionMessage simulatedPositionMessage);
         void Reset();
         Task SendSciMessage(SciMessage request);
         Task SetAbilityToMove(AbilityToMoveMessage request);

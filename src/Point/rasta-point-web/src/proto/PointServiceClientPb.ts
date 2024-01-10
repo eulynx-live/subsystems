@@ -212,6 +212,49 @@ export class PointClient {
     this.methodDescriptorPutIntoTrailedPosition);
   }
 
+  methodDescriptorPutIntoNoEndPosition = new grpcWeb.MethodDescriptor(
+    '/point.Point/PutIntoNoEndPosition',
+    grpcWeb.MethodType.UNARY,
+    point_pb.DegradedPositionMessage,
+    google_protobuf_empty_pb.Empty,
+    (request: point_pb.DegradedPositionMessage) => {
+      return request.serializeBinary();
+    },
+    google_protobuf_empty_pb.Empty.deserializeBinary
+  );
+
+  putIntoNoEndPosition(
+    request: point_pb.DegradedPositionMessage,
+    metadata: grpcWeb.Metadata | null): Promise<google_protobuf_empty_pb.Empty>;
+
+  putIntoNoEndPosition(
+    request: point_pb.DegradedPositionMessage,
+    metadata: grpcWeb.Metadata | null,
+    callback: (err: grpcWeb.RpcError,
+               response: google_protobuf_empty_pb.Empty) => void): grpcWeb.ClientReadableStream<google_protobuf_empty_pb.Empty>;
+
+  putIntoNoEndPosition(
+    request: point_pb.DegradedPositionMessage,
+    metadata: grpcWeb.Metadata | null,
+    callback?: (err: grpcWeb.RpcError,
+               response: google_protobuf_empty_pb.Empty) => void) {
+    if (callback !== undefined) {
+      return this.client_.rpcCall(
+        this.hostname_ +
+          '/point.Point/PutIntoNoEndPosition',
+        request,
+        metadata || {},
+        this.methodDescriptorPutIntoNoEndPosition,
+        callback);
+    }
+    return this.client_.unaryCall(
+    this.hostname_ +
+      '/point.Point/PutIntoNoEndPosition',
+    request,
+    metadata || {},
+    this.methodDescriptorPutIntoNoEndPosition);
+  }
+
   methodDescriptorSetAbilityToMove = new grpcWeb.MethodDescriptor(
     '/point.Point/SetAbilityToMove',
     grpcWeb.MethodType.UNARY,

@@ -170,7 +170,14 @@ function Point({
             </SemiBoldPropertyLabel>
             <ButtonGroup items={[
               { label: 'Left', active: pointState?.pointPosition === 'Left' ?? false, disabled: true },
-              { label: 'No End Position', active: pointState?.pointPosition === 'NoEndPosition' ?? false, disabled: true },
+              {
+                label: 'No End Position',
+                active: pointState?.pointPosition === 'NoEndPosition' ?? false,
+                disabled: !(pointState?.pointPosition === 'Left' || pointState?.pointPosition === 'Right'),
+                onClick: () => sendCommand(async (client) => {
+                  await client.putIntoNoEndPosition(new DegradedPositionMessage().setDegradedposition(false), null);
+                }),
+              },
               {
                 label: unintendedLabel,
                 active: pointState?.pointPosition === 'UnintendedPosition' ?? false,
