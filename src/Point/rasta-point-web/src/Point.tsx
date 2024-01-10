@@ -136,7 +136,7 @@ function Point({
               {' '}
               s
             </PropertyLabel>
-            <div className="flex flex-row">
+            <div className="flex flex-row items-center">
               <SemiBoldPropertyLabel>
                 PDI Version
               </SemiBoldPropertyLabel>
