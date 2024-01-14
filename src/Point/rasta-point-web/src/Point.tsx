@@ -6,7 +6,7 @@ import { PointClient } from './proto/PointServiceClientPb';
 import logo from './logo.png';
 
 import {
-  PreventedPosition, AbilityToMoveMessage, AbilityToMove, PreventedPositionMessage, DegradedPositionMessage, EnableMovementFailedMessage,
+  PreventedPosition, AbilityToMoveMessage, AbilityToMove, PreventedPositionMessage, DegradedPositionMessage,
   EnableInitializationTimeoutMessage,
 } from './proto/point_pb';
 import { PointState, SimulatedPointState, SimulatorConfiguration } from './App';
@@ -264,12 +264,6 @@ function Point({
                 Prevent left end position
               </SemiBoldPropertyLabel>
 
-              <Toggle
-                label="Trigger Movement Failed"
-                active={simulatedPointState?.simulateTimeoutLeft || false}
-                onChange={(enable) => sendCommand((client) => client.scheduleTimeoutLeft(new EnableMovementFailedMessage().setEnablemovementfailed(enable), null))}
-              />
-
               <ButtonGroup items={[
                 {
                   label: 'Do not prevent',
@@ -320,12 +314,6 @@ function Point({
               <div className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase">
                 Prevent right end position
               </div>
-
-              <Toggle
-                label="Trigger Movement Failed"
-                active={simulatedPointState?.simulateTimeoutRight || false}
-                onChange={(enable) => sendCommand((client) => client.scheduleTimeoutRight(new EnableMovementFailedMessage().setEnablemovementfailed(enable), null))}
-              />
 
               <ButtonGroup items={[
                 {

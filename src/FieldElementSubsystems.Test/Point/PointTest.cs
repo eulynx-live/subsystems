@@ -130,7 +130,11 @@ public class PointTest
             .SetupSequence(m => m.ReceiveMovePointCommand(It.IsAny<CancellationToken>()))
             .Returns(() =>
             {
-                point.EnableTimeoutLeft(true);
+                point.PreventLeftEndPosition(new PreventedPositionMessage
+                {
+                    Position = PreventedPosition.SetNoEndPosition,
+                    DegradedPosition = false
+                });
                 return Task.FromResult(GenericPointPosition.Left);
             })
             .Returns(() =>
@@ -158,7 +162,11 @@ public class PointTest
             .SetupSequence(m => m.ReceiveMovePointCommand(It.IsAny<CancellationToken>()))
             .Returns(() =>
             {
-                point.EnableTimeoutRight(true);
+                point.PreventRightEndPosition(new PreventedPositionMessage
+                {
+                    Position = PreventedPosition.SetNoEndPosition,
+                    DegradedPosition = false
+                });
                 return Task.FromResult(GenericPointPosition.Right);
             })
             .Returns(() =>

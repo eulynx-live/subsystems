@@ -85,8 +85,6 @@ namespace EulynxLive.Point
                 PreventedPositionRight: PreventedPosition.DoNotPrevent,
                 DegradedPositionLeft: false,
                 DegradedPositionRight: false,
-                SimulateTimeoutLeft: false,
-                SimulateTimeoutRight: false,
                 SimulateInitializationTimeout: false
             );
 
@@ -109,34 +107,10 @@ namespace EulynxLive.Point
         public void EnableInitializationTimeout(bool enableInitializationTimeout)
         {
             if (Connection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
-            _logger.LogInformation("Reset and Timeout on next initialization handshake enabled.");
+            _logger.LogInformation("Timeout on next initialization handshake enabled: {}.", enableInitializationTimeout ? "yes" : "no");
             _simulatedPointState = _simulatedPointState with
             {
                 SimulateInitializationTimeout = enableInitializationTimeout
-            };
-        }
-
-        /// <summary>
-        /// Sets the timeout flag for the next move left command.
-        /// </summary>
-        public void EnableTimeoutLeft(bool enableMovementFailed)
-        {
-            _logger.LogInformation("Timeout on next move left command enabled.");
-            _simulatedPointState = _simulatedPointState with
-            {
-                SimulateTimeoutLeft = enableMovementFailed
-            };
-        }
-
-        /// <summary>
-        /// Sets the timeout flag for the next move right command.
-        /// </summary>
-        public void EnableTimeoutRight(bool enableMovementFailed)
-        {
-            _logger.LogInformation("Timeout on next move right command enabled.");
-            _simulatedPointState = _simulatedPointState with
-            {
-                SimulateTimeoutRight = enableMovementFailed
             };
         }
 
@@ -373,9 +347,11 @@ namespace EulynxLive.Point
             if (Connection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
             _logger.LogDebug("Moving to {}.", commandedPointPosition);
 
-            if (PointState.PointPosition != GenericPointPosition.NoEndPosition)
+            var notDegradedPosition = AllPointMachinesCrucial ? GenericDegradedPointPosition.NotApplicable : GenericDegradedPointPosition.NotDegraded;
+
+            if (PointState.PointPosition != GenericPointPosition.NoEndPosition || PointState.DegradedPointPosition != notDegradedPosition)
             {
-                SetPointState(GenericPointPosition.NoEndPosition, RespectAllPointMachinesCrucial(PointState.DegradedPointPosition));
+                SetPointState(GenericPointPosition.NoEndPosition, notDegradedPosition);
                 await Connection.SendPointPosition(PointState);
             }
 
@@ -389,33 +365,39 @@ namespace EulynxLive.Point
                 return;
             }
 
-            if (ShouldSimulateTimeout(commandedPointPosition, simulatedState))
+            if (commandedPointPosition == GenericPointPosition.Left && simulatedState.PreventedPositionLeft != PreventedPosition.DoNotPrevent)
             {
-                _logger.LogInformation("Timeout");
                 await Connection.SendTimeoutMessage();
+
+                var (pointPosition, degradedPointPosition) = HandlePreventedPointPosition(commandedPointPosition, simulatedState);
+                var sendPointPosition = pointPosition != PointState.PointPosition || degradedPointPosition != PointState.DegradedPointPosition;
+
+                SetPointState(pointPosition, degradedPointPosition);
+
+                if (sendPointPosition)
+                    await Connection.SendPointPosition(PointState);
+                _logger.LogInformation("Prevented left end position: {} {}.", PointState.PointPosition, PointState.DegradedPointPosition);
+            }
+            else if (commandedPointPosition == GenericPointPosition.Right && simulatedState.PreventedPositionRight != PreventedPosition.DoNotPrevent)
+            {
+                await Connection.SendTimeoutMessage();
+
+                var (pointPosition, degradedPointPosition) = HandlePreventedPointPosition(commandedPointPosition, simulatedState);
+                var sendPointPosition = pointPosition != PointState.PointPosition || degradedPointPosition != PointState.DegradedPointPosition;
+
+                SetPointState(pointPosition, degradedPointPosition);
+
+                if (sendPointPosition)
+                    await Connection.SendPointPosition(PointState);
+                _logger.LogInformation("Prevented right end position: {} {}.", PointState.PointPosition, PointState.DegradedPointPosition);
             }
             else
             {
-                var (newPointPosition, newDegradedPointPosition) = HandlePreventedPointPosition(commandedPointPosition, simulatedState);
-                SetPointState(newPointPosition, RespectAllPointMachinesCrucial(newDegradedPointPosition));
+                SetPointState(commandedPointPosition, notDegradedPosition);
 
                 _logger.LogInformation("End position reached.");
                 await Connection.SendPointPosition(PointState);
             }
-        }
-
-        private bool ShouldSimulateTimeout(GenericPointPosition commandedPointPosition, SimulatedPointState simulatedState)
-        {
-            if (commandedPointPosition == GenericPointPosition.Left)
-            {
-                return simulatedState.SimulateTimeoutLeft;
-            }
-            else if (commandedPointPosition == GenericPointPosition.Right)
-            {
-                return simulatedState.SimulateTimeoutRight;
-            }
-
-            throw new ArgumentException("Invalid commanded position", nameof(commandedPointPosition));
         }
 
         /// <summary>
