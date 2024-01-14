@@ -95,7 +95,7 @@ function Point({
 
         {/* Right: Actions */}
         <div className="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
-          <a href="https://docs.systemslab21.com/simulators/eulynx-point/" target="_blank" rel="noreferrer" className="btn bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900">
+          <a href="https://redirect.systemslab21.com/PointSimulatorDocs" target="_blank" rel="noreferrer" className="btn bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900">
             <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-book mr-2 stroke-slate-600 dark:stroke-slate-300" width="16" height="16" viewBox="0 0 24 24" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round">
               <path stroke="none" d="M0 0h24v24H0z" fill="none" />
               <path d="M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0" />
