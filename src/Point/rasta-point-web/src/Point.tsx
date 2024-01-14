@@ -75,6 +75,7 @@ function Point({
     try {
       await sender(client);
     } catch (e) {
+      // eslint-disable-next-line no-alert
       alert(e);
     }
   };
