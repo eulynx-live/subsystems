@@ -18,8 +18,6 @@ namespace EulynxLive.Point
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // TODO: Add switch mappings for better usability
-            //  https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-8.0#switch-mappings
             services.AddControllersWithViews();
             services.AddSignalR()
                 .AddJsonProtocol(options => options.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter()));

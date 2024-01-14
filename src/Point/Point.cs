@@ -19,7 +19,9 @@ namespace EulynxLive.Point
 {
     public partial class Point : BackgroundService, IPoint
     {
-        public IPointToInterlockingConnection Connection { get; }
+        public IPointToInterlockingConnectionBuilder? ConnectionBuilder { get; }
+
+        public IPointToInterlockingConnection? Connection { get; private set; }
 
         public bool AllPointMachinesCrucial { get; }
         public bool ObserveAbilityToMove { get; }
@@ -33,12 +35,14 @@ namespace EulynxLive.Point
         private bool _initialized;
 
         private readonly ILogger<Point> _logger;
+        private readonly IPointToInterlockingConnectionBuilder _connectionBuilder;
         private readonly IConnectionProvider _connectionProvider;
         private readonly PointConfiguration _config;
+        private CancellationTokenSource _resetTokenSource = CancellationTokenSource.CreateLinkedTokenSource(CancellationToken.None);
 
-        public Point(ILogger<Point> logger, IConfiguration configuration, IPointToInterlockingConnection connection, IConnectionProvider connectionProvider, IHubContext<StatusHub> statusHub)
+        public Point(ILogger<Point> logger, IConfiguration configuration, IPointToInterlockingConnectionBuilder connectionBuilder, IConnectionProvider connectionProvider, IHubContext<StatusHub> statusHub)
         {
-            Connection = connection;
+            _connectionBuilder = connectionBuilder;
             _connectionProvider = connectionProvider;
             _logger = logger;
 
@@ -82,19 +86,34 @@ namespace EulynxLive.Point
                 DegradedPositionLeft: false,
                 DegradedPositionRight: false,
                 SimulateTimeoutLeft: false,
-                SimulateTimeoutRight: false
+                SimulateTimeoutRight: false,
+                SimulateInitializationTimeout: false
             );
 
             Observable.FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(h => PropertyChanged += h, h => PropertyChanged -= h)
                 .Select(x => Unit.Default)
                 .Merge(Observable.Interval(TimeSpan.FromSeconds(1)).Select(x => Unit.Default))
-                .Subscribe(x => statusHub.Clients.All.SendAsync("ReceiveStatus", _initialized, PointState, SimulatedPointState, new { AllPointMachinesCrucial, ObserveAbilityToMove, _config.ConnectionProtocol }));
+                .Subscribe(x => statusHub.Clients.All.SendAsync("ReceiveStatus", _initialized, PointState, SimulatedPointState, _config));
         }
 
         public async Task SendSciMessage(SciMessage message)
         {
+            if (Connection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
             _logger.LogInformation("Sending SCI message: {}", message.Message);
             await Connection.SendSciMessage(message.Message.ToByteArray());
+        }
+
+        /// <summary>
+        /// Sets the sets the initialization timeout flag for the next initialization.
+        /// </summary>
+        public void EnableInitializationTimeout(bool enableInitializationTimeout)
+        {
+            if (Connection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
+            _logger.LogInformation("Reset and Timeout on next initialization handshake enabled.");
+            _simulatedPointState = _simulatedPointState with
+            {
+                SimulateInitializationTimeout = enableInitializationTimeout
+            };
         }
 
         /// <summary>
@@ -142,7 +161,9 @@ namespace EulynxLive.Point
                 }
             };
 
-            if (_initialized) {
+            if (_initialized)
+            {
+                if (Connection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
                 await Connection.SendAbilityToMove(PointState);
             }
         }
@@ -167,7 +188,9 @@ namespace EulynxLive.Point
             var degradedPosition = PointState.PointPosition == GenericPointPosition.Left ? GenericDegradedPointPosition.DegradedLeft : GenericDegradedPointPosition.DegradedRight;
             SetPointState(GenericPointPosition.UnintendedPosition, simulatedPositionMessage.DegradedPosition ? degradedPosition : notDegradedPosition);
 
-            if (_initialized) {
+            if (_initialized)
+            {
+                if (Connection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
                 await Connection.SendPointPosition(PointState);
             }
         }
@@ -241,50 +264,53 @@ namespace EulynxLive.Point
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             // Main loop.
-            while (true)
+            while (!stoppingToken.IsCancellationRequested)
             {
                 _logger.LogTrace("Connecting...");
-                var conn = _connectionProvider.Connect(Connection.Configuration, stoppingToken);
-                Connection.Connect(conn);
-                Reset();
-                try
+                var conn = _connectionProvider.Connect(_config, stoppingToken);
+                using (Connection = _connectionBuilder.Connect(conn))
                 {
-                    var success = await Connection.InitializeConnection(PointState, _config.ObserveAbilityToMove, stoppingToken);
-                    if (!success)
-                    {
-                        throw new Exception("Unable to initialize connection");
-                    }
-                    _initialized = true;
+                    _resetTokenSource = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
 
-                    await AllMovePointCommands(stoppingToken)
-                        .ToObservable()
-                        .Select(x => Observable.FromAsync(token => HandleCommandedPointPosition(x, token)))
-                        // This will abort the previous simulated point movement if a new command is received.
-                        .Switch();
-                }
-                catch (RpcException)
-                {
-                    // TODO: Since this is gRPC-specific, catch and re-throw this in the GrpcConnectionProvider
-                    _logger.LogWarning("Could not communicate with remote endpoint.");
-                    Reset();
-                    await Task.Delay(1000, stoppingToken);
-                }
-                catch (OperationCanceledException)
-                {
-                    Reset();
-                    return;
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogWarning(ex, "Exception during simulation.");
-                    Reset();
-                    await Task.Delay(1000, stoppingToken);
+                    try
+                    {
+                        var success = await Connection.InitializeConnection(PointState, _config.ObserveAbilityToMove, _simulatedPointState.SimulateInitializationTimeout, _resetTokenSource.Token);
+                        if (!success)
+                        {
+                            throw new Exception("Unable to initialize connection");
+                        }
+                        _initialized = true;
+
+                        await AllMovePointCommands(_resetTokenSource.Token)
+                            .ToObservable()
+                            .Select(x => Observable.FromAsync(token => HandleCommandedPointPosition(x, token)))
+                            // This will abort the previous simulated point movement if a new command is received.
+                            .Switch();
+                    }
+                    catch (ConnectionException)
+                    {
+                        _logger.LogWarning("Could not communicate with remote endpoint.");
+                        Reset();
+                        await Task.Delay(1000, stoppingToken);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        Reset();
+                        return;
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogWarning(ex, "Exception during simulation.");
+                        Reset();
+                        await Task.Delay(1000, stoppingToken);
+                    }
                 }
             }
         }
 
         private async IAsyncEnumerable<GenericPointPosition> AllMovePointCommands([EnumeratorCancellation] CancellationToken stoppingToken)
         {
+            if (Connection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
             while (!stoppingToken.IsCancellationRequested)
             {
                 var commandedPointPosition = await Connection.ReceiveMovePointCommand(stoppingToken);
@@ -314,6 +340,7 @@ namespace EulynxLive.Point
                 return;
             }
 
+            if (Connection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
             _logger.LogDebug("Moving to {}.", commandedPointPosition);
 
             if (PointState.PointPosition != GenericPointPosition.NoEndPosition)
@@ -414,6 +441,7 @@ namespace EulynxLive.Point
         public void Reset()
         {
             _logger.LogInformation("Resetting point.");
+            _resetTokenSource.Cancel();
             _initialized = false;
         }
     }

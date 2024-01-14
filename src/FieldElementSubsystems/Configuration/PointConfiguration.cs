@@ -6,6 +6,8 @@ public record PointConfiguration(
     string LocalId,
     uint LocalRastaId,
     string RemoteId,
+    byte PDIVersion,
+    string PDIChecksum,
     string RemoteEndpoint,
     decimal SimulatedTransitioningTimeSeconds,
     // Whether all point machines are crucial to the point's operation.

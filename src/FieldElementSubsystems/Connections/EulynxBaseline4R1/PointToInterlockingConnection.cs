@@ -2,64 +2,99 @@ using EulynxLive.FieldElementSubsystems.Interfaces;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using EulynxLive.FieldElementSubsystems.Configuration;
-using Grpc.Core;
 using EulynxLive.Messages.Baseline4R1;
 using System.Threading.Channels;
-
+using EulynxLive.FieldElementSubsystems.Extensions;
 
 namespace EulynxLive.FieldElementSubsystems.Connections.EulynxBaseline4R1;
+
+
+public class PointToInterlockingConnectionBuilder : IPointToInterlockingConnectionBuilder
+{
+    private readonly ILogger<PointToInterlockingConnection> _logger;
+    private readonly CancellationToken _stoppingToken;
+    private readonly IConfiguration _configuration;
+
+    public PointToInterlockingConnectionBuilder(
+        ILogger<PointToInterlockingConnection> logger,
+        IConfiguration configuration,
+        CancellationToken stoppingToken)
+    {
+        _logger = logger;
+        _stoppingToken = stoppingToken;
+        _configuration = configuration;
+    }
+
+    public IPointToInterlockingConnection Connect(IConnection conn)
+    {
+        return new PointToInterlockingConnection(_logger, _configuration, _stoppingToken, conn);
+    }
+}
 
 public class PointToInterlockingConnection : IPointToInterlockingConnection
 {
     private readonly ILogger _logger;
     private readonly string _localId;
     private readonly string _remoteId;
+    private readonly byte _pdiVersion;
+    private readonly byte[] _checksum;
+
     public PointConfiguration Configuration { get; }
 
     private readonly Channel<byte[]> _overrideMessages;
 
-    public CancellationToken TimeoutToken => _timeout.Token;
-
     public IConnection? CurrentConnection { get; private set; }
-    private CancellationTokenSource _timeout;
-    private readonly int _timeoutDuration;
     private readonly CancellationToken _stoppingToken;
 
     public PointToInterlockingConnection(
         ILogger<PointToInterlockingConnection> logger,
         IConfiguration configuration,
-        CancellationToken stoppingToken,
-        int timeoutDuration = 10000)
+        CancellationToken stoppingToken, IConnection connection)
     {
-        _timeoutDuration = timeoutDuration;
         _stoppingToken = stoppingToken;
-        _timeout = new CancellationTokenSource();
         _logger = logger;
-        CurrentConnection = null;
+        CurrentConnection = connection;
 
         var config = configuration.GetSection("PointSettings").Get<PointConfiguration>() ?? throw new Exception("No configuration provided");
         _localId = config.LocalId;
         _remoteId = config.RemoteId;
+        _pdiVersion = config.PDIVersion;
+        _checksum = config.PDIChecksum.HexToByteArray();
         Configuration = config;
         _overrideMessages = Channel.CreateUnbounded<byte[]>();
     }
 
-    public void Connect(IConnection connection)
+    public async Task<bool> InitializeConnection(GenericPointState state, bool observeAbilityToMove, bool simulateTimeout, CancellationToken cancellationToken)
     {
-        ResetTimeout();
-        CurrentConnection = connection;
-    }
+        var versionCheckReceived = await ReceiveMessage<PointPdiVersionCheckCommand>(cancellationToken);
 
-    public async Task<bool> InitializeConnection(GenericPointState state, bool observeAbilityToMove, CancellationToken cancellationToken)
-    {
-        if (await ReceiveMessage<PointPdiVersionCheckCommand>(cancellationToken) == null)
+        if (versionCheckReceived == null)
         {
             _logger.LogError("Unexpected message.");
             return false;
         }
 
-        var versionCheckResponse = new PointPdiVersionCheckMessage(_localId, _remoteId, PointPdiVersionCheckMessageResultPdiVersionCheck.PDIVersionsFromReceiverAndSenderDoMatch, /* TODO */ 0, 0, Array.Empty<byte>());
+        if (!CheckPDIVersionReceived(versionCheckReceived.PdiVersionOfSender))
+        {
+            // Eu.Gen-SCI.445
+            // Eu.SCI-XX.PDI.91 - Eu.SCI-XX.PDI.94
+            // If byte 43 is set to 0x01, byte 45 shall be set to zero.
+            // The bytes 46 ... 46+n-1 shall not be allocated, if PDI-Version from Receiver and Sender does not match
+            _logger.LogError("Version check failed.");
+            var versionCheckFailedResponse = new PointPdiVersionCheckMessage(_localId, _remoteId, PointPdiVersionCheckMessageResultPdiVersionCheck.PDIVersionsFromReceiverAndSenderDoNotMatch, _pdiVersion, 0, []);
+            await SendMessage(versionCheckFailedResponse);
+            return false;
+        }
+
+        var versionCheckResponse = new PointPdiVersionCheckMessage(_localId, _remoteId, PointPdiVersionCheckMessageResultPdiVersionCheck.PDIVersionsFromReceiverAndSenderDoMatch, _pdiVersion, (byte)_checksum.Length, _checksum);
+
         await SendMessage(versionCheckResponse);
+
+        if (simulateTimeout)
+        {
+            // Never send the missing initialization messages
+            return true;
+        }
 
         if (await ReceiveMessage<PointInitialisationRequestCommand>(cancellationToken) == null)
         {
@@ -85,6 +120,13 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
         await SendMessage(completeInitialization);
         return true;
     }
+
+    /// <summary>
+    /// Checks whether the given version matches the expected version
+    /// </summary>
+    /// <param name="versionCheckResponse"></param>
+    /// <returns></returns> <summary>
+    private bool CheckPDIVersionReceived(byte version) => version == _pdiVersion;
 
     public async Task SendPointPosition(GenericPointState state)
     {
@@ -133,13 +175,6 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
         throw new InvalidOperationException("Unexpected message.");
     }
 
-    private void ResetTimeout()
-    {
-        _timeout = CancellationTokenSource.CreateLinkedTokenSource(_stoppingToken);
-        _timeout.CancelAfter(_timeoutDuration);
-    }
-
-
     public async Task SendSciMessage(byte[] message)
     {
         if (CurrentConnection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
@@ -156,5 +191,10 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
         var abilityToMove = new AbilityToMove(pointState);
         var abilityToMoveMessage = new PointAbilityToMovePointMessage(_localId, _remoteId, abilityToMove.AbilityToMove);
         await SendMessage(abilityToMoveMessage);
+    }
+
+    public void Dispose()
+    {
+        CurrentConnection?.Dispose();
     }
 }

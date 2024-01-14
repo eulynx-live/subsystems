@@ -28,6 +28,8 @@ public class PointTest
             {"PointSettings:InitialPointPosition", initialPointState.PointPosition.ToString() },
             {"PointSettings:InitialDegradedPointPosition", initialPointState.DegradedPointPosition.ToString() },
             {"PointSettings:InitialAbilityToMove", initialPointState.AbilityToMove.ToString() },
+            {"PointSettings:PDIVersion", "1" },
+            {"PointSettings:PDIChecksum", "0x00" }
         };
 
         var configuration = new ConfigurationBuilder()
@@ -36,11 +38,11 @@ public class PointTest
 
         var cancel = new CancellationTokenSource();
         var config = configuration.GetSection("PointSettings").Get<PointConfiguration>()!;
-        var mockConnection = CreateDefaultMockConnection(config);
+        var (mockConnection, mockConnectionBuilder) = CreateDefaultMockConnection(config);
 
         var mockHubContext = new Mock<IHubContext<StatusHub>>();
         mockHubContext.Setup(x => x.Clients.All.SendCoreAsync(It.IsAny<string>(), It.IsAny<object[]>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
-        var point = new EulynxLive.Point.Point(Mock.Of<ILogger<EulynxLive.Point.Point>>(), configuration, mockConnection.Object, Mock.Of<IConnectionProvider>(), mockHubContext.Object);
+        var point = new EulynxLive.Point.Point(Mock.Of<ILogger<EulynxLive.Point.Point>>(), configuration, mockConnectionBuilder.Object, Mock.Of<IConnectionProvider>(), mockHubContext.Object);
 
         async Task SimulatePoint()
         {
@@ -54,20 +56,24 @@ public class PointTest
         return (point, SimulatePoint, mockConnection, cancel);
     }
 
-    private static Mock<IPointToInterlockingConnection> CreateDefaultMockConnection(PointConfiguration configuration)
+    private static (Mock<IPointToInterlockingConnection>, Mock<IPointToInterlockingConnectionBuilder>) CreateDefaultMockConnection(PointConfiguration configuration)
     {
         var mockConnection = new Mock<IPointToInterlockingConnection>();
+        var mockConnectionBuilder = new Mock<IPointToInterlockingConnectionBuilder>();
         mockConnection.Setup(x => x.Configuration).Returns(() => configuration);
-        mockConnection.Setup(x => x.TimeoutToken).Returns(() => CancellationToken.None);
         mockConnection
             .Setup(m => m.SendPointPosition(
                 It.IsAny<GenericPointState>()))
             .Returns(Task.FromResult(0));
         mockConnection
             .Setup(m => m.InitializeConnection(
-                It.IsAny<GenericPointState>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
+                It.IsAny<GenericPointState>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult(true));
-        return mockConnection;
+        mockConnectionBuilder
+            .Setup(m => m.Connect(
+                It.IsAny<IConnection>()))
+            .Returns(mockConnection.Object);
+        return (mockConnection, mockConnectionBuilder);
     }
 
     private readonly ILogger<EulynxLive.Point.Point> _logger = Mock.Of<ILogger<EulynxLive.Point.Point>>();
@@ -85,6 +91,33 @@ public class PointTest
     {
         var (point, _, _, _) = CreateDefaultPoint(true, new GenericPointState(null, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.NotApplicable, GenericAbilityToMove.AbleToMove));
         Assert.Equal(GenericPointPosition.NoEndPosition, point.PointState.PointPosition);
+    }
+
+    [Fact]
+    public async Task Test_Reset()
+    {
+        // Arrange
+        var (point, pointTask, connection, cancel) = CreateDefaultPoint(true, new GenericPointState(null, GenericPointPosition.NoEndPosition, GenericDegradedPointPosition.NotApplicable, GenericAbilityToMove.AbleToMove));
+
+        connection
+            .SetupSequence(m => m.ReceiveMovePointCommand(It.IsAny<CancellationToken>()))
+            .Returns(() =>
+            {
+                point.Reset();
+                return Task.FromResult(GenericPointPosition.Left);
+            })
+            .Returns(() =>
+            {
+                cancel.Cancel();
+                return new TaskCompletionSource<GenericPointPosition>().Task;
+            });
+
+
+        // Act
+        await pointTask();
+
+        // Assert
+        connection.Verify(v => v.InitializeConnection(It.IsAny<GenericPointState>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
     }
 
     [Fact]
@@ -153,14 +186,14 @@ public class PointTest
 
         connection
             .SetupSequence(m => m.ReceiveMovePointCommand(It.IsAny<CancellationToken>()))
-            .Returns(() =>
+            .Returns(async () =>
             {
                 var message = new AbilityToMoveMessage
                 {
                     Ability = simulatedAbilityToMove
                 };
-                point.SetAbilityToMove(message);
-                return Task.FromResult(GenericPointPosition.Left);
+                await point.SetAbilityToMove(message);
+                return GenericPointPosition.Left;
             })
             .Returns(() =>
             {
@@ -233,7 +266,7 @@ public class PointTest
         await pointTask();
 
         // Assert
-        connection.Verify(v => v.InitializeConnection(It.IsAny<GenericPointState>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()));
+        connection.Verify(v => v.InitializeConnection(It.IsAny<GenericPointState>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()));
         Assert.Equal(GenericPointPosition.Left, point.PointState.PointPosition);
     }
 
@@ -256,7 +289,7 @@ public class PointTest
         await pointTask();
 
         // Assert
-        connection.Verify(v => v.InitializeConnection(It.IsAny<GenericPointState>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()));
+        connection.Verify(v => v.InitializeConnection(It.IsAny<GenericPointState>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()));
         Assert.Equal(GenericPointPosition.Right, point.PointState.PointPosition);
     }
 
@@ -280,7 +313,7 @@ public class PointTest
         await pointTask();
 
         // Assert
-        connection.Verify(v => v.InitializeConnection(It.IsAny<GenericPointState>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()));
+        connection.Verify(v => v.InitializeConnection(It.IsAny<GenericPointState>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()));
         Assert.Equal(GenericPointPosition.Left, point.PointState.PointPosition);
     }
 
@@ -317,7 +350,7 @@ public class PointTest
         await pointTask();
 
         // Assert
-        connection.Verify(v => v.InitializeConnection(It.IsAny<GenericPointState>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()));
+        connection.Verify(v => v.InitializeConnection(It.IsAny<GenericPointState>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()));
         Assert.Equal(expectedPosition, point.PointState.PointPosition);
         Assert.Equal(expectedDegradedPosition, point.PointState.DegradedPointPosition);
     }
@@ -338,7 +371,7 @@ public class PointTest
                 {
                     DegradedPosition = simulatedDegradedPosition
                 };
-                point.PutIntoUnintendedPosition(message);
+                await point.PutIntoUnintendedPosition(message);
 
                 cancel.Cancel();
                 return await new TaskCompletionSource<GenericPointPosition>().Task;
@@ -348,7 +381,7 @@ public class PointTest
         await pointTask();
 
         // Assert
-        connection.Verify(v => v.InitializeConnection(It.IsAny<GenericPointState>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()));
+        connection.Verify(v => v.InitializeConnection(It.IsAny<GenericPointState>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()));
         Assert.Equal(GenericPointPosition.UnintendedPosition, point.PointState.PointPosition);
         Assert.Equal(expectedDegradedPosition, point.PointState.DegradedPointPosition);
     }
@@ -387,7 +420,7 @@ public class PointTest
         await pointTask();
 
         // Assert
-        connection.Verify(v => v.InitializeConnection(It.IsAny<GenericPointState>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()));
+        connection.Verify(v => v.InitializeConnection(It.IsAny<GenericPointState>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()));
         Assert.Equal(GenericPointPosition.NoEndPosition, point.PointState.PointPosition);
         Assert.Equal(GenericDegradedPointPosition.DegradedRight, point.PointState.DegradedPointPosition);
     }

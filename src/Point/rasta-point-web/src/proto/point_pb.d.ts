@@ -1,6 +1,6 @@
 import * as jspb from 'google-protobuf'
 
-import * as google_protobuf_empty_pb from 'google-protobuf/google/protobuf/empty_pb'; // proto import: "google/protobuf/empty.proto"
+import * as google_protobuf_empty_pb from 'google-protobuf/google/protobuf/empty_pb';
 
 
 export class AbilityToMoveMessage extends jspb.Message {
@@ -96,6 +96,24 @@ export class EnableMovementFailedMessage extends jspb.Message {
 export namespace EnableMovementFailedMessage {
   export type AsObject = {
     enablemovementfailed: boolean,
+  }
+}
+
+export class EnableInitializationTimeoutMessage extends jspb.Message {
+  getEnableinitializationtimeout(): boolean;
+  setEnableinitializationtimeout(value: boolean): EnableInitializationTimeoutMessage;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): EnableInitializationTimeoutMessage.AsObject;
+  static toObject(includeInstance: boolean, msg: EnableInitializationTimeoutMessage): EnableInitializationTimeoutMessage.AsObject;
+  static serializeBinaryToWriter(message: EnableInitializationTimeoutMessage, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): EnableInitializationTimeoutMessage;
+  static deserializeBinaryFromReader(message: EnableInitializationTimeoutMessage, reader: jspb.BinaryReader): EnableInitializationTimeoutMessage;
+}
+
+export namespace EnableInitializationTimeoutMessage {
+  export type AsObject = {
+    enableinitializationtimeout: boolean,
   }
 }
 
