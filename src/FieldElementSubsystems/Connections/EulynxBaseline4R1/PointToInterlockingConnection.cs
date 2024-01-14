@@ -2,7 +2,6 @@ using EulynxLive.FieldElementSubsystems.Interfaces;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using EulynxLive.FieldElementSubsystems.Configuration;
-using Grpc.Core;
 using EulynxLive.Messages.Baseline4R1;
 using System.Threading.Channels;
 using EulynxLive.FieldElementSubsystems.Extensions;
@@ -15,7 +14,7 @@ public class PointToInterlockingConnectionBuilder : IPointToInterlockingConnecti
     private readonly ILogger<PointToInterlockingConnection> _logger;
     private readonly CancellationToken _stoppingToken;
     private readonly IConfiguration _configuration;
-  
+
     public PointToInterlockingConnectionBuilder(
         ILogger<PointToInterlockingConnection> logger,
         IConfiguration configuration,
@@ -68,7 +67,7 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
     public async Task<bool> InitializeConnection(GenericPointState state, bool observeAbilityToMove, bool simulateTimeout, CancellationToken cancellationToken)
     {
         var versionCheckReceived = await ReceiveMessage<PointPdiVersionCheckCommand>(cancellationToken);
-        
+
         if (versionCheckReceived == null)
         {
             _logger.LogError("Unexpected message.");
@@ -88,7 +87,7 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
         }
 
         var versionCheckResponse = new PointPdiVersionCheckMessage(_localId, _remoteId, PointPdiVersionCheckMessageResultPdiVersionCheck.PDIVersionsFromReceiverAndSenderDoMatch, _pdiVersion, (byte)_checksum.Length, _checksum);
-        
+
         await SendMessage(versionCheckResponse);
 
         if (simulateTimeout)
@@ -96,13 +95,13 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
             // Never send the missing initialization messages
             return true;
         }
-        
+
         if (await ReceiveMessage<PointInitialisationRequestCommand>(cancellationToken) == null)
         {
             _logger.LogError("Unexpected message.");
             return false;
         }
-        
+
         var startInitialization = new PointStartInitialisationMessage(_localId, _remoteId);
         await SendMessage(startInitialization);
 
@@ -123,7 +122,7 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
     }
 
     /// <summary>
-    /// Checks whether the given version matches the expected version 
+    /// Checks whether the given version matches the expected version
     /// </summary>
     /// <param name="versionCheckResponse"></param>
     /// <returns></returns> <summary>

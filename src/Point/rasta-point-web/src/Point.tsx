@@ -3,6 +3,7 @@ import _uniqueId from 'lodash/uniqueId';
 import './Point.css';
 import * as google_protobuf_empty_pb from 'google-protobuf/google/protobuf/empty_pb';
 import { PointClient } from './proto/PointServiceClientPb';
+import logo from './logo.png';
 
 import {
   PreventedPosition, AbilityToMoveMessage, AbilityToMove, PreventedPositionMessage, DegradedPositionMessage, EnableMovementFailedMessage,
@@ -68,7 +69,7 @@ function ButtonGroup({ items }: { items: { active: boolean, label: string, disab
 function Point({
   simulatorConfiguration, pointState, simulatedPointState, initialized,
 }: PointProps) {
-  const sendCommand = async (sender: (client: PointClient) => Promise<any>) => {
+  const sendCommand = async (sender: (client: PointClient) => Promise<unknown>) => {
     const url = `${window.location.protocol}//${window.location.host}${window.location.pathname.endsWith('/') ? window.location.pathname.slice(0, -1) : window.location.pathname}`;
     const client = new PointClient(url);
     try {
@@ -85,13 +86,16 @@ function Point({
       <div className="sm:flex sm:justify-between sm:items-center mb-5">
 
         {/* Left: Title */}
-        <div className="mb-4 sm:mb-0">
-          <h1 className="text-xl font-semibold text-slate-800 dark:text-slate-100 pb-4">Point Simulator</h1>
+        <div className="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2 mb-4 sm:mb-0">
+          <img src={logo} width="32" height="32" alt="logo" />
+          <h1 className="text-xl font-semibold text-slate-800 dark:text-slate-100 pb-4">
+            Point Simulator
+          </h1>
         </div>
 
         {/* Right: Actions */}
         <div className="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
-          <a href="https://docs.systemslab21.com/simulators/eulynx-point/" target="_blank" rel="noreferrer" className="btn bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900">
+          <a href="https://redirect.systemslab21.com/PointSimulatorDocs" target="_blank" rel="noreferrer" className="btn bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900">
             <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-book mr-2 stroke-slate-600 dark:stroke-slate-300" width="16" height="16" viewBox="0 0 24 24" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round">
               <path stroke="none" d="M0 0h24v24H0z" fill="none" />
               <path d="M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0" />
@@ -101,6 +105,16 @@ function Point({
               <path d="M21 6l0 13" />
             </svg>
             Readme
+          </a>
+          <a href="/point.proto" download className="btn bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900">
+            <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-file-download mr-2 stroke-slate-600 dark:stroke-slate-300" width="16" height="16" viewBox="0 0 24 24" strokeWidth="1.5" stroke="#2c3e50" fill="none" strokeLinecap="round" strokeLinejoin="round">
+              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+              <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+              <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
+              <path d="M12 17v-6" />
+              <path d="M9.5 14.5l2.5 2.5l2.5 -2.5" />
+            </svg>
+            Download .proto
           </a>
         </div>
       </div>
