@@ -8,8 +8,6 @@ namespace EulynxLive.Point
         PreventedPosition PreventedPositionRight,
         bool DegradedPositionLeft,
         bool DegradedPositionRight,
-        bool SimulateTimeoutLeft,
-        bool SimulateTimeoutRight,
         bool SimulateInitializationTimeout
     );
 }

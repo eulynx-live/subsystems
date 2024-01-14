@@ -8,9 +8,6 @@ namespace EulynxLive.Point
         ConnectionProtocol? ConnectionProtocol { get; }
         IPointToInterlockingConnection? Connection { get; }
         GenericPointState PointState { get; }
-
-        void EnableTimeoutLeft(bool enableMovementFailed);
-        void EnableTimeoutRight(bool enableMovementFailed);
         void EnableInitializationTimeout(bool enableInitializationTimeout);
         void PreventLeftEndPosition(PreventedPositionMessage request);
         void PreventRightEndPosition(PreventedPositionMessage request);

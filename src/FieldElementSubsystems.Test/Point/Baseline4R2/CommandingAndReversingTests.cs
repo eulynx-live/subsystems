@@ -4,6 +4,7 @@ using EulynxLive.FieldElementSubsystems.Interfaces;
 using EulynxLive.Messages.Baseline4R2;
 using EulynxLive.Point;
 using EulynxLive.Point.Hubs;
+using EulynxLive.Point.Proto;
 
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
@@ -78,8 +79,16 @@ public class CommandingAndReversingTests
         mockHubContext.Setup(x => x.Clients.All.SendCoreAsync(It.IsAny<string>(), It.IsAny<object[]>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
         var point = new EulynxLive.Point.Point(Mock.Of<ILogger<EulynxLive.Point.Point>>(), configuration, builder, connectionProvider.Object, mockHubContext.Object);
         if (simulateTimeouts) {
-            point.EnableTimeoutLeft(true);
-            point.EnableTimeoutRight(true);
+            point.PreventLeftEndPosition(new PreventedPositionMessage
+            {
+                Position = PreventedPosition.SetNoEndPosition,
+                DegradedPosition = false
+            });
+            point.PreventRightEndPosition(new PreventedPositionMessage
+            {
+                Position = PreventedPosition.SetNoEndPosition,
+                DegradedPosition = false
+            });
         }
 
         async Task SimulatePoint()

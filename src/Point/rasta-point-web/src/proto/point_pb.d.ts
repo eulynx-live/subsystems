@@ -1,6 +1,6 @@
 import * as jspb from 'google-protobuf'
 
-import * as google_protobuf_empty_pb from 'google-protobuf/google/protobuf/empty_pb';
+import * as google_protobuf_empty_pb from 'google-protobuf/google/protobuf/empty_pb'; // proto import: "google/protobuf/empty.proto"
 
 
 export class AbilityToMoveMessage extends jspb.Message {
@@ -78,24 +78,6 @@ export class DegradedPositionMessage extends jspb.Message {
 export namespace DegradedPositionMessage {
   export type AsObject = {
     degradedposition: boolean,
-  }
-}
-
-export class EnableMovementFailedMessage extends jspb.Message {
-  getEnablemovementfailed(): boolean;
-  setEnablemovementfailed(value: boolean): EnableMovementFailedMessage;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): EnableMovementFailedMessage.AsObject;
-  static toObject(includeInstance: boolean, msg: EnableMovementFailedMessage): EnableMovementFailedMessage.AsObject;
-  static serializeBinaryToWriter(message: EnableMovementFailedMessage, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): EnableMovementFailedMessage;
-  static deserializeBinaryFromReader(message: EnableMovementFailedMessage, reader: jspb.BinaryReader): EnableMovementFailedMessage;
-}
-
-export namespace EnableMovementFailedMessage {
-  export type AsObject = {
-    enablemovementfailed: boolean,
   }
 }
 

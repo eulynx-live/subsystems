@@ -39,8 +39,6 @@ service Point {
 
     rpc SchedulePreventRightEndPosition (PreventedPositionMessage) returns (google.protobuf.Empty) {}
     rpc SchedulePreventLeftEndPosition (PreventedPositionMessage) returns (google.protobuf.Empty) {}
-    rpc ScheduleTimeoutRight (EnableMovementFailedMessage) returns (google.protobuf.Empty) {}
-    rpc ScheduleTimeoutLeft (EnableMovementFailedMessage) returns (google.protobuf.Empty) {}
 
     rpc ScheduleInitializationTimeout (EnableInitializationTimeoutMessage) returns (google.protobuf.Empty) {}
     rpc Reset (google.protobuf.Empty) returns (google.protobuf.Empty) {}
@@ -66,10 +64,6 @@ message PreventedPositionMessage {
 
 message DegradedPositionMessage {
     bool degradedPosition = 1;
-}
-
-message EnableMovementFailedMessage {
-    bool enableMovementFailed = 1;
 }
 
 message EnableInitializationTimeoutMessage {

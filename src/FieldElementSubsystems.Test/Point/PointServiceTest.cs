@@ -29,34 +29,6 @@ public class PointServiceTest()
     }
 
     [Fact]
-    public void TestScheduleTimeoutRight()
-    {
-        // Arrange
-        var point = new Mock<IPoint>();
-        var pointService = new PointService(point.Object);
-
-        // Act
-        pointService.ScheduleTimeoutRight(new EnableMovementFailedMessage() { EnableMovementFailed = true }, Mock.Of<ServerCallContext>());
-
-        // Assert
-        point.Verify(x => x.EnableTimeoutRight(true), Times.Once);
-    }
-
-    [Fact]
-    public void TestScheduleTimeoutLeft()
-    {
-        // Arrange
-        var point = new Mock<IPoint>();
-        var pointService = new PointService(point.Object);
-
-        // Act
-        pointService.ScheduleTimeoutLeft(new EnableMovementFailedMessage() { EnableMovementFailed = true }, Mock.Of<ServerCallContext>());
-
-        // Assert
-        point.Verify(x => x.EnableTimeoutLeft(true), Times.Once);
-    }
-
-    [Fact]
     public async Task TestSetAbilityToMove()
     {
         // Arrange

@@ -22,18 +22,6 @@ namespace EulynxLive.Point.Services
             return Task.FromResult(new Empty());
         }
 
-        public override Task<Empty> ScheduleTimeoutRight(EnableMovementFailedMessage request, ServerCallContext context)
-        {
-            _point.EnableTimeoutRight(request.EnableMovementFailed);
-            return Task.FromResult(new Empty());
-        }
-
-        public override Task<Empty> ScheduleTimeoutLeft(EnableMovementFailedMessage request, ServerCallContext context)
-        {
-            _point.EnableTimeoutLeft(request.EnableMovementFailed);
-            return Task.FromResult(new Empty());
-        }
-
         public override async Task<Empty> SetAbilityToMove(AbilityToMoveMessage request, ServerCallContext context)
         {
             await _point.SetAbilityToMove(request);
