@@ -29,8 +29,8 @@ namespace EulynxLive.Point
                         { "--initial-point-position", "PointSettings:InitialPointPosition" },
                         { "--initial-degraded-point-position", "PointSettings:InitialDegradedPointPosition" },
                         { "--initial-ability-to-move", "PointSettings:InitialAbilityToMove" },
-                        { "--pdi-version", "PointSettings:PDIVersion"},
-                        { "--pdi-checksum", "PointSettings:PDIChecksum"}
+                        { "--pdi-version", "PointSettings:PDIVersion" },
+                        { "--pdi-checksum", "PointSettings:PDIChecksum" }
                     };
                     webBuilder
                         .ConfigureAppConfiguration((hostingContext, config) =>
