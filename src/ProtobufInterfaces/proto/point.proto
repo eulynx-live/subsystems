@@ -31,6 +31,7 @@ service Point {
 
     rpc PutIntoUnintendedPosition (DegradedPositionMessage) returns (google.protobuf.Empty) {}
     rpc PutIntoTrailedPosition (DegradedPositionMessage) returns (google.protobuf.Empty) {}
+    rpc PutIntoNoEndPosition (DegradedPositionMessage) returns (google.protobuf.Empty) {}
     rpc SetAbilityToMove (AbilityToMoveMessage) returns (google.protobuf.Empty) {}
 
     rpc SendSciMessage (SciMessage) returns (google.protobuf.Empty) {}

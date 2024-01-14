@@ -386,6 +386,37 @@ public class PointTest
         Assert.Equal(expectedDegradedPosition, point.PointState.DegradedPointPosition);
     }
 
+    [Theory]
+    [InlineData(false, GenericDegradedPointPosition.NotDegraded)]
+    [InlineData(true, GenericDegradedPointPosition.DegradedLeft)]
+    public async Task Test_PutIntoNoEndPosition(bool simulatedDegradedPosition, GenericDegradedPointPosition expectedDegradedPosition)
+    {
+        // Arrange
+        var (point, pointTask, connection, cancel) = CreateDefaultPoint(false, new GenericPointState(GenericPointPosition.Left, GenericPointPosition.Left, GenericDegradedPointPosition.NotDegraded, GenericAbilityToMove.AbleToMove));
+
+        connection
+            .SetupSequence(m => m.ReceiveMovePointCommand(It.IsAny<CancellationToken>()))
+            .Returns(async () =>
+            {
+                var message = new DegradedPositionMessage
+                {
+                    DegradedPosition = simulatedDegradedPosition
+                };
+                await point.PutIntoNoEndPosition(message);
+
+                cancel.Cancel();
+                return await new TaskCompletionSource<GenericPointPosition>().Task;
+            });
+
+        // Act
+        await pointTask();
+
+        // Assert
+        connection.Verify(v => v.InitializeConnection(It.IsAny<GenericPointState>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()));
+        Assert.Equal(GenericPointPosition.NoEndPosition, point.PointState.PointPosition);
+        Assert.Equal(expectedDegradedPosition, point.PointState.DegradedPointPosition);
+    }
+
     [Fact]
     public async Task Test_PreventEndPosition_Multiple_Times()
     {

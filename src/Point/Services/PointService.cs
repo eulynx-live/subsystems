@@ -89,6 +89,12 @@ namespace EulynxLive.Point.Services
             return new Empty();
         }
 
+        public override async Task<Empty> PutIntoNoEndPosition(DegradedPositionMessage request, ServerCallContext context)
+        {
+            await _point.PutIntoNoEndPosition(request);
+            return new Empty();
+        }
+
         public override Task<PointDegradedPositionMessage> GetDegradedPointPosition(Empty request, ServerCallContext context)
         {
             var response = new PointDegradedPositionMessage()

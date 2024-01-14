@@ -173,6 +173,42 @@ namespace EulynxLive.Point
         /// </summary>
         public async Task PutIntoUnintendedPosition(DegradedPositionMessage simulatedPositionMessage)
         {
+            var degradedPosition = HandleSimulatedDegradedPosition(simulatedPositionMessage);
+            _logger.LogInformation("Transitioning point into unintended / trailed position.");
+            SetPointState(GenericPointPosition.UnintendedPosition, degradedPosition);
+
+            if (_initialized)
+            {
+                if (Connection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
+                await Connection.SendPointPosition(PointState);
+            }
+        }
+
+        /// <summary>
+        /// Puts the point into a no end position status immediately.
+        /// </summary>
+        public async Task PutIntoNoEndPosition(DegradedPositionMessage simulatedPositionMessage)
+        {
+            var degradedPosition = HandleSimulatedDegradedPosition(simulatedPositionMessage);
+            _logger.LogInformation("Transitioning point into no end position.");
+            SetPointState(GenericPointPosition.NoEndPosition, degradedPosition);
+
+            if (_initialized)
+            {
+                if (Connection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
+                await Connection.SendPointPosition(PointState);
+            }
+        }
+
+        /// <summary>
+        /// Evaluates the simulated degraded position using the current point state and the correct point degraded position.
+        /// Will throw an exception if the simulated degraded position is not compatible with the point state.
+        /// </summary>
+        /// <param name="simulatedPositionMessage"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        private GenericDegradedPointPosition HandleSimulatedDegradedPosition(DegradedPositionMessage simulatedPositionMessage)
+        {
             if (AllPointMachinesCrucial && simulatedPositionMessage.DegradedPosition)
             {
                 throw new InvalidOperationException("All point machines are crucial, cannot set degraded position.");
@@ -183,16 +219,10 @@ namespace EulynxLive.Point
                 throw new InvalidOperationException($"Point is not in an end position, cannot put into unintended position.");
             }
 
-            _logger.LogInformation("Transitioning point into unintended / trailed position.");
             var notDegradedPosition = AllPointMachinesCrucial ? GenericDegradedPointPosition.NotApplicable : GenericDegradedPointPosition.NotDegraded;
             var degradedPosition = PointState.PointPosition == GenericPointPosition.Left ? GenericDegradedPointPosition.DegradedLeft : GenericDegradedPointPosition.DegradedRight;
-            SetPointState(GenericPointPosition.UnintendedPosition, simulatedPositionMessage.DegradedPosition ? degradedPosition : notDegradedPosition);
 
-            if (_initialized)
-            {
-                if (Connection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
-                await Connection.SendPointPosition(PointState);
-            }
+            return simulatedPositionMessage.DegradedPosition ? degradedPosition : notDegradedPosition;
         }
 
         /// <summary>

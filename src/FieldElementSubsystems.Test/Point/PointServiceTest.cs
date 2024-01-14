@@ -199,6 +199,22 @@ public class PointServiceTest()
     }
 
     [Fact]
+    public async Task TestPutIntoNoEndPosition()
+    {
+        // Arrange
+        var point = new Mock<IPoint>();
+        point.Setup(x => x.ConnectionProtocol)
+            .Returns(EulynxLive.FieldElementSubsystems.Configuration.ConnectionProtocol.EulynxBaseline4R2);
+        var pointService = new PointService(point.Object);
+
+        // Act
+        await pointService.PutIntoNoEndPosition(new DegradedPositionMessage() { DegradedPosition = true }, Mock.Of<ServerCallContext>());
+
+        // Assert
+        point.Verify(x => x.PutIntoNoEndPosition(It.IsAny<DegradedPositionMessage>()), Times.Once);
+    }
+
+    [Fact]
     public async Task TestGetDegradedPointPosition()
     {
         // Arrange
