@@ -14,12 +14,9 @@ namespace EulynxLive.Point.Connections;
 class GrpcConnection : IConnection
 {
     readonly AsyncDuplexStreamingCall<SciPacket, SciPacket>? _connection;
-    private readonly CancellationToken _stoppingToken;
 
     public GrpcConnection(Metadata? metadata, string remoteEndpoint, CancellationToken stoppingToken)
     {
-        _stoppingToken = stoppingToken;
-
         var channel = GrpcChannel.ForAddress(remoteEndpoint);
         var client = new RastaClient(channel);
         _connection = client.Stream(metadata, cancellationToken: stoppingToken);

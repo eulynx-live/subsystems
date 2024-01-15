@@ -155,6 +155,7 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
 
     private async Task SendMessage(Message message)
     {
+        _logger.LogInformation("Sending SCI message: {}", message);
         await SendMessage(message.ToByteArray());
     }
 
@@ -170,6 +171,7 @@ public class PointToInterlockingConnection : IPointToInterlockingConnection
         if (CurrentConnection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
 
         var message = Message.FromBytes(await CurrentConnection.ReceiveAsync(cancellationToken));
+        _logger.LogInformation("Received SCI message: {}", message);
         if (message is T tMessage) return tMessage;
         _logger.LogError("Unexpected message: {}", message);
         throw new InvalidOperationException("Unexpected message.");
