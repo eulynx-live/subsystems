@@ -10,9 +10,11 @@ using Microsoft.AspNetCore.SignalR;
 using PropertyChanged.SourceGenerator;
 
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Net.WebSockets;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace EulynxLive.Point
@@ -267,6 +269,10 @@ namespace EulynxLive.Point
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            // Log version information
+            var version = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
+            _logger.LogInformation("Simulator software version: {}", version ?? "unknown");
+
             // Main loop.
             while (!stoppingToken.IsCancellationRequested)
             {

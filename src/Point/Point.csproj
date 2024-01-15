@@ -9,6 +9,10 @@
     <IsPackable>false</IsPackable>
     <SpaRoot>rasta-point-web\</SpaRoot>
     <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
+    <Version>1.1.0</Version>
+    <Company>Systems Lab 21 GmbH</Company>
+    <Product>EULYNX Point Simulator</Product>
+    <Description>Simulator for EULYNX SCI-P Electronic Field Element Subsystem</Description>
   </PropertyGroup>
 
   <ItemGroup>
@@ -77,6 +81,16 @@
   <!-- Provide the point.proto for download -->
   <Target Name="CopyCustomContentOnPublish" AfterTargets="PublishRunWebpack">
     <Copy SourceFiles="..\ProtobufInterfaces\proto\point.proto" DestinationFolder="$(PublishDir)$(SpaRoot)build" />
+  </Target>
+
+  <Target Name="SetSourceRevisionId" BeforeTargets="InitializeSourceControlInformation">
+    <Exec
+      Command="git describe --long --always --dirty --exclude=* --abbrev=8"
+      ConsoleToMSBuild="True"
+      IgnoreExitCode="False"
+      >
+      <Output PropertyName="SourceRevisionId" TaskParameter="ConsoleOutput"/>
+    </Exec>
   </Target>
 
 </Project>

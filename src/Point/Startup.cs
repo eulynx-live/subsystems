@@ -40,7 +40,7 @@ namespace EulynxLive.Point
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Usage: --PointSettings:LocalId=<> --PointSettings:LocalRastaId=<> --PointSettings:RemoteId=<> --PointSettings:RemoteEndpoint=<>. {e.Message}");
+                Console.WriteLine($"One of the required configuration options was not provided. {e.Message}");
                 Environment.Exit(1);
             }
 
