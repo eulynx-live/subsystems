@@ -3,6 +3,8 @@ using EulynxLive.FieldElementSubsystems.Interfaces;
 using EulynxLive.Point.Hubs;
 using EulynxLive.Point.Proto;
 
+using Google.Protobuf.WellKnownTypes;
+
 using Grpc.Core;
 
 using Microsoft.AspNetCore.SignalR;
@@ -99,6 +101,45 @@ namespace EulynxLive.Point
             if (Connection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
             _logger.LogInformation("Sending SCI message: {}", message.Message);
             await Connection.SendSciMessage(message.Message.ToByteArray());
+        }
+
+        /// <summary>
+        /// Send a SCI message with a Protocol Error.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        public async Task SendSciMessagePDIError(Empty request)
+        {
+            if (Connection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
+            // Arbitrary message, that is not protocol type SCI-P.
+            byte[] message = new Messages.Baseline4R1.CCPdiVersionCheckCommand(
+                _config.LocalId,
+                _config.RemoteId,
+                _config.PDIVersion).ToByteArray();
+            await Connection.SendSciMessage(message);
+        }
+
+        /// <summary>
+        /// Send a SCI message with content with a Content Telegram Error.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        public async Task SendSciMessageContentError(Empty request)
+        {
+            if (Connection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
+            byte[] messageBytes = Enumerable.Range(0, 43).Select(number => (byte)0x0A).ToArray();
+            await Connection.SendSciMessage(messageBytes);
+        }
+
+        /// <summary>
+        /// Send a SCI message with content a Formal Telegram Error.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        public async Task SendSciMessageFormalError(Empty request)
+        {
+            SciMessage message = new SciMessage();
+            await SendSciMessage(message);
         }
 
         /// <summary>

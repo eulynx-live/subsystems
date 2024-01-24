@@ -258,7 +258,7 @@ function Point({
 
         <div className="col-span-full sm:col-span-12 xl:col-span-8 bg-white dark:bg-slate-800 shadow-lg rounded-sm border border-slate-200 dark:border-slate-700 p-4">
           <h2 className="text-l font-semibold text-slate-800 dark:text-slate-100">Simulate Irregularities</h2>
-          <div className="grid grid-flow-col">
+          <div className="grid grid-cols-2 ">
             <div className="py-3">
               <SemiBoldPropertyLabel>
                 Prevent left end position
@@ -365,28 +365,58 @@ function Point({
                 ))}
               />
             </div>
-          </div>
-          <div>
-            <SemiBoldPropertyLabel>
-              Connectivity
-            </SemiBoldPropertyLabel>
             <div>
-              <button
-                type="button"
-                onClick={() => sendCommand((client) => client.reset(new google_protobuf_empty_pb.Empty(), null))}
-                className="m-3 btn dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 text-rose-500"
-              >
-                Reset RaSTA Connection
-
-              </button>
+              <SemiBoldPropertyLabel>
+                Connectivity
+              </SemiBoldPropertyLabel>
               <div>
-                <Toggle
-                  label="Enable Initialization Timeout"
-                  active={simulatedPointState?.simulateInitializationTimeout || false}
-                  onChange={
-                    (enable) => sendCommand((client) => client.scheduleInitializationTimeout(new EnableInitializationTimeoutMessage().setEnableinitializationtimeout(enable), null))
-                  }
-                />
+                <button
+                  type="button"
+                  onClick={() => sendCommand((client) => client.reset(new google_protobuf_empty_pb.Empty(), null))}
+                  className="m-3 btn dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 text-rose-500"
+                >
+                  Reset RaSTA Connection
+
+                </button>
+                <div>
+                  <Toggle
+                    label="Enable Initialization Timeout"
+                    active={simulatedPointState?.simulateInitializationTimeout || false}
+                    onChange={
+                      (enable) => sendCommand((client) => client.scheduleInitializationTimeout(new EnableInitializationTimeoutMessage().setEnableinitializationtimeout(enable), null))
+                    }
+                  />
+                </div>
+              </div>
+            </div>
+            <div>
+              <SemiBoldPropertyLabel>
+                <div className="mb-3">
+                  Communication
+                </div>
+              </SemiBoldPropertyLabel>
+              <div>
+                <button
+                  type="button"
+                  onClick={() => sendCommand((client) => client.sendSciMessagePDIError(new google_protobuf_empty_pb.Empty(), null))}
+                  className="w-full p-3 mb-3 border-box btn dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 text-rose-500"
+                >
+                  Send SCI Message with Protocol Error
+                </button>
+                <button
+                  type="button"
+                  onClick={() => sendCommand((client) => client.sendSciMessageContentError(new google_protobuf_empty_pb.Empty(), null))}
+                  className="w-full p-3 mb-3 border-box btn dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 text-rose-500"
+                >
+                  Send SCI Message with Content Telegram Error
+                </button>
+                <button
+                  type="button"
+                  onClick={() => sendCommand((client) => client.sendSciMessageFormalError(new google_protobuf_empty_pb.Empty(), null))}
+                  className="w-full p-3 mb-3 border-box btn dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 text-rose-500"
+                >
+                  Send SCI Message with Formal Telegram Error
+                </button>
               </div>
             </div>
           </div>
