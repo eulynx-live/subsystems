@@ -116,6 +116,7 @@ namespace EulynxLive.Point
                 _config.LocalId,
                 _config.RemoteId,
                 _config.PDIVersion).ToByteArray();
+            _logger.LogInformation("Sending SCI message: {}", message);
             await Connection.SendSciMessage(message);
         }
 
@@ -127,7 +128,16 @@ namespace EulynxLive.Point
         public async Task SendSciMessageContentError(Empty request)
         {
             if (Connection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
-            byte[] messageBytes = Enumerable.Range(0, 43).Select(number => (byte)0x0A).ToArray();
+            byte[] messageBytes = new Messages.Baseline4R1.PointPointPositionMessage(
+                _config.LocalId,
+                _config.RemoteId,
+                Messages.Baseline4R1.PointPointPositionMessageReportedPointPosition.PointIsInNoEndPosition,
+                Messages.Baseline4R1.PointPointPositionMessageReportedDegradedPointPosition.PointIsInADegradedRightHandPosition
+            ).ToByteArray();
+            messageBytes[43] = 0x07; //undefined value
+            messageBytes[44] = 0x07; //undefined value
+
+            _logger.LogInformation("Sending SCI message: {}", BitConverter.ToString(messageBytes).Replace("-", " 0x"));
             await Connection.SendSciMessage(messageBytes);
         }
 
@@ -138,8 +148,15 @@ namespace EulynxLive.Point
         /// <returns></returns>
         public async Task SendSciMessageFormalError(Empty request)
         {
-            SciMessage message = new SciMessage();
-            await SendSciMessage(message);
+            if (Connection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
+            byte[] messageBytes = new Messages.Baseline4R1.PointPointPositionMessage(
+                _config.LocalId,
+                _config.RemoteId,
+                Messages.Baseline4R1.PointPointPositionMessageReportedPointPosition.PointIsInNoEndPosition,
+                Messages.Baseline4R1.PointPointPositionMessageReportedDegradedPointPosition.PointIsInADegradedRightHandPosition
+            ).ToByteArray().Take(43).ToArray(); //remove last byte
+            _logger.LogInformation("Sending SCI message: {}", BitConverter.ToString(messageBytes).Replace("-", " 0x"));
+            await Connection.SendSciMessage(messageBytes);
         }
 
         /// <summary>
