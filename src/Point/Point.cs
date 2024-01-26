@@ -128,12 +128,24 @@ namespace EulynxLive.Point
         public async Task SendSciMessageContentError(Empty request)
         {
             if (Connection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
-            byte[] messageBytes = new Messages.Baseline4R1.PointPointPositionMessage(
-                _config.LocalId,
-                _config.RemoteId,
-                Messages.Baseline4R1.PointPointPositionMessageReportedPointPosition.PointIsInNoEndPosition,
-                Messages.Baseline4R1.PointPointPositionMessageReportedDegradedPointPosition.PointIsInADegradedRightHandPosition
-            ).ToByteArray();
+            byte[] messageBytes = ConnectionProtocol switch
+            {
+                FieldElementSubsystems.Configuration.ConnectionProtocol.EulynxBaseline4R1 =>
+                    new Messages.Baseline4R1.PointPointPositionMessage(
+                        _config.LocalId,
+                        _config.RemoteId,
+                        Messages.Baseline4R1.PointPointPositionMessageReportedPointPosition.PointIsInNoEndPosition,
+                        Messages.Baseline4R1.PointPointPositionMessageReportedDegradedPointPosition.PointIsInADegradedRightHandPosition
+                    ).ToByteArray(),
+                FieldElementSubsystems.Configuration.ConnectionProtocol.EulynxBaseline4R2 =>
+                    new Messages.Baseline4R2.PointPointPositionMessage(
+                        _config.LocalId,
+                        _config.RemoteId,
+                        Messages.Baseline4R2.PointPointPositionMessageReportedPointPosition.PointIsInNoEndPosition,
+                        Messages.Baseline4R2.PointPointPositionMessageReportedDegradedPointPosition.PointIsInADegradedRightHandPosition
+                    ).ToByteArray(),
+                _ => throw new NotImplementedException()
+            };
             messageBytes[43] = 0x07; //undefined value
             messageBytes[44] = 0x07; //undefined value
 
@@ -149,12 +161,25 @@ namespace EulynxLive.Point
         public async Task SendSciMessageFormalError(Empty request)
         {
             if (Connection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
-            byte[] messageBytes = new Messages.Baseline4R1.PointPointPositionMessage(
-                _config.LocalId,
-                _config.RemoteId,
-                Messages.Baseline4R1.PointPointPositionMessageReportedPointPosition.PointIsInNoEndPosition,
-                Messages.Baseline4R1.PointPointPositionMessageReportedDegradedPointPosition.PointIsInADegradedRightHandPosition
-            ).ToByteArray().Take(43).ToArray(); //remove last byte
+            byte[] messageBytes = ConnectionProtocol switch
+            {
+                FieldElementSubsystems.Configuration.ConnectionProtocol.EulynxBaseline4R1 =>
+                    new Messages.Baseline4R1.PointPointPositionMessage(
+                        _config.LocalId,
+                        _config.RemoteId,
+                        Messages.Baseline4R1.PointPointPositionMessageReportedPointPosition.PointIsInNoEndPosition,
+                        Messages.Baseline4R1.PointPointPositionMessageReportedDegradedPointPosition.PointIsInADegradedRightHandPosition
+                    ).ToByteArray(),
+                FieldElementSubsystems.Configuration.ConnectionProtocol.EulynxBaseline4R2 =>
+                    new Messages.Baseline4R2.PointPointPositionMessage(
+                        _config.LocalId,
+                        _config.RemoteId,
+                        Messages.Baseline4R2.PointPointPositionMessageReportedPointPosition.PointIsInNoEndPosition,
+                        Messages.Baseline4R2.PointPointPositionMessageReportedDegradedPointPosition.PointIsInADegradedRightHandPosition
+                    ).ToByteArray(),
+                _ => throw new NotImplementedException()
+            };
+            messageBytes = messageBytes.Take(43).ToArray(); //remove last byte
             _logger.LogInformation("Sending SCI message: {}", BitConverter.ToString(messageBytes).Replace("-", " 0x"));
             await Connection.SendSciMessage(messageBytes);
         }
