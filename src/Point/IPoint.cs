@@ -2,6 +2,8 @@ using EulynxLive.FieldElementSubsystems.Configuration;
 using EulynxLive.FieldElementSubsystems.Interfaces;
 using EulynxLive.Point.Proto;
 
+using Google.Protobuf.WellKnownTypes;
+
 namespace EulynxLive.Point
 {
     public interface IPoint {
@@ -16,5 +18,8 @@ namespace EulynxLive.Point
         void Reset();
         Task SendSciMessage(SciMessage request);
         Task SetAbilityToMove(AbilityToMoveMessage request);
+        Task SendSciMessagePDIError(Empty request);
+        Task SendSciMessageContentError(Empty request);
+        Task SendSciMessageFormalError(Empty request);
     }
 }

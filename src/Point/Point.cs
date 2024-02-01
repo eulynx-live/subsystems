@@ -3,6 +3,8 @@ using EulynxLive.FieldElementSubsystems.Interfaces;
 using EulynxLive.Point.Hubs;
 using EulynxLive.Point.Proto;
 
+using Google.Protobuf.WellKnownTypes;
+
 using Grpc.Core;
 
 using Microsoft.AspNetCore.SignalR;
@@ -101,6 +103,87 @@ namespace EulynxLive.Point
             if (Connection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
             _logger.LogInformation("Sending SCI message: {}", message.Message);
             await Connection.SendSciMessage(message.Message.ToByteArray());
+        }
+
+        /// <summary>
+        /// Send a SCI message with a Protocol Error.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        public async Task SendSciMessagePDIError(Empty request)
+        {
+            if (Connection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
+            // Arbitrary message, that is not protocol type SCI-P.
+            byte[] message = new Messages.Baseline4R1.CCPdiVersionCheckCommand(
+                _config.LocalId,
+                _config.RemoteId,
+                _config.PDIVersion).ToByteArray();
+            _logger.LogInformation("Sending SCI message: {}", message);
+            await Connection.SendSciMessage(message);
+        }
+
+        /// <summary>
+        /// Send a SCI message with content with a Content Telegram Error.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        public async Task SendSciMessageContentError(Empty request)
+        {
+            if (Connection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
+            byte[] messageBytes = ConnectionProtocol switch
+            {
+                FieldElementSubsystems.Configuration.ConnectionProtocol.EulynxBaseline4R1 =>
+                    new Messages.Baseline4R1.PointPointPositionMessage(
+                        _config.LocalId,
+                        _config.RemoteId,
+                        Messages.Baseline4R1.PointPointPositionMessageReportedPointPosition.PointIsInNoEndPosition,
+                        Messages.Baseline4R1.PointPointPositionMessageReportedDegradedPointPosition.PointIsInADegradedRightHandPosition
+                    ).ToByteArray(),
+                FieldElementSubsystems.Configuration.ConnectionProtocol.EulynxBaseline4R2 =>
+                    new Messages.Baseline4R2.PointPointPositionMessage(
+                        _config.LocalId,
+                        _config.RemoteId,
+                        Messages.Baseline4R2.PointPointPositionMessageReportedPointPosition.PointIsInNoEndPosition,
+                        Messages.Baseline4R2.PointPointPositionMessageReportedDegradedPointPosition.PointIsInADegradedRightHandPosition
+                    ).ToByteArray(),
+                _ => throw new NotImplementedException()
+            };
+            messageBytes[43] = 0x07; //undefined value
+            messageBytes[44] = 0x07; //undefined value
+
+            _logger.LogInformation("Sending SCI message: {}", BitConverter.ToString(messageBytes).Replace("-", " 0x"));
+            await Connection.SendSciMessage(messageBytes);
+        }
+
+        /// <summary>
+        /// Send a SCI message with content a Formal Telegram Error.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        public async Task SendSciMessageFormalError(Empty request)
+        {
+            if (Connection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");
+            byte[] messageBytes = ConnectionProtocol switch
+            {
+                FieldElementSubsystems.Configuration.ConnectionProtocol.EulynxBaseline4R1 =>
+                    new Messages.Baseline4R1.PointPointPositionMessage(
+                        _config.LocalId,
+                        _config.RemoteId,
+                        Messages.Baseline4R1.PointPointPositionMessageReportedPointPosition.PointIsInNoEndPosition,
+                        Messages.Baseline4R1.PointPointPositionMessageReportedDegradedPointPosition.PointIsInADegradedRightHandPosition
+                    ).ToByteArray(),
+                FieldElementSubsystems.Configuration.ConnectionProtocol.EulynxBaseline4R2 =>
+                    new Messages.Baseline4R2.PointPointPositionMessage(
+                        _config.LocalId,
+                        _config.RemoteId,
+                        Messages.Baseline4R2.PointPointPositionMessageReportedPointPosition.PointIsInNoEndPosition,
+                        Messages.Baseline4R2.PointPointPositionMessageReportedDegradedPointPosition.PointIsInADegradedRightHandPosition
+                    ).ToByteArray(),
+                _ => throw new NotImplementedException()
+            };
+            messageBytes = messageBytes.Take(43).ToArray(); //remove last byte
+            _logger.LogInformation("Sending SCI message: {}", BitConverter.ToString(messageBytes).Replace("-", " 0x"));
+            await Connection.SendSciMessage(messageBytes);
         }
 
         /// <summary>

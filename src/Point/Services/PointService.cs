@@ -34,6 +34,24 @@ namespace EulynxLive.Point.Services
             return new Empty();
         }
 
+        public override async Task<Empty> SendSciMessagePDIError(Empty request, ServerCallContext context)
+        {
+            await _point.SendSciMessagePDIError(request);
+            return new Empty();
+        }
+
+        public override async Task<Empty> SendSciMessageContentError(Empty request, ServerCallContext context)
+        {
+            await _point.SendSciMessageContentError(request);
+            return new Empty();
+        }
+
+        public override async Task<Empty> SendSciMessageFormalError(Empty request, ServerCallContext context)
+        {
+            await _point.SendSciMessageFormalError(request);
+            return new Empty();
+        }
+
         public override async Task<Empty> OverrideSciMessage(SciMessage request, ServerCallContext context)
         {
             if (_point.Connection == null) throw new InvalidOperationException("Connection is null. Did you call Connect()?");

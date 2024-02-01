@@ -35,6 +35,9 @@ service Point {
     rpc SetAbilityToMove (AbilityToMoveMessage) returns (google.protobuf.Empty) {}
 
     rpc SendSciMessage (SciMessage) returns (google.protobuf.Empty) {}
+    rpc SendSciMessagePDIError (google.protobuf.Empty) returns (google.protobuf.Empty) {}
+    rpc SendSciMessageContentError (google.protobuf.Empty) returns (google.protobuf.Empty) {}
+    rpc SendSciMessageFormalError (google.protobuf.Empty) returns (google.protobuf.Empty) {}
     rpc OverrideSciMessage (SciMessage) returns (google.protobuf.Empty) {}
 
     rpc SchedulePreventRightEndPosition (PreventedPositionMessage) returns (google.protobuf.Empty) {}
