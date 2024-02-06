@@ -10,12 +10,8 @@ namespace EulynxLive.Messages.Baseline4R2;
 ///
 /// </summary>
 /// <value></value>
-public record GenericIOSetOutputChannelsCommand(string senderIdentifier, string receiverIdentifier, byte numberOfChannels, byte[] channelStates): Message(senderIdentifier, receiverIdentifier) 
+public record GenericIOSetOutputChannelsCommand(string SenderIdentifier, string ReceiverIdentifier, byte NumberOfChannels, byte[] ChannelStates): Message(SenderIdentifier, ReceiverIdentifier) 
 {
-    public string SenderIdentifier { get; set; }
-    public string ReceiverIdentifier { get; set; }
-    public byte NumberOfChannels { get; set; }
-    public byte[] ChannelStates { get; set; }
     public static readonly ushort MessageType = 0x0001; // Eu.SCI-ILS.PDI.162
 
     public new static GenericIOSetOutputChannelsCommand FromBytes(byte[] data)
@@ -52,12 +48,8 @@ public record GenericIOSetOutputChannelsCommand(string senderIdentifier, string 
 ///
 /// </summary>
 /// <value></value>
-public record GenericIOStateOfOutputChannelsMessage(string senderIdentifier, string receiverIdentifier, byte numberOfChannels, byte[] channelStates): Message(senderIdentifier, receiverIdentifier) 
+public record GenericIOStateOfOutputChannelsMessage(string SenderIdentifier, string ReceiverIdentifier, byte NumberOfChannels, byte[] ChannelStates): Message(SenderIdentifier, ReceiverIdentifier) 
 {
-    public string SenderIdentifier { get; set; }
-    public string ReceiverIdentifier { get; set; }
-    public byte NumberOfChannels { get; set; }
-    public byte[] ChannelStates { get; set; }
     public static readonly ushort MessageType = 0x0002; // Eu.SCI-IO.PDI.175
 
     public new static GenericIOStateOfOutputChannelsMessage FromBytes(byte[] data)
@@ -94,12 +86,8 @@ public record GenericIOStateOfOutputChannelsMessage(string senderIdentifier, str
 ///
 /// </summary>
 /// <value></value>
-public record GenericIOStateOfInputChannelsMessage(string senderIdentifier, string receiverIdentifier, byte numberOfChannels, byte[] channelStates): Message(senderIdentifier, receiverIdentifier) 
+public record GenericIOStateOfInputChannelsMessage(string SenderIdentifier, string ReceiverIdentifier, byte NumberOfChannels, byte[] ChannelStates): Message(SenderIdentifier, ReceiverIdentifier) 
 {
-    public string SenderIdentifier { get; set; }
-    public string ReceiverIdentifier { get; set; }
-    public byte NumberOfChannels { get; set; }
-    public byte[] ChannelStates { get; set; }
     public static readonly ushort MessageType = 0x0003; // Eu.SCI-IO.PDI.189
 
     public new static GenericIOStateOfInputChannelsMessage FromBytes(byte[] data)
