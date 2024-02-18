@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Text;
 
-namespace EulynxLive.Messages.Baseline4R1;
+namespace EulynxLive.Messages.Baseline4R2;
 
 public record AdjacentInterlockingSystemPdiVersionCheckMessage (string SenderIdentifier, string ReceiverIdentifier, AdjacentInterlockingSystemPdiVersionCheckMessageResultPdiVersionCheck ResultPdiVersionCheck, byte SenderPdiVersion, byte ChecksumLength, byte[] Checksum) : Message(SenderIdentifier, ReceiverIdentifier) {
     private const int MessageTypeOffset = 1;

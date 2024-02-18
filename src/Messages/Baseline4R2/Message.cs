@@ -144,8 +144,11 @@ public abstract record Message(string SenderIdentifier, string ReceiverIdentifie
                 _ => throw new Exception($"Unknown protocol and message type {protocolType} / {messageType}")
             },
             ProtocolType.GenericIO => messageType switch {
+                0x0001 => GenericIOSetOutputChannelsCommand.FromBytes(message),
+                0x0002 => GenericIOStateOfOutputChannelsMessage.FromBytes(message),
+                0x0003 => GenericIOStateOfInputChannelsMessage.FromBytes(message),
                 0x0024 => GenericIOPdiVersionCheckCommand.FromBytes(message),
-                // 0x0025 => GenericIOPdiVersionCheckMessage.FromBytes(message),
+                0x0025 => GenericIOPdiVersionCheckMessage.FromBytes(message),
                 0x0021 => GenericIOInitialisationRequestCommand.FromBytes(message),
                 0x0022 => GenericIOStartInitialisationMessage.FromBytes(message),
                 0x0026 => GenericIOStatusReportCompletedMessage.FromBytes(message),
